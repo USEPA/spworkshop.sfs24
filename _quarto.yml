@@ -1,0 +1,29 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Spatial Analysis and Statistical Modeling with R and spmodel"
+  subtitle: "2024 Society for Freshwater Science Conference"
+  author: "Michael Dumelle and Ryan Hill"
+  page-footer:
+    left: |
+      Workshop materials created by Michael Dumelle and Ryan Hill
+    right: |
+      This book was built with <a href="https://quarto.org/">Quarto</a>.
+  chapters:
+    - index.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+    code-link: true
+    toc: true
+    toc-depth: 4
+
+
+
+

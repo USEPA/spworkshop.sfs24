@@ -1,0 +1,53 @@
+---
+title: "Spatial Analysis and Statistical Modeling with R and spmodel"
+subtitle: "2024 Society for Freshwater Science Conference"
+date: June 02, 2024
+format:
+  revealjs:
+    author: 
+      - "Michael Dumelle"
+      - "Ryan Hill"
+    institute: 
+      - "EPA (USA)"
+      - "EPA (USA)"
+    slide-number: true
+    preview-links: true
+    transition: fade
+    theme: [default, slides.scss]
+    smaller: false
+    auto-stretch: true
+    code-link: true
+    incremental: false
+execute: 
+  echo: true
+embed-resources: true
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# set width of code output
+options(width = 80)
+
+# load background packages
+library(countdown)
+```
+
+## Welcome!
+
+1. Please visit link to follow to view the workshop's accompanying workbook
+
+2. Install and load R packages by visiting "Setup" in the workbook's "Welcome" section 
+
+3. (Optional) Download the workshop slides (instructions in the workbook's "Welcome" section)
+
+4. (Optional) Fill out the poll so we can better understand attendee's level of experience handling spatial data
+
+5. Follow along and have fun!
+
+## Acknowledgements
+
+* Thank you so much for attending!
+* Questions?
