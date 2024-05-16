@@ -13,6 +13,7 @@ book:
       This book was built with <a href="https://quarto.org/">Quarto</a>.
   chapters:
     - index.qmd
+    - before-sfs.qmd
 
 bibliography: references.bib
 
