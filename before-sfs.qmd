@@ -88,6 +88,7 @@ install.packages('geojson')
 install.packages('mapview')
 install.packages('FedData')
 install.packages('tidyterra')
+install.packages('maps')
 ```
 
 **New EPA Packages**
