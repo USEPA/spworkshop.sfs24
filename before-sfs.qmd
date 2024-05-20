@@ -36,9 +36,11 @@ R runs on contributed packages - it has core functionality, but all the spatial 
 
 ## Preliminaries
 
-### Install R
+### Install R and RTools
 
-Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have R, Rtools, and RStudio. Please get at least R version > 4.0 and the compatible version of R tools: [R CRAN](https://cran.r-project.org/).Rtools will be necessary to install non-CRAN repositories from GitHub (see below).
+Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have both R (at least version 4). Get the latest versions of each and install using the defaults: [R CRAN](https://cran.r-project.org/).
+
+In addition to R, it will be critical to install the compatible version of RTools (also available at [R CRAN](https://cran.r-project.org/). This will allow you to install the GitHub version of pakcages that are not yet on the CRAN (see below).
 
 ### Install RStudio
 
