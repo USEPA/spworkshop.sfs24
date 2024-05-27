@@ -1,83 +1,77 @@
-```{r source_r, echo = FALSE}
-source("_common.R")
-```
+---
+title: "Before SFS"
+format: 
+  html:
+    self-contained: true
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
 
-## What is R and why use it?
+# Welcome {#sec-intro .unnumbered}
 
-There are several advantages to using R in your work, especially as the R ecosystem as exanded and R has become the default langauge for many scientists.
+Hello and welcome! The purpose of this site is to provide workshop materials for the 2024 SFS workshop __Spatial Analysis and Statistical Modeling with R and spmodel__.
 
-- A language and environment for statistical computing and graphics.
-- R is lightweight, free, open-source and cross-platform.
-- Works with contributed packages, including `tidyverse`.
-- Automation and recording of workflow (reproducibility).
-- Optimized work flow - data manipulation, analysis and visualization all in one place.
-- R does not alter underlying data - manipulation and visualization in memory.
-- R is great for repetitive graphics.
+It is our hope that this workshop will provide attendees with the conceptual and practical knowledge to incorporate geospatial analyses into their `R` workflow to improve the interpretation of spatial data. In particular, this workshop will focus on the R package `spmodel`.
 
-![A short history of R.](History_of_R.png){#fig-foo height="100%"}
+__What is `spmodel`?__ The `spmodel` `R` package [@dumelle2023spmodel] can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that `spmodel` can do include:
 
-## Why use R for GIS workflows?
+* Fit spatial linear and generalized linear models for point-referenced and areal (lattice) data
+* Compare model fits and inspect model diagnostics
+* Predict at unobserved spatial locations (i.e., Kriging)
+* And much more!
 
-- Spatial and statistical analysis in one environment (GIS suddenly feels like R).
-- Leverage statistical power of R (i.e. modeling spatial data, data visualization, statistical exploration).
-- Can handle vector and raster data, as well as work with spatial databases and pretty much any data format spatial data comes in.
-- R’s GIS capabilities growing rapidly right now - new packages added monthly. 
+__Why use `spmodel`?__ There are many great spatial modeling packages in `R`. A few reasons to use `spmodel` for spatial analysis are that:
 
-## Drawbacks to using R for GIS work
+* `spmodel` syntax is similar to base `R` syntax for functions like `lm()`, `glm()`, `summary()`, and `predict()`, making the transition from fitting non-spatial models to spatial models relatively seamless.
+* There are a wide variety of `spmodel` capabilities that give the user significant control over the specific spatial model being fit.
+* `spmodel` is compatible with other modern `R` packages like `broom` and `sf`.
 
-- R not as good for interactive use as desktop GIS applications like ArcGIS or QGIS (i.e. editing features, panning, zooming, and analysis on selected subsets of features).
-- Explicit coordinate system handling by the user, no on-the-fly projection support.
-- In memory analysis does not scale well with large GIS vector and tabular data.
-- Steep(ish) learning curve.
+## Workshop Agenda
+ 
+- 9:00am - 10:00am EDT: XYZ
+- 10:00am - 11:00am EDT: XYZ
+ 
+## Instructor Introduction 
 
-An ideal solution for many tasks is using R in conjunction with traditional GIS software.
+__Michael Dumelle__ (he/him/his) is a statistician for the United States Environmental Protection Agency (USEPA). He works primarily on facilitating the survey design and analysis of USEPA’s National Aquatic Resource Surveys (NARS), which characterize the condition of waters across the United States. His primary research interests are in spatial statistics, survey design, environmental and ecological applications, and software development.
 
-R runs on contributed packages - it has core functionality, but all the spatial work we would do in R is contained in user-contributed packages. While GIS functionality in R was originally handled with the `sp`, `rgdal`, `rgeos` packages for vector data and the `raster` package for rasterized data, much of this work as moved to the `sf` package for vector data and `terra` or `stars` packages for rasters. We'll be using `sf`and `terra` during the workshop.
+__Ryan Hill__ (he/him/his) is an aquatic ecologist with the U.S. EPA Office of Research and Development. He is interested in how watershed conditions drive differences in freshwater diversity and water quality across the United States. He has worked extensively with federal physical, chemical, and biological datasets to gain insights into the factors affecting water quality and biotic condition of freshwaters across the conterminous US. He has also worked to develop and distribute large datasets of geospatial watershed metrics of streams and lakes for the Agency (EPA’s StreamCat and LakeCat datasets). 
 
-## Preliminaries
+## Volunteer Introduction 
+
+__Lara Jansen__ (she/her/hers) is an aquatic community ecologist and an ORISE postdoctoral fellow working on predictive models of benthic macroinvertebrate communities across the conterminous US in relation to watershed factors. Lara completed her PhD in Environmental Science at Portland State University in 2023, studying the drivers and dynamics of harmful algal blooms in mountain lakes with Dr. Angela Strecker.She obtained a MS in Natural Resource Sciences at Cal Poly Humboldt University with a thesis focused on the downstream impacts of dam flow regulation on benthic macroinvertebrate and algal communities. 
+
+__Wade Boys__ (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.
+
+## Setup
 
 ### Install R and RTools
 
-Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have both R (at least version 4). Get the latest versions of each and install using the defaults: [R CRAN](https://cran.r-project.org/).
-
-In addition to R, it will be critical to install the compatible version of RTools (also available at [R CRAN](https://cran.r-project.org/). This will allow you to install the GitHub version of pakcages that are not yet on the CRAN (see below).
+Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have `R`, `Rtools`, and `RStudio`. Please install at least R version > 4.0 and the compatible version of `RTools`: [R CRAN](https://cran.r-project.org/).`Rtools` will be necessary to install non-CRAN repositories from GitHub (see below).
 
 ### Install RStudio
 
-Please also make sure you have a version of Posit's RStudio installed that is compatible with your version of R/Rtools: [RStudio](https://posit.co/products/open-source/rstudio/).
+Please also make sure you have the latest version of Posit's [`RStudio`](https://posit.co/products/open-source/rstudio/) installed.
 
 ### Install R Packages
 
-***Common Packages***
+The packages that we use throughout this workshop are listed below. To install them run:
 
-First, we need to install several R packages. R operates on user-contributed packages, and we’ll be using several of these in this workshop. We will use several packages that are core to data management in R: `tidyverse`, `ggplot2`, `data.table`.
-
-If you haven't done so already for these packages, please run these lines of code:
-
+**Common Packages**
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 install.packages('tidyverse')
 install.packages('ggplot2')
 install.packages('data.table')
+install.packages('tictoc')
+install.packages("remotes")
+install.packages("devtools")
 ```
 
 **Geospatial Packages**
 
-In addition to these core packages, we'll be using several CRAN packages specifically developed for GIS tasks or handling/obtaining spatial data: 
-
-- `sf` - The [Simple Features](https://r-spatial.github.io/sf/) package is for working with vector data (points, lines, polygons).
-- `terra` - The [Terra](https://rspatial.github.io/terra/reference/terra-package.html) package handles raster data. 
-- `prism` - [PRISM](https://docs.ropensci.org/prism/) facilitates the download and extraction of Oregon State University's [PRISM climate data](https://www.prism.oregonstate.edu/). 
-- `tigris` - [Census TIGER/Line](https://github.com/walkerke/tigris) package for accessing political boundaries of the U.S.
-- `nhdplusTools` - [nhdplusTools](https://github.com/doi-usgs/nhdplusTools/) is a package for navigating and extracting data from the medium resolution NHDPlus.
-
-We'll also need a couple of packages to handle watershed delineation from a USGS API:
-
-- `jsonlite` - [jsonlite](https://github.com/jeroen/jsonlite) package for parsing results from API queries.
-
-- `geojson` - [geojson](https://github.com/ropensci/geojson) package for parsing geographic json results.
-
-- `mapview` - [mapview](https://github.com/r-spatial/mapview) is a package for quickly making interactive maps in R, but especially useful within RMarkdown or Quarto documents. 
+In addition to these core `R` packages, we'll be using several CRAN packages specifically developed for GIS tasks or handling/obtaining spatial data: 
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 install.packages('sf')
@@ -85,41 +79,48 @@ install.packages('terra')
 install.packages('prism')
 install.packages('tigris')
 install.packages('nhdplusTools')
-install.packages('jsonlite')
-install.packages('geojson')
 install.packages('mapview')
 install.packages('FedData')
 install.packages('tidyterra')
+install.packages('jsonlite')
+install.packages('geojson')
 install.packages('maps')
 ```
 
 **New EPA Packages**
 
-Finally, we will use three new packages developed by researchers at the U.S. Environmental Protection Agency. These packages will need to installed from GitHub:
-
-![spmodel hex sticker.](spmodel_hex_rancho_300dpi_cropped_2in.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+Finally, we will use three new `R` packages developed by researchers at the U.S. Environmental Protection Agency. The package `spmodel`, in particular, will form the basis of this workshop.
 
 `spmodel` - The [spmodel](https://github.com/USEPA/spmodel) package is the basis of this workshop. Although this package is available on the CRAN, we will use the version from GitHub with the latest updates.  
 
-![StreamCatTools hex sticker.](streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+![spmodel hex sticker.](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/spmodel_hex_rancho_300dpi_cropped_2in.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
 
 `StreamCatTools` - The [StreamCatTools](https://github.com/USEPA/StreamCatTools/) package retrieves StreamCat and LakeCat data via an API.
 
-
-![finsyncR hex sticker.](finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
-
+![StreamCatTools hex sticker.](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
 
 `finsyncR` - The [finsyncR](https://github.com/USEPA/finsyncR) package greatly facilitates the retrieval and harmonization of EPA and USGS stream macroinvertebrate and fish data.
 
+![finsyncR hex sticker.](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+
 To install these packages:
+
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
-# spmodel from CRAN
+# Install spmodel from CRAN
 install.packages('spmodel')
-# Packages from GitHub
+
+# Install remotes package to allow GitHub installation of finsyncR and StreamCatTools
 install.packages('remotes')
-remotes::install_github("USEPA/finsyncR", build_vignette = TRUE)
-remotes::install_github("USEPA/StreamCatTools", build_vignettes = FALSE)
+remotes::install_github('USEPA/finsyncR', build_vignette = TRUE)
+remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
 ```
 
-```{r all-code, ref.label=labs, eval = FALSE}
-```
+## How to follow along with material
+This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository XXX INSERT LINK WHEN READY](), or simply clone directly and open the corresponding .qmd files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
+
+## See you soon!
+
+We look forward to having you in our workshop. Please reach out with any questions beforehand. 
+
+
+

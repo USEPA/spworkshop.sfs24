@@ -14,6 +14,10 @@ book:
   chapters:
     - index.qmd
     - before-sfs.qmd
+    - gis-in-r.qmd
+    - watershed-delineation.qmd
+    - streamcattools.qmd
+    - spatial-glm.qmd
 
 bibliography: references.bib
 

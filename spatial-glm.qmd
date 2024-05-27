@@ -1,0 +1,458 @@
+---
+title: ""
+format: 
+  html:
+    self-contained: true
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# Spatial GLM of "Dancer" damselfly (_Argia_) {#spatial-glm}
+
+![Image from: inaturalist.org](https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg){height="25%" width="25%" fig-align="left"}
+
+To start this exercise, we'll introduce a new `R` package called [`finsyncR`](https://usepa.github.io/finsyncR/). This package was developed by US EPA scientists and academic collaborators. 
+
+![](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+
+From the `finsyncR` GitHub page: 
+
+_(**f**ish and **in**vertebrate **sync**hronizer in **R**) is a data management package that integrates and processes national-level aquatic biomonitoring datasets in the U.S., with a focus on fish and macroinvertebrates sampled in rivers and streams._   
+
+_The sources of data for this package are the United States Environmental Protection Agency’s (USEPA) National Aquatic Resource Surveys (NARS), namely the National River and Streams Assessment (NRSA), and United States Geological Survey’s (USGS) BioData._
+
+In short, `finsyncR` provides us with access to thousands of biological samples across the U.S. from both EPA and USGS sources (e.g., [Rumschlag et al. 2023](https://www.science.org/doi/full/10.1126/sciadv.adf4896)). We'll be using EPA data today. The EPA data are from the National Aquatic Resources Assessment's [Wadeable Streams Assessment](https://www.epa.gov/national-aquatic-resource-surveys/wadeable-streams-assessment) (2001-2004) and [National Rivers and Streams Assessments](https://www.epa.gov/national-aquatic-resource-surveys/nrsa) (NRSA; 2008/2009, 2013/2014, and 2018/2019). 
+
+We encourage potential users of `finsyncR` to thoroughly read the GitHub tutorial and other associated materials. A paper describing the package is currently under review in _Methods in Ecology and Evolution_. 
+
+## Data Prep 
+
+### Biological (Dependent) Data
+
+First, load `finsyncR`, `spmodel`, `StreamCatTools`, and other needed packages.
+
+```{r, warning=F, message=F, eval=TRUE}
+library(finsyncR)
+library(tidyverse)
+library(sf)
+library(tigris)
+library(StreamCatTools)
+library(nhdplusTools)
+library(spmodel)
+library(data.table)
+library(pROC)
+library(knitr)
+```
+
+Next, we will use `finsyncR` to get genus-level macroinvert data from just EPA and rarefy to 500 count. The code will also convert the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. Finally, we will include samples from boatable streams rather than just those that are wadeable. 
+
+```{r, warning=F, message=F, eval=TRUE}
+macros <- getInvertData(dataType = "occur",
+                        taxonLevel = "Genus",
+                        agency = "EPA",
+                        lifestage = FALSE,
+                        rarefy = TRUE,
+                        rarefyCount = 300,
+                        sharedTaxa = FALSE,
+                        seed = 1,
+                        boatableStreams = T)
+
+print(dim(macros))
+
+# Print an example of the data
+kable(macros[1:5, 1:23])
+```
+
+Let's massage the table with dplyr to get what we want, including data on the occurences of _Argia_:
+
+- Select columns of interest, including the _Argia_ occurrence column.
+- Remove data related to the EPA's Wadeable Streams Assessment (2001-2004).
+- Convert "CollectionDate" to a date (`lubridate::date()`) and convert presence/absence to a factor.
+- Finally, convert table to a `sf`object and transform to EPSG:5070.
+
+```{r, warning=F, message=F, eval=TRUE}
+# Flexible code so we could model another taxon
+genus <- 'Argia'
+
+taxon = macros %>%
+  dplyr::select(SampleID, 
+                ProjectLabel, 
+                CollectionDate,  
+                Latitude_dd,
+                Longitude_dd,
+                all_of(genus))  %>%
+  #filter(ProjectLabel != 'WSA') %>% 
+  mutate(CollectionDate = date(CollectionDate),
+         presence = 
+           as.factor(pull(., genus)))  %>% 
+  st_as_sf(coords = c('Longitude_dd', 'Latitude_dd'), crs = 4269)  %>% 
+  st_transform(crs = 5070)
+```
+
+To visualize the data, we will read in a layer of lower 48 states to give some context. To do this we can use the `tigris` package. We will also remove non-conterminous states and transform the projection to our favorite - EPSG:5070.
+
+```{r, warning=F, message=F, eval=TRUE}
+states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>% 
+  filter(!STUSPS %in% c('HI', 'PR', 'AK', 'MP', 'GU', 'AS', 'VI'))  %>% 
+  st_transform(crs = 5070)
+```
+
+First, let's plot the observed presences/absences in the data...
+
+```{r, warning=F, message=F, eval=TRUE}
+ggplot() + 
+  geom_sf(data = states, fill = NA) +
+  geom_sf(data = taxon, 
+          aes(color = presence),
+          size = 1.5,
+          alpha = 0.65) + 
+  scale_color_manual(values=c("#d9d9d9", "#08519c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+...and by NRSA survey period: 
+
+```{r, warning=F, message=F, eval=TRUE}
+ggplot() + 
+  geom_sf(data = states, fill = NA) +
+  geom_sf(data = taxon, 
+          aes(color = ProjectLabel),
+          size = 1.5,
+          alpha = 0.75) + 
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+For today's exercise, we'll narrow down the samples to the northeaster region of the U.S.
+
+- Select states from the northeaster U.S.
+- Select NRSA sample sites that intersect with these states.
+- Filter to just the 2013/2014 and 2018/2019 sample periods.
+- Create a new column for sample year.
+- Select desired columns.
+
+```{r, warning=F, message=F, eval=TRUE}
+
+# Filter to study region (states)
+region <- states %>% 
+  filter(STUSPS %in% c('VT', 'NH', 'ME', 'NY', 'RI',
+                       'MA', 'CT', 'NJ', 'PA', 'DE'))
+
+# Use region as spatial filter (sf::st_filter()) for taxon of interest
+taxon_rg <- taxon %>% 
+  st_filter(region) %>% 
+  filter(ProjectLabel %in% c('NRSA1314', 'NRSA1819')) %>% 
+  mutate(year = year(ymd(CollectionDate))) %>% 
+  select(SampleID:CollectionDate, presence:year) 
+
+ggplot() + 
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = taxon_rg, 
+          aes(color = presence)) + 
+  scale_color_manual(values=c("#d9d9d9", "#08519c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+
+ggplot() + 
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = taxon_rg, 
+          aes(color = ProjectLabel)) + 
+  scale_color_manual(values=c("#1f78b4", "#b2df8a")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+
+taxon_rg %>% 
+  pull(presence) %>% 
+  table()
+```
+
+### Predictor (Independent) Data
+
+1. Obtain list of NHDPlus COMIDs that match sample sites from `nhdplusTools`
+
+- Use NLDI service via StreamCat to get the COMIDs
+- Create a vector of COMIDs by splitting the COMID string
+- Add COMID to our _Argia_ occurrence table
+
+```{r, warning=F, message=F, eval=TRUE}
+comids <- sc_get_comid(taxon_rg)
+
+#comids <- read_rds('./data/nrsa_comids.rds')
+comid_vect <- 
+  comids %>%
+  str_split(',') %>%
+  unlist() %>%
+  as.integer()
+
+taxon_rg <- 
+  taxon_rg %>%
+  mutate(COMID = comid_vect) 
+```
+
+2. Get non-varying StreamCat data.
+
+```{r, warning=F, message=F, eval=TRUE}
+sc <- 
+  sc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'bfi, precip8110, wetindex, elev',
+              showAreaSqKm = TRUE)
+```
+
+3. Get year-specific wetlands within watersheds.
+
+- NLCD contains data on the distribution of herbaceous (pcthbwet) and woody (pctwdwet) wetlands. We will combine them into a single metric representing the % of the watershed comprised of wetlands.
+- Duplicate the data, but offset by 1 year so we can 2019 NLCD to 2018 observations (same for 2013 NLCD and 2014 NRSA).
+
+```{r, warning=F, message=F, eval=TRUE}
+wetlands <- 
+  sc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'pctwdwet2013,pcthbwet2013,pctwdwet2019,pcthbwet2019',
+              showAreaSqKm = FALSE) %>% 
+  
+  # Sum wetland types to create single wetlands metric
+  mutate(PCTWETLAND2013WS = PCTHBWET2013WS + PCTWDWET2013WS,
+         PCTWETLAND2019WS = PCTHBWET2019WS + PCTWDWET2019WS) %>% 
+  
+  # Reduce columns
+  select(COMID, PCTWETLAND2013WS, PCTWETLAND2019WS) %>% 
+  
+  # Create long table w/ column name w/out year
+  pivot_longer(!COMID, names_to = 'tmpcol', values_to = 'PCTWETLANDXXXXWS') %>% 
+  
+  # Create new column of year by removing "PCTWETLAND" and "WS" from names
+  mutate(year = as.integer(str_replace_all(tmpcol, 'PCTWETLAND|WS', ''))) 
+
+# But some samples have 2014 and 2018 as sample years? How can we trick the data into joining?
+# We can match 2019 data to 2018 observations by subtracting a year and appending it to the data
+
+# Create tmp table with 1 added or subtracted to year of record
+tmp_wetlands <- wetlands %>% 
+  mutate(year = ifelse(year == 2013, year + 1, year - 1))
+
+# rbind() wetlands and tmp_wetlands so we have records to join to 2014 and 2018
+wetlands <- wetlands %>% 
+  rbind(tmp_wetlands) %>% 
+  select(-tmpcol)
+```
+
+4. Year-specific impervious surfaces within 100-m riparian buffer.
+
+```{r, warning=F, message=F, eval=TRUE}
+riparian_imp <- 
+  sc_get_data(comid = comids,
+              aoi = 'riparian_watershed',
+              metric = 'pctimp2013, pctimp2019',
+              showAreaSqKm = FALSE) %>% 
+  select(-WSAREASQKMRP100) %>% 
+  pivot_longer(!COMID, names_to = 'tmpcol', values_to = 'PCTIMPXXXXWSRP100') %>% 
+  mutate(year = as.integer(
+    str_replace_all(tmpcol, 'PCTIMP|WSRP100', '')))
+
+tmp_imp <- riparian_imp %>% 
+  mutate(year = ifelse(year == 2013, year + 1, year - 1))
+
+riparian_imp <- riparian_imp %>% 
+  rbind(tmp_imp) %>% 
+  select(-tmpcol)
+```
+
+5. PRISM air temperatures for sample periods
+
+- The `prism` package requires that we set a temporary folder in our work space. Here, we set it to "prism_data" inside of our "data" folder. It will create this folder if it does not already exist.
+- We then stack the climate rasters and use `terra::extract()` to 
+
+```{r, warning=F, message=F, eval=TRUE}
+library(prism)
+
+# Get these years of PRISM
+years <- c(2013, 2014, 2018, 2019)
+
+# Set the PRISM directory (creates directory in not present)
+prism_set_dl_dir("./data/prism_data", create = TRUE)
+
+# Download monthly PRISM rasters (tmean)
+get_prism_monthlys('tmean', 
+                   years = years, 
+                   mon = 7:8, 
+                   keepZip = FALSE)
+
+# Create stack of downloaded PRISM rasters
+tmn <- pd_stack((prism_archive_subset("tmean","monthly", 
+                                      years = years, 
+                                      mon = 7:8)))
+
+# Extract tmean at sample points and massage data
+tmn <- terra::extract(tmn, 
+                      # Transform taxon_rg to CRS of PRISM on the fly
+                      taxon_rg %>% 
+                        st_transform(crs = st_crs(tmn))) %>%
+  
+  # Add COMIDs to extracted values
+  data.frame(COMID = comid_vect, .) %>%
+  
+  # Remove front and back text from PRISM year/month in names
+  rename_with( ~ stringr::str_replace_all(., 'PRISM_tmean_stable_4kmM3_|_bil', '')) %>% 
+  
+  # Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year
+  pivot_longer(!COMID, names_to = 'year_month', 
+               values_to = 'TMEANPRISMXXXXPT') %>% 
+  
+  # Create new column of year
+  mutate(year = year(ym(year_month))) %>% 
+  
+  # Average July and August temperatures 
+  summarise(TMEANPRISMXXXXPT = mean(TMEANPRISMXXXXPT, na.rm = TRUE), 
+            .by = c(COMID, year))
+```
+
+### Combine Dependent and Independent Data
+
+```{r, warning=F, message=F, eval=TRUE}
+model_data <-
+  taxon_rg %>%
+  left_join(sc, join_by(COMID)) %>%
+  left_join(wetlands, join_by(COMID, year)) %>%
+  left_join(riparian_imp, join_by(COMID, year)) %>%
+  left_join(tmn, join_by(COMID, year)) %>%
+  drop_na()
+
+cor(model_data %>%
+      st_drop_geometry() %>%
+      select(WSAREASQKM:TMEANPRISMXXXXPT))
+
+```
+
+## Modeling occurrece of genus _Argia_
+
+### Model formulation
+
+```{r, warning=F, message=F, eval=TRUE}
+formula <-
+  presence ~
+  I(log10(WSAREASQKM)) +
+  ELEVWS +
+  WETINDEXWS +
+  BFIWS +
+  PRECIP8110WS +
+  PCTWETLANDXXXXWS +
+  PCTIMPXXXXWSRP100 +
+  TMEANPRISMXXXXPT
+
+bin_mod <- spglm(formula = formula,
+                 data = model_data,
+                 family = 'binomial',
+                 spcov_type = 'none')
+
+bin_spmod <- spglm(formula = formula,
+                   data = model_data,
+                   family = 'binomial',
+                   spcov_type = 'exponential')
+
+glances(bin_mod, bin_spmod)
+
+summary(bin_spmod)
+```
+
+### Model performance
+
+```{r, warning=F, message=F, eval=TRUE}
+# Function to convert from log odds to probability
+to_prob <- function(x) exp(x)/(1+exp(x))
+
+
+prd_mod <- loocv(bin_mod, cv_predict = TRUE) %>% 
+  pluck('cv_predict') %>% 
+  to_prob()
+
+prd_spmod <- loocv(bin_spmod, cv_predict = TRUE)%>% 
+  pluck('cv_predict') %>% 
+  to_prob()
+
+pROC::auc(model_data$presence, prd_mod)
+pROC::auc(model_data$presence, prd_spmod)
+
+model_data <- model_data %>%
+  mutate(prd_mod = prd_mod,
+         prd_spmod = prd_spmod)
+
+ggplot() +
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prd_mod)) +
+  scale_color_viridis_b() +
+  theme_bw() +
+  theme(legend.position="bottom")
+
+ggplot() +
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prd_spmod)) +
+  scale_color_viridis_b() +
+  theme_bw() +
+  theme(legend.position="bottom")
+```
+
+### EXTRA: Mapping predictions
+
+```{r, warning=F, message=F, eval=TRUE}
+state <- region %>% 
+  filter(STUSPS == "ME") %>% 
+  st_transform(crs = 4326)
+
+# Use get_nhdplus to access the individual stream sub-catchments
+pourpoints <- 
+  nhdplusTools::get_nhdplus(AOI = state,
+                            realization = 'outlet') |> 
+  filter(flowdir == "With Digitized")
+
+plot(pourpoints$geometry, pch = 19)
+
+prd_comids <- paste(pourpoints$comid, collapse = ',')
+
+sc_prd <- sc_get_data(state = 'ME',
+                      aoi = 'watershed,riparian_watershed',
+                      metric = 'bfi,precip8110,wetindex,elev,pctwdwet2019,pcthbwet2019,pctimp2019') |> 
+  mutate(PCTWETLANDXXXXWS = PCTWDWET2019WS + PCTHBWET2019WS) |> 
+  rename(PCTIMPXXXXWSRP100 = PCTIMP2019WSRP100) |> 
+  select(COMID, WSAREASQKM, ELEVWS, WETINDEXWS, BFIWS, 
+         PRECIP8110WS, PCTWETLANDXXXXWS, PCTIMPXXXXWSRP100)
+
+tmn_prd <- 
+  pd_stack((prism_archive_subset("tmean","monthly", 
+                                 years = 2019, 
+                                 mon = 7:8)))
+tmn_prd <-
+  terra::extract(tmn_prd, 
+                 pourpoints %>% 
+                   st_transform(crs = st_crs(tmn_prd))) |> 
+  as.tibble() |> 
+  mutate(COMID = pourpoints$comid,
+         TMEANPRISMXXXXPT = PRISM_tmean_stable_4kmM3_201907_bil + PRISM_tmean_stable_4kmM3_201908_bil) |> 
+  select(COMID, TMEANPRISMXXXXPT)
+
+prediction <- sc_prd |> 
+  left_join(tmn_prd, join_by(COMID)) |>
+  left_join(pourpoints, join_by(COMID == comid)) |> 
+  st_as_sf() |> 
+  na.omit() 
+
+argia_predict <- 
+  predict(bin_spmod, 
+          newdata = prediction,
+          local = TRUE) |> 
+  to_prob()
+
+prediction <-
+  prediction |> 
+  mutate(argia_predict = argia_predict)
+
+ggplot() +
+  geom_sf(data = prediction,
+          aes(color = argia_predict))
+```
+

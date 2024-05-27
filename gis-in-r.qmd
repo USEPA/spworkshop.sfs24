@@ -1,0 +1,469 @@
+---
+title: ""
+format: 
+  html:
+    self-contained: true
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+# GIS in R  {#gis-in-r}
+
+## Goals and Motivation
+
+Maintaining all analyses within a single software (`R`) can greatly simplify your research workflow. In this section, we'll cover the basics of doing GIS in `R`.
+
+By the end of this lesson, you should be able to:
+
+- Understand the main features and types of vector data.
+- Generate point data from a set of latitudes and longitudes, such as from fields sites.
+- Read, write, query, and manipulate vector data using the `sf` package.
+- Understand the main features of raster data.
+- Access, manipulate, and stack raster layers.
+- Generate summaries of raster data within vector polygon layers.
+
+## Points, lines, and polygons
+
+These data are a way of representing real-world features on a landscape in a highly simplified way. The simplest of these features is a point, which is a 0-dimensional feature that can be used to represent a specific location on the earth, such as a single tree or an entire city. Linear, 1-dimensional features can be represented with points (or vertices) that are connected by a path to form a line and when many points are connected these form a polyline. Finally, when a polyline’s path returns to its origin to represent an enclosed space, such as a forest, watershed boundary, or lake, this forms a polygon.
+
+![Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/pts-lines-polys.png){#fig-foo height="100%"}
+
+We can represent these features in `R` without actually using GIS packages. In this example, we’ll represent several cities in Oregon with common `R` data structures that you are probably already familiar with.
+
+```{r, warning=F, message=F}
+library(ggplot2)
+
+id <- c(1:5)
+cities <- c('Ashland','Corvallis','Bend','Portland','Newport')
+longitude <- c(-122.699, -123.275, -121.313, -122.670, -124.054)
+latitude <- c(42.189, 44.57, 44.061, 45.523, 44.652)
+population <- c(20062, 50297, 61362, 537557, 9603)
+
+oregon_cities <- 
+  data.frame(id, cities, longitude, latitude, population)
+
+#| label: fig-oregon-cities1
+#| fig-cap: "Oregon cities plotted from data frame."
+ggplot(data = oregon_cities, 
+       aes(x = longitude, 
+           y = latitude, 
+           size = population,
+           label = cities)) +
+  geom_point() +
+  geom_text(hjust=1, vjust=1) +
+  theme_bw()
+```
+
+So, is this sufficient for working with spatial data in `R` and doing spatial analysis? What are we missing? 
+
+If you have worked with vector data before, you may know that these data also usually have:
+
+- A coordinate reference system
+- A bounding box or extent
+- Plot order
+- Additional data
+
+In the next section we will introduce the `sf` package that will allow us to take fuller advantage of spatial features in `R`.
+
+### Exploring the Simple Features (`sf`) package
+
+The [`sf` package](https://github.com/r-spatial/sf/) provides [simple features access](https://en.wikipedia.org/wiki/Simple_Features) for `R`. `sf` fits in within the "tidy" approach to data of Hadley Wickham's `tidyverse` and is an ever-expanding package with 113 contributors in GitHub. In short, much of what used to require ArcGIS license can now be done in `R` with `sf`:
+
+```{r, warning=F, message=F}
+library(sf)
+ls("package:sf")
+```
+
+Important for us today - the `sf` package is fast and simple to use. To get a sense of why simple features are simple, let's make one from our Oregon cities.
+
+In this code we will...
+
+- Convert an existing data frame to a simple feature by:
+- Supplying the longitude and latitude (x and y).
+- Defining the coordinate reference system (`crs`).
+
+```{r, warning=F, message=F}
+print(oregon_cities)
+
+oregon_cities <- oregon_cities %>%
+  st_as_sf(coords = c('longitude', 'latitude'), crs = 4269)
+
+print(oregon_cities)
+```
+
+::: {.callout-tip}
+
+### Reading and Writing vector files
+
+For reference, `sf` makes it very easy to write and read spatial objects in `R`, such as ESRI shapefiles:
+
+To write an `sf` object out as an ESRI shapefile:
+
+`st_write(oregon_cities, dsn = 'oregon_cities.shp')`
+
+To read and ESRI shapefile:
+
+`oregon_cities <- st_read('oregon_cities.shp')`
+:::
+
+
+When we print the `oregon_cities` object, we can see it has changed from being a standard data frame. It now includes features that are required for a true spatial object:
+
+- Geometry type
+- Bounding box
+- Coordinate reference system
+
+In addition, we see that the latitude and longitude columns have been moved to a new column called "geometry" that appears in parentheses. Unlike shapefiles or older vector data types, simple features contain the geometric information in a single column. An important note about the geometry column is that it is "sticky", meaning that we can manipulate the sf object, such as with select in `tidyverse` (e.g., with dplyr) without explicitly referencing the geometry column without losing it:
+
+```{r, warning=F, message=F}
+library(tidyverse)
+
+oregon_cities %>% 
+  select(cities)
+```
+
+In the above example, we selected the cities column and the returned feature still included the "geometry" column.
+
+### Coordinate Reference Systems
+
+`sf` also has functionality to re-project and manipulate spatial objects. For example, the coordinate reference system of the `sf` object is currently in degrees. For many applications, we may want to transform the data to have an equal area projection and to have x and y units of meters, such as the USGS's [Albers Equal-Area Conic Projection](https://epsg.org/crs_5070/NAD83-Conus-Albers.html?sessionkey=2havsqacn7). 
+
+Although a full discussion of geographic projections is beyond the scope of this workshop, it's worth understanding how they affect geographic data.
+
+![Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/crs-comparisons.jpg)
+
+When we created the `oregon_cities` object, we defined the coordinate reference system with `crs = 4269`. Likewise, we can use the EPSG reference number of the Albers Equal-Area Conic Projection to transform the spatial object. At [epsg.org](epsg.org), we can see that this code is 5070.
+
+In this code we:
+
+- Check to see if the current CRS is equal to the Albers Equal-Area Conic Projection.
+- Transform `oregon_cities` to CRS 5070.
+- Plot the results with `ggplot` using the `geom_sf_text()` and `geom_sf()` functions.
+
+```{r, warning=F, message=F}
+st_crs(oregon_cities) == st_crs(5070)
+
+oregon_cities <- 
+  oregon_cities %>% 
+  st_transform(crs = 5070)
+
+print(oregon_cities)
+
+#| label: fig-oregon-cities2
+#| fig-cap: "Oregon cities plotted from sf object."
+ggplot(data = oregon_cities) +
+  geom_sf_text(aes(label = cities),
+               hjust=0, vjust=1.5) +
+  geom_sf(aes(size = population)) + 
+  xlab('Longitude') +
+  ylab('Latitude') +
+  theme_bw()
+```
+
+### It all feels like `R`
+
+There can be huge advantages to doing GIS tasks in `R`. First, there are huge advantages to keeping workflows within one software system. Second, if you are familiar with `R`, the leap to doing GIS in `R` will feel small. 
+
+As noted above, the `sf` package provides a variety of GIS functions, such as buffers, intersection, centroids, etc. In addition, these functions can be combined with `tidyverse` functions in piped procedures.
+
+```{r, warning=F, message=F}
+# Plot 1:
+
+# Add 100 Km buffer to cities
+cities_buffer <- 
+  oregon_cities %>% 
+  
+  st_buffer(100000)
+
+# Plot, color by city, and add centroids
+
+#| label: buffered-cities1
+#| fig-cap: "Buffered cities w/ overlapping buffers."
+ggplot(data = cities_buffer) +
+  geom_sf(aes(fill = cities), alpha = 0.5) +
+  geom_sf(data = st_centroid(oregon_cities)) +
+  theme_bw()
+
+# Plot 2:
+
+oregon_cities %>% 
+  
+  # 100 Km buffer
+  
+  st_buffer(100000) %>%
+  
+  # Split polygons where buffers intersect
+  
+  st_intersection() %>%
+  
+  # Add area to table, but drop units (causes issues with ggplot)
+  
+  mutate(area = st_area(.) %>% 
+           units::drop_units(),
+         id = as.factor(1:nrow(.))) %>% 
+  
+  # Plot and color by id of polygons
+  
+  #| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+
+ggplot() +
+  geom_sf(aes(fill = id), alpha = 0.5) +
+  theme_bw()
+
+```
+
+## Raster data
+
+Another fundamental data type in GIS is the raster. Rasters are a way of displaying gridded or an array of data, where each member of the grid represents a landscape feature (e.g., elevation) and each element also has a given resolution (e.g., 30m x 30m).
+
+There are several packages available to work with rasters in `R`, including the original `raster`, but also now `terra`, and `stars`. We'll use the [`terra` package](https://github.com/rspatial/terra) since it has an active develoment community on GitHub and has taken over as the primary package for handling and viewing raster data. It is reported to be up to 7x faster than the original `raster` package for some processes. If you are familiar with `raster` it will feel very similar.
+
+Much like `sf`, `terra` has a large number of functions for working with raster data.
+
+```{r, warning=F, message=F}
+library(terra)
+ls("package:terra")
+```
+
+Let's create an empty RasterLayer object - we have to define the matrix (rows and columns) the spatial bounding box, and then we provide values to the cells using the runif function to derive random values from the uniform distribution.
+
+```{r, warning=F, message=F}
+r <- rast(ncol=10, nrow = 10)
+
+r[] <- runif(n=ncell(r))
+
+r
+
+#| label: basic-raster
+#| fig-cap: "Basic raster dataset in R."
+plot(r)
+```
+
+The raster we made from scratch is in memory but very small. An important feature of the `terra` package is that when you load a raster from file, it is not actually loaded into memory. Instead, `terra` reads information about the raster into memory, such as its dimensions, its extent, and more. This makes working with rasters lightweight, as it will only ever load into memory what is needed for a specific task. For example, you can access raster values via direct indexing or line/column indexing. The `terra` package accesses just those locations on the disk. Take a minute to see how this works using the raster `r` that we just created - the syntax is:
+
+```{r, warning=F, message=F, eval=TRUE}
+# Access data from the ith location in a raster
+r[12]
+
+# Access data based on row and column
+r[2, 2] 
+```
+
+### Stacking raster data
+
+Often, it can be very efficient to work with mutliple rasters at once. Raster data is often distributed in stacks, such as climate data as a NetCDF file. 
+
+```{r, warning=F, message=F, eval=TRUE}
+# Create 2 new rasters based on raster r
+
+r2 <- r * 50
+r3 <- sqrt(r * 5)
+
+# Stack rasters and rename to be unique
+
+s <- c(r, r2, r3)
+names(s) <- c('r1', 'r2', 'r3')
+
+#| label: stacked-rasters
+#| fig-cap: "Plot of stacked rasters in R."
+plot(s)
+
+# Manipulate all rasters in stack
+
+s2 <- (s + 5) / 3
+
+# Give modified rasters a new name (add "modified")
+
+names(s2) <- paste0(names(s), " modified")
+
+#| label: modified-stacked-rasters
+#| fig-cap: "Plot of stacked rasters in R."
+plot(c(s, s2))
+```
+
+::: {.callout-tip}
+### Reclassifying rasters
+You can also relcassify rasters values with `terra::classify()`
+
+```{r, warning=F, message=F, eval=TRUE}
+
+# Create a matrix where first 2 values are raster values and third value is the class value:
+class_table <-  c(0, 0.5, 1,
+                  0.5, 1, 2) %>% 
+  matrix(ncol = 3, byrow = TRUE)
+
+# Reclassify r based on the reclass matrix
+rcls <- r %>%
+  terra::classify(class_table) 
+
+plot(c(r, rcls))
+```
+
+:::
+
+## Working with real data
+
+There are several (often very new) `R` packages for accessing and working with spatial data. In this code, we will use the`FedData` `R` package to download National Elevation Data. Although this example focuses on digital elevation data, the `FedData` package provides access to several federal datasets, including the National Land Cover Database (NLCD).
+
+```{r, warning=F, message=F, eval=TRUE}
+library(FedData)
+
+# Select just Corvallis and calculate a 10,000-m buffer
+corvallis <- 
+  oregon_cities %>%
+  filter(cities == 'Corvallis') %>% 
+  st_buffer(10000)
+
+# Download national elevation data (ned)
+ned <- FedData::get_ned(
+  template = corvallis,
+  label = "corvallis")
+
+names(ned) <- "elevation"
+
+# Check whether the elevation and buffer data share the same geographic reference system
+st_crs(ned) == st_crs(corvallis)
+```
+
+We can transform the projection of the raster with `terra::project()`. Because the raster represents continuous data, we will use the bilinear interpolation method. For categorical data (e.g., land cover), it is best to use `method = 'near'`
+
+
+```{r, warning=F, message=F, eval=TRUE}
+ned <- terra::project(ned, 
+                      'epsg:5070',
+                      method = 'bilinear')
+```
+
+The `tidyterra` package gives us a new "geometry" for ggplot called `geom_spatraster()`. 
+
+```{r, warning=F, message=F, eval=TRUE}
+library(tidyterra)
+
+#| label: elevation-ggplot
+#| fig-cap: "ggplot of elevation data."
+ggplot() + 
+  tidyterra::geom_spatraster(data = ned) + 
+  geom_sf(data = corvallis, 
+          fill = NA, 
+          color = 'white', 
+          lwd = 2) +
+  theme_bw()
+```
+
+
+In addition to elevation, we can derive several topographic indices, including slope and roughness. 
+
+```{r, warning=F, message=F, eval=FALSE}
+# Calculate several terrain metrics
+?terra::terrain
+```
+
+To calculate these metrics on the elevation raster, we can use the `terrain()` function from the `terra` package.
+
+```{r, warning=F, message=F, eval=TRUE}
+# Calculate several terrain metrics
+terrain_metrics <- terrain(ned, 
+                           v = c('slope', 'roughness', 'TRI'))
+
+#| label: terrain-plots
+#| fig-cap: "Plot of elevation-derived terrain metrics."
+plot(c(ned, terrain_metrics))
+
+#| label: terrain-ggplots
+#| fig-cap: "ggplots of elevation-derived terrain metrics."
+ggplot() + 
+  geom_spatraster(data = terrain_metrics) + 
+  facet_wrap(~lyr, ncol = 2) + 
+  scale_fill_whitebox_c(
+    palette = "muted",
+    n.breaks = 12,
+    guide = guide_legend(reverse = TRUE)
+  ) +
+  theme_bw()
+```
+
+What if we want to know the average of elevation, slope, etc. within the buffered area of Corvallis?
+
+```{r, warning=F, message=F, eval=TRUE}
+# First, let's combine into a single stack of rasters
+terrain_metrics <- c(terrain_metrics, ned)
+
+# zonal function in terra to calculate zonal statistics
+terra::zonal(terrain_metrics, 
+             
+             # Need to convert corvallis `sf` object to terra vector
+             terra::vect(corvallis), 
+             
+             # Metric to be calculated
+             mean, na.rm = T)
+```
+
+::: {.callout-important icon="false"}
+## Exercise
+
+1. Create a layer of U.S. cities with `data('us.cities')` from the `maps` library.
+2. Select the city of your choice and buffer it by 10Km. (We suggest converting to an equal area projection first). 
+3. Read in NLCD land cover data for your city with the `FedData` package.
+4. Calculate the % of the buffer around your city that is composed of row crop.
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Exercise Solution
+
+```{r, warning=F, message=F}
+library(FedData)
+library(sf)
+library(tidyverse)
+library(terra)
+library(tidyterra)
+library(maps)
+
+data('us.cities')
+
+my_city <- us.cities %>% 
+  filter(name == 'Idaho Falls ID') %>% 
+  st_as_sf(coords = c('long', 'lat'), crs = 4269) %>% 
+  st_transform(crs = 5070) %>% 
+  st_buffer(10000)
+
+nlcd <- get_nlcd(
+  template = my_city,
+  year = 2021,
+  label = 'city') %>%
+terra::project('epsg:5070',
+               method = 'near')
+
+city_nlcd <- terra::extract(nlcd, 
+                            terra::vect(my_city))
+
+city_nlcd %>% 
+  group_by(Class) %>% 
+  summarise(count = n()) %>% 
+  mutate(percent = (count / sum(count)) * 100)
+
+# Bonus: mapping land cover w/ city radius
+
+# Mask then crop the NLCD to the buffer
+nlcd_crop <- terra::mask(nlcd, my_city) %>% 
+  terra::crop(my_city)
+
+ggplot() + 
+  geom_spatraster(data = nlcd_crop) +
+  geom_sf(data = my_city,
+          fill = NA,
+          lwd = 2) +
+  theme_bw()
+
+```
+
+:::
+
+Zonal statistics are fundamental to generating data summaries that are useful for ecological/statistical analyses, and the `terra` package has greatly improved the processing speed of zonal stats in `R`.  
+
+However, most analyses in aquatic ecology are not based on buffered points, like we covered here. In addition, zonal statistics over large geographic areas can still be a big task for `R`, such as for large watersheds.
+
+In the next sections, we'll first cover how to generate watershed boundaries to generate watershed summaries. After that, we'll discuss the `StreamCatTools` package for accessing  a variety of watershed metrics for which the zonal statistics have already been calculated.  
+
