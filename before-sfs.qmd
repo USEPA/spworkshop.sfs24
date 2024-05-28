@@ -134,7 +134,7 @@ remotes::install_github('USEPA/finsyncR', build_vignettes = FALSE)
 remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
 ```
 
-## How to follow along with material
+## How to follow along with materials
 
 This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  To follow along, you can also copy code snippets from the rendered book site and paste into your code files in RStudio. We will provide a link to the workshop book before the meeting.
 
