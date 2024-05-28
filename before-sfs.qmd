@@ -130,13 +130,19 @@ install.packages('spmodel')
 
 # Install remotes package to allow GitHub installation of finsyncR and StreamCatTools
 install.packages('remotes')
-remotes::install_github('USEPA/finsyncR', build_vignettes = TRUE)
+remotes::install_github('USEPA/finsyncR', build_vignettes = FALSE)
 remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
 ```
 
 ## How to follow along with material
 
-This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository XXX INSERT LINK WHEN READY](), or simply clone directly and open the corresponding .qmd files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
+This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  To follow along, you can also copy code snippets from the rendered book site and paste into your code files in RStudio. We will provide a link to the workshop book before the meeting.
+
+## R projects
+
+We highly recommend that you create an R project to contain the code and work related to this workshop. Doing so will greatly simplify paths to data and the execution of code. 
+
+If you are not in the practice of using R projects, please read this section of Hadley Wickham's book [R for Data Science](https://r4ds.hadley.nz/workflow-scripts.html#projects) and create a project on your laptop for this workshop. 
 
 ## See you soon!
 
