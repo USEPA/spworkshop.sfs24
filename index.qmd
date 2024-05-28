@@ -1,7 +1,140 @@
-# Welcome {#sec-welcome .unnumbered}
+# Introduction {#sec-intro .unnumbered}
 
-Hello and welcome!
+```{r}
+#| echo: false
+library(emo)
+```
+
+Hello `r emo::ji("wave")` and welcome! The purpose of this website is to provide workshop materials for the "Spatial Analysis and Statistical Modeling with R and `spmodel`" workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop's accompanying workbook, [visit here](https://usepa.github.io/spatial.sfs2024/). To download the workshop's slides, [visit here](https://github.com/USEPA/spatial.sfs2024/blob/main/slides.html).  Slides are downloaded by clicking the "Download raw file" button via the ellipsis or downward arrow symbol on the right side of the screen.
+
+It is our hope that this workshop will provide attendees with the conceptual and practical knowledge to incorporate geospatial analyses into their `R` workflow to improve the interpretation of spatial data. In particular, this workshop will focus on the R package `spmodel`.
+
+__What is `spmodel`?__ The `spmodel` `R` package [@dumelle2023spmodel] can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that `spmodel` can do include:
+
+* Fit spatial linear and generalized linear models for point-referenced and areal (lattice) data
+* Compare model fits and inspect model diagnostics
+* Predict at unobserved spatial locations (i.e., Kriging)
+* And much more!
+
+::: {.callout-tip}
+## `spmodel` Website
+
+`spmodel`'s [website](https://usepa.github.io/spmodel/) contains all the resources you need to get started using the software.
+
+:::
+
+__Why use `spmodel`?__ There are many great spatial modeling packages in `R`. A few reasons to use `spmodel` for spatial analysis are that:
+
+* `spmodel` syntax is similar to base `R` syntax for functions like `lm()`, `glm()`, `summary()`, and `predict()`, making the transition from fitting non-spatial models to spatial models relatively seamless.
+* There are a wide variety of `spmodel` capabilities that give the user significant control over the specific spatial model being fit.
+* `spmodel` is compatible with other modern `R` packages like `broom` and `sf`.
+
+Throughout the rest of these materials, we introduce `spmodel` through a few applied examples. We connect basic summary output with the spatial linear model for both point-referenced and areal (lattice) data. We discuss prediction and generalized linear spatial models for response variables whose distribution is not Gaussian. Along the way, we mention a few other advanced `spmodel` features. Then we show how to use `spmodel` to analyze several real freshwater data sets.
+
+__Workshop Summary.__ The `spmodel` `R` package can be used to fit, summarize, and predict for a variety of spatial statistical models for both point-referenced and areal spatial data. What distinguishes `spmodel` from many other `R` packages for modeling spatial data is (1) a syntactic structure similar to the syntactic structure of base `R` functions `lm()` and `glm()` that makes `spmodel` relatively easy to learn, (2) the breadth of options that give the user a high amount of control over the model being fit, and (3) compatibility with other modern `R` packages like `broom` and `sf`. By the end of this workshop, participants can expect to be able to use `spmodel` to fit spatial linear models for point-referenced and areal (lattice) data, make predictions for unobserved spatial locations, fit anisotropic models for point-referenced data, fit spatial models with additional non-spatial random effects, fit generalized linear models for spatial data, and use big data methods to analyze large spatial data sets. More information on `spmodel` can be found on our website at [https://usepa.github.io/spmodel/](https://usepa.github.io/spmodel/). 
+
+
+## Workshop Agenda
+ 
+- 9:00am - 10:00am EDT: XYZ
+- 10:00am - 11:00am EDT: XYZ
+
+## Author Introduction
+
+__Michael Dumelle__ (he/him/his) is a statistician for the United States Environmental Protection Agency (USEPA). He works primarily on facilitating the survey design and analysis of USEPA’s National Aquatic Resource Surveys (NARS), which characterize the condition of waters across the United States. His primary research interests are in spatial statistics, survey design, environmental and ecological applications, and software development.
+
+__Ryan Hill__ (he/him/his) is an aquatic ecologist with the U.S. EPA Office of Research and Development. He is interested in how watershed conditions drive differences in freshwater diversity and water quality across the United States. He has worked extensively with federal physical, chemical, and biological datasets to gain insights into the factors affecting water quality and biotic condition of freshwaters across the conterminous US. He has also worked to develop and distribute large datasets of geospatial watershed metrics of streams and lakes for the Agency (EPA’s StreamCat and LakeCat datasets). 
+
+## Support Introduction 
+
+__Lara Jansen__ (she/her/hers) is an aquatic community ecologist and an ORISE postdoctoral fellow working on predictive models of benthic macroinvertebrate communities across the conterminous US in relation to watershed factors. Lara completed her PhD in Environmental Science at Portland State University in 2023, studying the drivers and dynamics of harmful algal blooms in mountain lakes with Dr. Angela Strecker.She obtained a MS in Natural Resource Sciences at Cal Poly Humboldt University with a thesis focused on the downstream impacts of dam flow regulation on benthic macroinvertebrate and algal communities. 
+
+__Wade Boys__ (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.
+
+## Setup
+
+### Install R and RTools
+
+Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have `R`, `Rtools`, and `RStudio`. Please install at least [R version >= 4.0](https://cran.r-project.org/) and the compatible version of [RTools](https://cran.r-project.org/bin/windows/Rtools/).`RTools` will be necessary to install non-CRAN repositories from GitHub (see below).
+
+### Install RStudio
+
+There are many graphical user interfaces (GUIs) that make it easier to interact with `R`. We recommend using Posit's `RStudio`](https://posit.co/products/open-source/rstudio/).
+
+### Install R Packages
+
+The packages that we use throughout this workshop are listed below. To install them run:
+
+**Common Packages**
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+install.packages('tidyverse')
+install.packages('ggplot2')
+install.packages('data.table')
+install.packages('tictoc')
+install.packages("remotes")
+install.packages("devtools")
+```
+
+**Geospatial Packages**
+
+In addition to these core `R` packages, we'll be using several CRAN packages specifically developed for GIS tasks or handling/obtaining spatial data: 
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+install.packages('sf')
+install.packages('terra')
+install.packages('prism')
+install.packages('tigris')
+install.packages('nhdplusTools')
+install.packages('mapview')
+install.packages('FedData')
+install.packages('tidyterra')
+install.packages('jsonlite')
+install.packages('geojson')
+install.packages('geojsonio')
+install.packages('maps')
+```
+
+**New EPA Packages**
+
+Finally, we will use three new `R` packages developed by researchers at the U.S. Environmental Protection Agency. The package `spmodel`, in particular, will form the basis of this workshop.
+
+`spmodel` - The [spmodel](https://github.com/USEPA/spmodel) package is the basis of this workshop. 
+
+![](figures/spmodel_hex_rancho_300dpi_cropped_2in.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
+
+`StreamCatTools` - The [StreamCatTools](https://github.com/USEPA/StreamCatTools/) package retrieves StreamCat and LakeCat data via an API.
+
+![](figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
+
+`finsyncR` - The [finsyncR](https://github.com/USEPA/finsyncR) package greatly facilitates the retrieval and harmonization of EPA and USGS stream macroinvertebrate and fish data.
+
+![](figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
+
+To install these packages:
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+# Install spmodel from CRAN
+install.packages('spmodel')
+
+# Install remotes package to allow GitHub installation of finsyncR and StreamCatTools
+install.packages('remotes')
+remotes::install_github('USEPA/finsyncR', build_vignettes = TRUE)
+remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
+```
+
+## How to follow along with material
+
+This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository](https://github.com/USEPA/spatial.sfs2024), or simply clone directly and open the corresponding `.qmd` files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
+
+## Citation Information
+
+If you use these software packages in a formal report or publication, please cite them. For example, the `spmodel` citation is available by running:
+
+```{r}
+citation(package = "spmodel")
+```
 
 ## Disclaimer
 
-The views expressed in this manuscript are those of the authors and do not necessarily represent the views or policies of the U.S. Environmental Protection Agency. Any mention of trade names, products, or services does not imply an endorsement by the U.S. government or the U.S. Environmental Protection Agency. The U.S. Environmental Protection Agency does not endorse any commercial products, services, or enterprises.
+The views expressed in this manuscript are those of the authors and do not necessarily represent the views or policies of the U.S. Environmental Protection Agency or the U.S. National Oceanic and Atmospheric Administration. Any mention of trade names, products, or services does not imply an endorsement by the U.S. government, the U.S. Environmental Protection Agency, or the U.S. National Oceanic and Atmospheric Administration. The U.S. Environmental Protection Agency and the U.S. National Oceanic and Atmospheric Administration do not endorse any commercial products, services, or enterprises.

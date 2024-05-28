@@ -1,14 +1,8 @@
----
-title: ""
-format: 
-  html:
-    self-contained: true
-editor: source
-editor_options: 
-  chunk_output_type: console
----
-
 # GIS in R  {#gis-in-r}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
 
 ## Goals and Motivation
 
@@ -27,11 +21,12 @@ By the end of this lesson, you should be able to:
 
 These data are a way of representing real-world features on a landscape in a highly simplified way. The simplest of these features is a point, which is a 0-dimensional feature that can be used to represent a specific location on the earth, such as a single tree or an entire city. Linear, 1-dimensional features can be represented with points (or vertices) that are connected by a path to form a line and when many points are connected these form a polyline. Finally, when a polyline’s path returns to its origin to represent an enclosed space, such as a forest, watershed boundary, or lake, this forms a polygon.
 
-![Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/pts-lines-polys.png){#fig-foo height="100%"}
+![Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/](figures/pts-lines-polys.png){#fig-foo height="100%" fig-align="center"}
 
 We can represent these features in `R` without actually using GIS packages. In this example, we’ll represent several cities in Oregon with common `R` data structures that you are probably already familiar with.
 
 ```{r, warning=F, message=F}
+
 library(ggplot2)
 
 id <- c(1:5)
@@ -40,18 +35,19 @@ longitude <- c(-122.699, -123.275, -121.313, -122.670, -124.054)
 latitude <- c(42.189, 44.57, 44.061, 45.523, 44.652)
 population <- c(20062, 50297, 61362, 537557, 9603)
 
-oregon_cities <- 
-  data.frame(id, cities, longitude, latitude, population)
+oregon_cities <- data.frame(id, cities, longitude, latitude, population)
+```
 
+
+```{r}
 #| label: fig-oregon-cities1
 #| fig-cap: "Oregon cities plotted from data frame."
-ggplot(data = oregon_cities, 
-       aes(x = longitude, 
-           y = latitude, 
-           size = population,
-           label = cities)) +
+ggplot(
+  data = oregon_cities, 
+  aes(x = longitude, y = latitude, size = population, label = cities)
+) +
   geom_point() +
-  geom_text(hjust=1, vjust=1) +
+  geom_text(hjust = 1, vjust = 1) +
   theme_bw()
 ```
 
@@ -70,7 +66,7 @@ In the next section we will introduce the `sf` package that will allow us to tak
 
 The [`sf` package](https://github.com/r-spatial/sf/) provides [simple features access](https://en.wikipedia.org/wiki/Simple_Features) for `R`. `sf` fits in within the "tidy" approach to data of Hadley Wickham's `tidyverse` and is an ever-expanding package with 113 contributors in GitHub. In short, much of what used to require ArcGIS license can now be done in `R` with `sf`:
 
-```{r, warning=F, message=F}
+```{r}
 library(sf)
 ls("package:sf")
 ```
@@ -80,10 +76,11 @@ Important for us today - the `sf` package is fast and simple to use. To get a se
 In this code we will...
 
 - Convert an existing data frame to a simple feature by:
-- Supplying the longitude and latitude (x and y).
-- Defining the coordinate reference system (`crs`).
+- Supply the longitude and latitude (x and y).
+- Define the (geographic) coordinate reference system (`crs`).
 
 ```{r, warning=F, message=F}
+
 print(oregon_cities)
 
 oregon_cities <- oregon_cities %>%
@@ -102,7 +99,7 @@ To write an `sf` object out as an ESRI shapefile:
 
 `st_write(oregon_cities, dsn = 'oregon_cities.shp')`
 
-To read and ESRI shapefile:
+To read an ESRI shapefile:
 
 `oregon_cities <- st_read('oregon_cities.shp')`
 :::
@@ -114,7 +111,7 @@ When we print the `oregon_cities` object, we can see it has changed from being a
 - Bounding box
 - Coordinate reference system
 
-In addition, we see that the latitude and longitude columns have been moved to a new column called "geometry" that appears in parentheses. Unlike shapefiles or older vector data types, simple features contain the geometric information in a single column. An important note about the geometry column is that it is "sticky", meaning that we can manipulate the sf object, such as with select in `tidyverse` (e.g., with dplyr) without explicitly referencing the geometry column without losing it:
+In addition, we see that the latitude and longitude columns have been moved to a new column called `"geometry"` that appears in parentheses. Unlike shapefiles or older vector data types, simple features contain the geometric information in a single column. An important note about the geometry column is that it is "sticky", meaning that we can manipulate the sf object, such as with select in `tidyverse` (e.g., with `dplyr`) without explicitly referencing the geometry column without losing it:
 
 ```{r, warning=F, message=F}
 library(tidyverse)
@@ -123,7 +120,7 @@ oregon_cities %>%
   select(cities)
 ```
 
-In the above example, we selected the cities column and the returned feature still included the "geometry" column.
+In the above example, we selected the cities column and the returned feature still included the `"geometry"` column.
 
 ### Coordinate Reference Systems
 
@@ -149,7 +146,9 @@ oregon_cities <-
   st_transform(crs = 5070)
 
 print(oregon_cities)
+```
 
+```{r}
 #| label: fig-oregon-cities2
 #| fig-cap: "Oregon cities plotted from sf object."
 ggplot(data = oregon_cities) +
@@ -160,6 +159,18 @@ ggplot(data = oregon_cities) +
   ylab('Latitude') +
   theme_bw()
 ```
+
+::: {.callout-tip}
+
+### EPSG Codes
+
+EPSG codes are unique identifiers that represent coordinate reference systems. Some commonly used EPSG codes include:
+
+* 4326: The WGS84 geographic coordinate reference system.
+* 4269: The NAD83 geographic coordinate reference system.
+* 5070: The NAD83 projected coordinate reference system.
+
+:::
 
 ### It all feels like `R`
 
@@ -173,7 +184,6 @@ As noted above, the `sf` package provides a variety of GIS functions, such as bu
 # Add 100 Km buffer to cities
 cities_buffer <- 
   oregon_cities %>% 
-  
   st_buffer(100000)
 
 # Plot, color by city, and add centroids
@@ -205,7 +215,7 @@ oregon_cities %>%
   
   # Plot and color by id of polygons
   
-  #| label: buffered-cities2
+#| label: buffered-cities2
 #| fig-cap: "Buffered cities w/ overlapping buffers split."
 
 ggplot() +
@@ -467,3 +477,12 @@ However, most analyses in aquatic ecology are not based on buffered points, like
 
 In the next sections, we'll first cover how to generate watershed boundaries to generate watershed summaries. After that, we'll discuss the `StreamCatTools` package for accessing  a variety of watershed metrics for which the zonal statistics have already been calculated.  
 
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```

@@ -1,20 +1,14 @@
----
-title: ""
-format: 
-  html:
-    self-contained: true
-editor: source
-editor_options: 
-  chunk_output_type: console
----
-
 # Spatial GLM of "Dancer" damselfly (_Argia_) {#spatial-glm}
 
-![Image from: inaturalist.org](https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg){height="25%" width="25%" fig-align="left"}
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+![Image from: inaturalist.org](https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg){height="25%" width="25%" fig-align="center"}
 
 To start this exercise, we'll introduce a new `R` package called [`finsyncR`](https://usepa.github.io/finsyncR/). This package was developed by US EPA scientists and academic collaborators. 
 
-![](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+![](figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
 From the `finsyncR` GitHub page: 
 
@@ -456,3 +450,12 @@ ggplot() +
           aes(color = argia_predict))
 ```
 
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```

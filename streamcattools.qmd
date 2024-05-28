@@ -1,16 +1,10 @@
----
-title: ""
-format: 
-  html:
-    self-contained: true
-editor: source
-editor_options: 
-  chunk_output_type: console
----
-
 # StreamCat & LakeCat {#streamcattools}
 
-![](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+![](figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
 
 ## Why StreamCat/LakeCat?
@@ -23,7 +17,7 @@ Both datasets are now accessible through the `StreamCatTools` package.
 
 ## Accessing StreamCat
 
-Let's revisit the Calapooia watershed and extract % row crop for 2019: 
+Let's revisit the Calapooia watershed and extract percent row crop for 2019: 
 
 ```{r, warning=F, message=F}
 library(FedData)
@@ -85,7 +79,7 @@ StreamCat pre-stages the calculated metrics in an online database and accessible
 
 In addition to watershed-level summaries, StreamCat provides metrics for the local catchment (i.e., the area draining to the stream segment, excluding upstream sources).
 
-![Geospatial framework of the StreamCat Dataset](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/geospatialframework.png){#fig-foo height="312px" width="480px" fig-align="left"}
+![Geospatial framework of the StreamCat Dataset](figures/geospatialframework.png){#fig-foo height="312px" width="480px" fig-align="center"}
 
 ```{r, warning=F, message=F, echo=TRUE}
 sc_get_data(comid = comid,
@@ -123,7 +117,7 @@ mapview(streams, color='blue', legend = FALSE) +
 
 For a subset of watershed metrics, summaries within ~100m of the stream segment are also available for catchments and watersheds:
 
-![Riparian buffers (red) of NHD stream lines (white) and on-network NLCD water pixels (blue).](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/riparianbuffer.png){#fig-foo height="471px" width="480px" fig-align="left"}
+![Riparian buffers (red) of NHD stream lines (white) and on-network NLCD water pixels (blue).](figures/riparianbuffer.png){#fig-foo height="471px" width="480px" fig-align="center"}
 
 
 ```{r, warning=F, message=F, echo=TRUE}
@@ -181,7 +175,7 @@ Like StreamCat, LakeCat makes local catchment and watershed metrics available fo
 
 The challenge of watershed delineation and extraction of data is even greater than for lakes than streams. There are no online services that do this. Therefore, LakeCat is one of the only ways to get watershed metrics for lakes (however, see [LAGOS-NE and LAGOS-US GEO](https://lagoslakes.org/)).
 
-![Example of off-network lakes (opaque with black outline) and their local catchments (semi-transparent). Numbers within lakes are unique identifiers and arrows indicate the direction of hydrologic connection among lake catchments. Hydrologic connections among lake catchments can be represented with a topology table. Figure from Hill et al. (2018).](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/offnetwork.png){#fig-foo height="522px" width="897px" fig-align="left"}
+![Example of off-network lakes (opaque with black outline) and their local catchments (semi-transparent). Numbers within lakes are unique identifiers and arrows indicate the direction of hydrologic connection among lake catchments. Hydrologic connections among lake catchments can be represented with a topology table. Figure from Hill et al. (2018).](figures/offnetwork.png){#fig-foo height="522px" width="897px" fig-align="center"}
 As with StreamCat, the [Metrics and Definitions](https://www.epa.gov/national-aquatic-resource-surveys/lakecat-metrics-and-definitions) page is the best way to examine which variables are available in LakeCat. Currently, fewer variables are available in LakeCat than StreamCat, mainly due to the fact that riparian buffers were not included as an "AOI" for lakes.
 
 The `R` function to access LakeCat data was designed to parallel StreamCat functions. In this example, we:
@@ -260,5 +254,14 @@ ggplot() +
 In the next sections, we will put what we have learned about GIS in R together with the `spmodel` package to model two types of data. First, we will model the presence/absence of a damselfly genus (_Argia_) in the northeastern U.S. streams. We'll access _Argia_ presences/absences via another `R` package that was recently released called [`finsyncR`](https://usepa.github.io/finsyncR/). In the second example, we will model the specific conductivity of lakes in several midwestern states. 
 
 
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```
 
 

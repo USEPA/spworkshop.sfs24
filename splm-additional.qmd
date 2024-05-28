@@ -1,0 +1,513 @@
+# Additional `spmodel` Features {#sec-features}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+Throughout this section, we will use both the `spmodel` package and the `ggplot2` package:
+
+```{r}
+library(spmodel)
+library(ggplot2)
+```
+
+We will continue to use the `moss` data throughout this section.
+
+__Goals__: 
+
+* Accommodate big spatial data:
+    * Use the `local` argument in `splm()` to fit a spatial linear model to a large data set.
+    * Use the `local` argument in `predict()` (or `augment()`) to make predictions for a large data set.
+* Incorporate additional arguments to `splm()` (and later, `spautor()`) to:
+    * Fit and predict for multiple models simultaneously.
+    * Fit a spatial linear model with non-spatial random effects.
+    * Fit a spatial linear model with anisotropy.
+    * Fit a spatial linear model with a partition factor.
+    * Fix certain spatial covariance parameters at known values.
+    * Fit a random forest spatial residual linear model and make predictions.
+* Use the `spautor()` function in `spmodel` to fit a spatial linear model to areal data.
+    * Connect parameter estimates in the summary output of `spautor()` to the spatial linear model introduced in @eq-splm in @sec-splm.
+    * Apply some of the other functions introduced in @sec-model-fitting to a model object fit with `spautor()`.
+* Simulate spatial Gaussian data using `sprnorm()`
+
+## Big Spatial Data
+
+## Additional Arguments
+
+### Multiple Models
+
+`splm()` fits multiple models simultaneously when `spcov_type` is a vector with more than one element:
+
+```{r}
+spmods <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = c("exponential", "gaussian"))
+```
+
+`spmods` is a list with two elements: `exponential`, using the exponential spatial covariance; and `gaussian`, using the Gaussian spatial covariance.
+
+```{r}
+names(spmods)
+```
+
+`spmods` is natural to combine with `glances()` to glance at each model fit:
+
+```{r}
+glances(spmods)
+```
+
+and to combine with `predict()` to predict for each model fit.
+
+::: {.callout-important icon="false"}
+## Exercise
+Work with a neighbor to find 90% confidence intervals for the fixed effects in the Gaussian model using either (1) `tidy()` or (2) `confint()`. Before beginning, decide with your neighbor who will begin working on (1) `tidy()` and who will begin working on (2) `confint()`.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Exercise Solution
+
+```{r}
+tidy(spmods$gaussian, conf.int = TRUE, conf.level = 0.90)
+confint(spmods$gaussian, level = 0.90)
+```
+:::
+
+### Non-Spatial Random Effects
+
+In the `moss` data, there are actually some spatial locations that have more than one measurement due to multiple samples being collected at a single location or due to a single sample being tested multiple times in the laboratory. The `sample` variable indexes the spatial location:
+
+```{r}
+moss
+```
+
+We might expect Zinc concentration to be correlated within a spatial location; therefore, we might want to add `sample` as a non-spatial random effect (here, an intercept random effect) to the model with `log_Zn` as the response and `log_dist2road` as the predictor. The `splm()` function allows non-spatial random effects to be incorporated with the `random` argument, which takes a formula specification that is similar in syntax as the `nlme` [@pinheiro2006mixed] and `lme4` [@bates2015lme4] \textbf{\textsf{R}} packages.
+
+```{r}
+randint <- splm(log_Zn ~ log_dist2road,
+                data = moss, spcov_type = "exponential",
+                random = ~ (1 | sample))
+```
+
+:::{.callout-tip}
+For the `randint` model, in the `random` argument, `sample` is shorthand for `(1 | sample)`. So the `randint` model could be written more concisely as
+
+```{r}
+randint <- splm(log_Zn ~ log_dist2road,
+                      data = moss, spcov_type = "exponential",
+                      random = ~ sample)
+```
+
+:::
+
+The summary output now shows an estimate of the variance of the random intercepts, in addition to the estimated fixed effects and estimated spatial covariance parameters.
+
+```{r}
+summary(randint)
+```
+
+And, `glances()` shows that the model with the random intercepts is a better fit to the data than the model without random intercepts. 
+
+```{r}
+spmod <- splm(log_Zn ~ log_dist2road,
+              data = moss, spcov_type = "exponential")
+glances(spmod, randint)
+```
+
+As another example, we might consider a model that also has random intercepts for `year`, or, a model that also has both random intercepts for `year` and random slopes for `log_dist2road` within `year`:
+
+```{r}
+yearint <- splm(log_Zn ~ log_dist2road,
+                      data = moss, spcov_type = "exponential",
+                      random = ~ (1 | sample + year))
+yearsl <- splm(log_Zn ~ log_dist2road,
+                      data = moss, spcov_type = "exponential",
+                      random = ~ (1 | sample) + 
+                       (log_dist2road | year))
+```
+
+`glances()` shows that, of these four models, the model that includes random intercepts for `sample`, random intercepts for `year`, and random slopes for `year` is best, according to the AIC and AICc metrics.
+
+```{r}
+glances(spmod, randint, yearint, yearsl)
+```
+
+::: {.callout-note}
+### Note
+
+The syntax `~ (log_dist2road | year)` specifies that both random intercepts for `year` and random slopes for `log_dist2road` within `year` should be included in the model. If only random slopes are desired, then we should set `random` to `~ (-1 + log_dist2road | year)`.
+:::
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Perhaps a model with random intercepts for `sample` and random intercepts and slopes for `year` but without any spatial covariance is an even better fit to the data. Fit such a model by specifying `spcov_type` to be `"none"`. Then, use `glances()` to see how well this non-spatial model fits the `moss` data compared to the spatially explicit models.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Exercise Solution
+
+```{r}
+nospcov <- splm(log_Zn ~ log_dist2road,
+                    data = moss, spcov_type = "none",
+                    random = ~ (1 | sample) + 
+                      (log_dist2road | year))
+glances(spmod, randint, yearint, yearsl, nospcov)
+## the model with no explicit spatial covariance has the worst fit 
+## of the five models.
+```
+:::
+
+### Anisotropy
+
+By default, `splm()` uses isotropic spatial covariance. Spatial covariance is isotropic if it behaves similarly in all directions. A spatial covariance is (geometrically) anisotropic if it does not behave similarly in all directions. Anisotropic models require estimation of two additional parameters: `rotate` and `scale`, which control the behavior of the spatial covariance as a function of distance and direction. 
+
+```{r}
+aniso <- splm(log_Zn ~ log_dist2road,
+              data = moss, spcov_type = "exponential",
+              anisotropy = TRUE)
+aniso
+```
+
+We can again use glances to compare the model that allows for anisotropy with the isotropic model:
+
+```{r}
+glances(spmod, aniso)
+```
+
+The anisotropic model does have lower AIC and AICc than the isotropic model, indicating a better fit. However, the reduction in AIC and AICc is quite small, so we may still prefer the isotropic model for simplicity and interpretability.
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Visualize the anisotropic level curve for `aniso` using `plot()`. Hint: Run `?plot.spmodel` or visit [this link](https://usepa.github.io/spmodel/reference/plot.spmodel.html). Which direction does the model predict two responses will be more correlated?
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Exercise Solution
+
+```{r}
+plot(aniso, which = 8)
+```
+
+A clockwise rotation of this level curve by `rotate` followed by a scaling of the minor axis by the reciprocal of `scale` yields a spatial covariance that is isotropic.
+
+:::
+
+### Partition Factors
+
+A partition factor is a categorical (or factor) variable that forces observations in different levels of the partition factor to be uncorrelated. The `year` variable in `moss` has two levels, `2001` and `2006`, which correspond to the year of measurement. Suppose the goal is to fit a model that assumes observations from the same year are spatially correlated but observations from different years are not spatially correlated. In this context, `year` is a partition factor. We fit this model by running
+
+```{r}
+part <- splm(log_Zn ~ log_dist2road,
+             data = moss, spcov_type = "exponential",
+             partition_factor = ~ year)
+```
+
+Like the `formula` and `random` arguments, the `partition_factor` argument requires a formula object.
+
+
+
+### Fixing Covariance Parameters
+
+By default, `splm()` estimates all unknown covariance parameters. However, we can also fix covariance parameters at known values with the `spcov_initial` argument for spatial covariance parameters and with the `randcov_initial` argument for non-spatial covariance parameters.
+
+As an example, suppose that we want to fit a `"spherical"` covariance model to the moss data, but that, we want to fix the `range` at `20000` units so that errors from spatial locations more than 20000 units apart are not spatially correlated. We first create an `spcov_initial` object with the `spcov_initial()` function:
+
+```{r}
+init_spher <- spcov_initial("spherical", range = 20000, known = "range")
+init_spher
+```
+
+Within the function call, we specify that, for a `"spherical"` covariance, we would like to set the `range` parameter to `20000` and for that value to be known and therefore fixed in any subsequent estimation. We then provide `init_spher` as an argument to `spcov_initial` in `splm()`:
+
+```{r}
+splm(log_Zn ~ log_dist2road, data = moss,
+     spcov_initial = init_spher)
+```
+
+When `spcov_initial` is provided, `spcov_type` is not a necessary argument to `splm()`.
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Fit a `"spherical"` spatial covariance model to the `moss` data set without a nugget effect (i.e., the model should have the `ie` independent variance parameter set to `0` and treated as `known`). Verify in the summary output that the `ie` is indeed `0` for this model.
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Exercise Solution
+
+```{r}
+init_no_ie <- spcov_initial("spherical", ie = 0, known = "ie")
+no_ie <- splm(log_Zn ~ log_dist2road, data = moss,
+              spcov_initial = init_no_ie)
+summary(no_ie)
+```
+
+:::
+
+### Random Forest Spatial Residual Models
+
+Random forests are a popular machine-learning modeling tool. The random forest spatial residual model available in `spmodel` combines random forest modeling and spatial linear models. First, the model is fit using random forests and fitted values are obtained. Then the response residuals are used to fit a spatial linear model. Predictions at unobserved locations are computed as the sum of the random forest prediction and the predicted (i.e., Kriged) response residual from the spatial linear model. Suppose we split the `moss` data into training and test data sets, with the goal of predicting `log_Zn` in the test data. 
+
+```{r}
+set.seed(1)
+n <- NROW(moss)
+n_train <- round(0.75 * n)
+n_test <- n - n_train
+train_index <- sample(n, size = n_train)
+moss_train <- moss[train_index, , ]
+moss_test <- moss[-train_index, , ]
+```
+
+We fit a random forest spatial residual model to the test data by running
+```{r}
+rfsrmod <- splmRF(log_Zn ~ log_dist2road, moss_train,
+                  spcov_type = "exponential")
+```
+
+We make predictions for the test data by running
+```{r}
+#| results: hide
+
+# results omitted
+predict(rfsrmod, moss_test)
+```
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Use `predict()` to store the random forest spatial residual predictions of `log_Zn` at locations in the test data and then compute the mean-squared prediction error.
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Exercise Solution
+
+```{r}
+preds <- predict(rfsrmod, newdata = moss_test)
+errors <- moss_test$log_Zn - preds
+mean(errors^2)
+```
+
+:::
+
+## Areal Data
+
+### Data Introduction
+
+Throughout the section, we will use the `seal` data in the `spmodel` package. The `seal` data is an `sf` object with a `POLYGON` geometry. There are 62 polygons in the data, some of which have non-missing values of `log_trend`, which is the log of the estimated harbor-seal trends that were calculated from abundance data.
+
+The following code generates a visualization of the `seal` data: polygons that are grey have a missing value for `log_trend`.
+
+```{r}
+ggplot(seal, aes(fill = log_trend)) +
+  geom_sf() +
+  scale_fill_viridis_c() +
+  theme_bw(base_size = 14) 
+```
+
+Our goal is to fit a spatial autoregressive model (@eq-splm and @eq-Rareal) to the `log_trend` response variable with the `spautor()` function. Then, we will use the fitted model to predict the `log_trend` for sites where `log_trend` is not recorded.
+
+### `spautor()` Syntax and Output Interpretation
+
+The syntax for fitting a model to areal data with `spautor()` is very similar to that used for `splm()`. Again, there are generally at least three required arguments:
+
+* `formula`: a formula that describes the relationship between the response variable ($\mathbf{y}$) and explanatory variables ($\mathbf{X}$)
+    * `formula` in `spautor()` is the same as `formula` in `lm()` and `splm()`
+* `data`: a `data.frame` or `sf` object that contains the response variable, explanatory variables, and spatial information. Note that if `data` is a `data.frame`, then `W` is an additional required argument to `spautor()`.
+* `spcov_type`: the spatial covariance type (`"car"` or `"sar"`)
+
+We can fit a conditional auto-regressive (CAR) model with
+
+```{r}
+sealmod <- spautor(log_trend ~ 1, data = seal, spcov_type = "car")
+summary(sealmod)
+```
+
+```{r spatparms}
+#| echo: false
+spcov_params_car <- coef(sealmod, type = "spcov")
+de_car <- as.vector(round(spcov_params_car[["de"]], digits = 3))
+range_car <- as.vector(round(spcov_params_car[["range"]], digits = 3))
+```
+
+We can relate some of the components in the summary output to the model in @eq-splm and @eq-Rareal: 
+
+* the value in the `Estimate` column of the `Coefficients (fixed)` table form $\boldsymbol{\hat{\beta}}$, an estimate of $\boldsymbol{\beta}$. 
+* the `de` value of `r de_car` in the `Coefficients (car spatial covariance)` table is $\hat{\sigma}^2_{de}$, which is an estimate of $\sigma^2_{de}$, the variance of $\boldsymbol{\tau}$. 
+* the `range` value of `r range_car` in the `Coefficients (car spatial covariance)` table is $\hat{\phi}$, an estimate of $\phi$ in @eq-Rareal.
+
+::: {.callout-note}
+### Note
+
+By default, $\sigma^2_{ie}$ is assumed to be `0` for autoregressive models and hence, `ie` is omitted from the summary output. 
+:::
+
+Though the weight matrix $\mathbf{W}$ in @eq-Rareal used in the model does not appear in the summary output, we can pull the weight matrix from the `sealmod` object with
+
+```{r}
+#| results: false
+sealmod$W
+```
+
+By default, `spautor()` uses __queen contiguity__ to form the weight matrix: observations are "neighbors" if they share at least one boundary (even if that boundary is a single point). Recall that observations are not considered neighbors with themselves. Also by default, `spautor()` row standardizes the weight matrix so that each of the rows in $\mathbf{W}$ sum to $1$. Row standardization of the weight matrix is performed by default because doing so results in "nice" properties of the resulting covariance matrix [@ver2018spatial]. The first row of the weight matrix is 
+
+```{r}
+sealmod$W[1, ]
+```
+
+The output indicates that the first observation is neighbors with the second observation, the sixteenth observation, and the twenty-eighth observation. 
+
+Finally, if we re-examine $\mathbf{W}$, we can note that some rows of $\mathbf{W}$ do not have any positive values, indicating that some observations in the data have no neighbors. Looking back on the plot of the data, we see that there are indeed a few "island" sites that do not share a boundary with any other polygons. The errors for these spatial locations are assumed to be uncorrelated with all other random errors, and, they are given a unique variance parameter that is the `extra` spatial covariance estimate in the summary output of the model.
+
+### Additional Analysis
+
+Most of the helper functions for models fit with `splm()` are also useful for models fit with `spautor()`. Additionally, most of the additional arguments for `splm()` are also additional arguments for `spautor()`. 
+
+Of the functions mentioned in @sec-model-fitting, the following are also available to use on a model fit with `spautor()`:
+
+* `augment()`, `glance()`, and `glances()`
+* model fit statistics with `AIC()`, `AICc()` and `GR2()`
+* model diagnostics statistics with `cooks.distance()`, `residuals()`, `fitted()`, etc.
+
+Of the arguments mentioned in @sec-model-fitting, `spcov_initial` and `random` are available for `spautor()`.
+
+::: {.callout-note}
+### Note
+
+The `anisotropy` argument is not available for `spautor()` because the covariance for an autoregressive model is based on the neighborhood structure of the spatial locations, not on distance.
+:::
+
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Choose a couple of the helper functions that you would like to explore and apply those functions to the fitted seal model.
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Exercise Solution
+
+```{r}
+AIC(sealmod)
+fitted(sealmod)
+```
+
+:::
+
+### Prediction with Areal Data
+
+Prediction of response values for unobserved polygons with areal data requires that the polygons with missing response values be included in the `data` argument supplied to `spautor()`. The reason for this requirement is that exclusion of these polygons changes the underlying neighborhood structure of the data, and, therefore changes the covariance matrix.
+
+For areal data, we can obtain predictions for unobserved polygons using `predict()` on the fitted model object or `augment()` on the fitted model object, specifying the `newdata` argument to be `mod$newdata`. Both approaches are given below:
+
+```{r}
+#| results: false
+sealmod <- spautor(log_trend ~ 1, data = seal, spcov_type = "car")
+summary(sealmod)
+
+predict(sealmod)
+```
+
+```{r}
+augment(sealmod, newdata = sealmod$newdata)
+```
+
+::: {.callout-note}
+### Note
+
+The `mod$newdata` syntax also works for models fit with `splm()`, where the `data` used contains missing values for the response variable at any unobserved locations.
+:::
+
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Verify that the fitted autoregressive model with the `seal` data changes when the polygons with missing response values are excluded from the `data` argument in `spautor()`. The following code creates a data without the polygons with missing values:
+
+```{r}
+is_missing <- is.na(seal$log_trend)
+seal_nomiss <- seal[!is_missing, , ]
+```
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Exercise Solution
+
+```{r}
+sealmod_nomiss <- spautor(log_trend ~ 1,
+                          data = seal_nomiss, spcov_type = "car")
+print(sealmod)
+print(sealmod_nomiss)
+```
+
+:::
+
+### Spatial Generalized Autoregressive Mdoels
+
+In @sec-spglm we discussed how to formulate spatial generalized linear models using `spglm()`, building off the construction of spatial linear models fit using `splm()`. Similarly, we can formulate spatial generalized autoregressive models using `spgautor()`, building off the construction of spatial autoregressive models fit using `spautor()`. Spatial generalized autoregressive models can be fit to binomial, proportion, count, and skewed data by providing the `family` argument, as with the models fit using `spglm()` in @sec-spglm. For example, we model `exp(log_trend)` (which is strictly positive) as a gamma random variable with the simultaneous autoregressive spatial covariance by running
+```{r}
+sealgmod <- spgautor(exp(log_trend) ~ 1, family = Gamma,
+                  data = seal, spcov_type = "sar")
+summary(sealgmod)
+```
+
+
+## Simulating Spatial Data
+
+Throughout this section, we will simulate spatially-correlated data using a variety of `spmodel` functions. It is often useful to simulate spatial data with "known" spatial covariance parameters and study the suitability of models fit to these data. 
+
+### Simulating Spatial Gaussian Data {#sec-simulate-gauss}
+
+We simulate Gaussian spatial data using `sprnorm()`. `sprnorm()` is similar in structure to `rnorm()` for simulating non-spatial Gaussian data. The first argument to `sprnorm()` is `spcov_params`, which is a spatial covariance parameter object created with `spcov_params()`:
+```{r}
+params <- spcov_params("exponential", de = 1, ie = 0.5, range = 5e5)
+```
+
+::: {.callout-note}
+ When the `type` argument to `coef()` is `"spcov"`, the estimated spatial covariance parameters are returned as an `spcov_params` object, naturally usable simulation-based contexts that require conditioning on these estimated parameters.
+:::
+
+`sprnorm()` simulates data at each location in `data` for each of `n` samples (specified via `n`) with some mean vector (specified via `mean`). We simulate one realization of zero-mean Gaussian data with spatial covariance structure from `params` at each location in the `sulfate` data by running
+```{r}
+set.seed(1)
+sulfate$z <- sprnorm(params, data = sulfate)
+```
+
+We visualize this realization by running
+```{r}
+ggplot(sulfate, aes(color = z)) +
+  geom_sf() +
+  scale_color_viridis_c() +
+  theme_gray(base_size = 14)
+```
+
+We visualize an empirical semivariogram of this realization by running
+```{r}
+esv_out <- esv(z ~ 1, sulfate)
+ggplot(esv_out, aes(x = dist, y = gamma, size = np)) +
+  geom_point() +
+  lims(y = c(0, NA)) +
+  theme_gray(base_size = 14)
+```
+
+::: {.callout-caution}
+### Caution
+
+Simulating spatial data in `spmodel` requires the Cholesky decomposition of the covariance matrix, which can take awhile for sample sizes exceeding 10,000. Regardless of the number of realizations simulated, this Cholesky decompsition is only needed once, which means that simulating many realizations (via `samples`) takes nearly the same time as simulating just one.
+
+:::
+
+
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```

@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Spatial Analysis and Statistical Modeling with R and spmodel - 7&nbsp; Spatial GLM of “Dancer” damselfly (Argia)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./streamcattools.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Spatial Analysis and Statistical Modeling with R and spmodel</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./splm-additional.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Additional <code>spmodel</code> Features</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gis-in-r.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./watershed-delineation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Watershed Delineation in <code>R</code></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./streamcattools.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#data-prep" id="toc-data-prep" class="nav-link active" data-scroll-target="#data-prep"><span class="toc-section-number">7.1</span>  Data Prep</a>
+  <ul>
+<li><a href="#biological-dependent-data" id="toc-biological-dependent-data" class="nav-link" data-scroll-target="#biological-dependent-data"><span class="toc-section-number">7.1.1</span>  Biological (Dependent) Data</a></li>
+  <li><a href="#predictor-independent-data" id="toc-predictor-independent-data" class="nav-link" data-scroll-target="#predictor-independent-data"><span class="toc-section-number">7.1.2</span>  Predictor (Independent) Data</a></li>
+  <li><a href="#combine-dependent-and-independent-data" id="toc-combine-dependent-and-independent-data" class="nav-link" data-scroll-target="#combine-dependent-and-independent-data"><span class="toc-section-number">7.1.3</span>  Combine Dependent and Independent Data</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#modeling-occurrece-of-genus-argia" id="toc-modeling-occurrece-of-genus-argia" class="nav-link" data-scroll-target="#modeling-occurrece-of-genus-argia"><span class="toc-section-number">7.2</span>  Modeling occurrece of genus <em>Argia</em></a>
+  <ul>
+<li><a href="#model-formulation" id="toc-model-formulation" class="nav-link" data-scroll-target="#model-formulation"><span class="toc-section-number">7.2.1</span>  Model formulation</a></li>
+  <li><a href="#model-performance" id="toc-model-performance" class="nav-link" data-scroll-target="#model-performance"><span class="toc-section-number">7.2.2</span>  Model performance</a></li>
+  <li><a href="#extra-mapping-predictions" id="toc-extra-mapping-predictions" class="nav-link" data-scroll-target="#extra-mapping-predictions"><span class="toc-section-number">7.2.3</span>  EXTRA: Mapping predictions</a></li>
+  </ul>
+</li>
+  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">7.3</span>  R Code Appendix</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title"><span id="spatial-glm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header><div class="cell">
+
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg" style="width:25.0%;height:25.0%" class="figure-img"></p>
+<p></p><figcaption class="figure-caption">Image from: inaturalist.org</figcaption><p></p>
+</figure>
+</div>
+<p>To start this exercise, we’ll introduce a new <code>R</code> package called <a href="https://usepa.github.io/finsyncR/"><code>finsyncR</code></a>. This package was developed by US EPA scientists and academic collaborators.</p>
+<div id="fig-foo" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure"><p><img src="figures/finsyncR.png" width="166" height="192" class="figure-img"></p>
+</figure>
+</div>
+<p>From the <code>finsyncR</code> GitHub page:</p>
+<p><em>(<strong>f</strong>ish and <strong>in</strong>vertebrate <strong>sync</strong>hronizer in <strong>R</strong>) is a data management package that integrates and processes national-level aquatic biomonitoring datasets in the U.S., with a focus on fish and macroinvertebrates sampled in rivers and streams.</em></p>
+<p><em>The sources of data for this package are the United States Environmental Protection Agency’s (USEPA) National Aquatic Resource Surveys (NARS), namely the National River and Streams Assessment (NRSA), and United States Geological Survey’s (USGS) BioData.</em></p>
+<p>In short, <code>finsyncR</code> provides us with access to thousands of biological samples across the U.S. from both EPA and USGS sources (e.g., <a href="https://www.science.org/doi/full/10.1126/sciadv.adf4896">Rumschlag et al.&nbsp;2023</a>). We’ll be using EPA data today. The EPA data are from the National Aquatic Resources Assessment’s <a href="https://www.epa.gov/national-aquatic-resource-surveys/wadeable-streams-assessment">Wadeable Streams Assessment</a> (2001-2004) and <a href="https://www.epa.gov/national-aquatic-resource-surveys/nrsa">National Rivers and Streams Assessments</a> (NRSA; 2008/2009, 2013/2014, and 2018/2019).</p>
+<p>We encourage potential users of <code>finsyncR</code> to thoroughly read the GitHub tutorial and other associated materials. A paper describing the package is currently under review in <em>Methods in Ecology and Evolution</em>.</p>
+<section id="data-prep" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="data-prep">
+<span class="header-section-number">7.1</span> Data Prep</h2>
+<section id="biological-dependent-data" class="level3" data-number="7.1.1"><h3 data-number="7.1.1" class="anchored" data-anchor-id="biological-dependent-data">
+<span class="header-section-number">7.1.1</span> Biological (Dependent) Data</h3>
+<p>First, load <code>finsyncR</code>, <code>spmodel</code>, <code>StreamCatTools</code>, and other needed packages.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/finsyncR/">finsyncR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/StreamCatTools/">StreamCatTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://xrobin.github.io/pROC/">pROC</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we will use <code>finsyncR</code> to get genus-level macroinvert data from just EPA and rarefy to 500 count. The code will also convert the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. Finally, we will include samples from boatable streams rather than just those that are wadeable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>macros <span class="ot">&lt;-</span> <span class="fu">getInvertData</span>(<span class="at">dataType =</span> <span class="st">"occur"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">taxonLevel =</span> <span class="st">"Genus"</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">agency =</span> <span class="st">"EPA"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">lifestage =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">rarefy =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">rarefyCount =</span> <span class="dv">300</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">sharedTaxa =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">seed =</span> <span class="dv">1</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">boatableStreams =</span> T)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a> finsyncR is running<span class="sc">:</span> Gathering, joining, and cleaning EPA raw data                    </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a> finsyncR is running<span class="sc">:</span> Rarefying EPA data                              </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a> finsyncR is running<span class="sc">:</span> Applying taxonomic fixes to EPA data                    </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a> finsyncR is running<span class="sc">:</span> Finalizing data <span class="cf">for</span> output                          </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a> finsyncR data synchronization complete</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">dim</span>(macros))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 6174  856</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Print an example of the data</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(macros[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">23</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Agency</th>
+<th style="text-align: left;">SampleID</th>
+<th style="text-align: left;">ProjectLabel</th>
+<th style="text-align: left;">SiteNumber</th>
+<th style="text-align: left;">CollectionDate</th>
+<th style="text-align: right;">CollectionYear</th>
+<th style="text-align: right;">CollectionMonth</th>
+<th style="text-align: right;">CollectionDayOfYear</th>
+<th style="text-align: right;">Latitude_dd</th>
+<th style="text-align: right;">Longitude_dd</th>
+<th style="text-align: left;">CoordinateDatum</th>
+<th style="text-align: right;">COMID</th>
+<th style="text-align: right;">StreamOrder</th>
+<th style="text-align: right;">WettedWidth</th>
+<th style="text-align: right;">PredictedWettedWidth_m</th>
+<th style="text-align: left;">NARS_Ecoregion</th>
+<th style="text-align: left;">SampleTypeCode</th>
+<th style="text-align: right;">AreaSampTot_m2</th>
+<th style="text-align: left;">FieldSplitRatio</th>
+<th style="text-align: left;">LabSubsamplingRatio</th>
+<th style="text-align: right;">PropID</th>
+<th style="text-align: right;">Gen_ID_Prop</th>
+<th style="text-align: right;">Ablabesmyia</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">EPA</td>
+<td style="text-align: left;">10000</td>
+<td style="text-align: left;">NRSA0809</td>
+<td style="text-align: left;">NRS_KS-10018</td>
+<td style="text-align: left;">2008-08-05</td>
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">218</td>
+<td style="text-align: right;">39.01491</td>
+<td style="text-align: right;">-98.01046</td>
+<td style="text-align: left;">NAD83</td>
+<td style="text-align: right;">18865370</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2.2525</td>
+<td style="text-align: right;">2.68</td>
+<td style="text-align: left;">SPL</td>
+<td style="text-align: left;">BERWW</td>
+<td style="text-align: right;">1.022</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">1.0000000</td>
+<td style="text-align: right;">0.9373650</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EPA</td>
+<td style="text-align: left;">10001</td>
+<td style="text-align: left;">NRSA0809</td>
+<td style="text-align: left;">NRS_KS-10008</td>
+<td style="text-align: left;">2008-08-11</td>
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">224</td>
+<td style="text-align: right;">37.39528</td>
+<td style="text-align: right;">-98.92628</td>
+<td style="text-align: left;">NAD83</td>
+<td style="text-align: right;">21012349</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4.9850</td>
+<td style="text-align: right;">5.37</td>
+<td style="text-align: left;">SPL</td>
+<td style="text-align: left;">BERWW</td>
+<td style="text-align: right;">0.372</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0.1770852</td>
+<td style="text-align: right;">0.8576998</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EPA</td>
+<td style="text-align: left;">10004</td>
+<td style="text-align: left;">NRSA0809</td>
+<td style="text-align: left;">NRS_KS-10040</td>
+<td style="text-align: left;">2008-07-15</td>
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">197</td>
+<td style="text-align: right;">37.78662</td>
+<td style="text-align: right;">-96.42997</td>
+<td style="text-align: left;">NAD83</td>
+<td style="text-align: right;">21515712</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">10.0800</td>
+<td style="text-align: right;">9.05</td>
+<td style="text-align: left;">TPL</td>
+<td style="text-align: left;">BERWW</td>
+<td style="text-align: right;">1.022</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0.4374453</td>
+<td style="text-align: right;">0.9310987</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EPA</td>
+<td style="text-align: left;">10006</td>
+<td style="text-align: left;">NRSA0809</td>
+<td style="text-align: left;">NRS_KS-10064</td>
+<td style="text-align: left;">2008-08-25</td>
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">238</td>
+<td style="text-align: right;">37.99323</td>
+<td style="text-align: right;">-99.32134</td>
+<td style="text-align: left;">NAD83</td>
+<td style="text-align: right;">22082845</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">4.5150</td>
+<td style="text-align: right;">9.18</td>
+<td style="text-align: left;">SPL</td>
+<td style="text-align: left;">BERWW</td>
+<td style="text-align: right;">0.186</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0.2187705</td>
+<td style="text-align: right;">0.9659091</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EPA</td>
+<td style="text-align: left;">1002013</td>
+<td style="text-align: left;">NRSA1314</td>
+<td style="text-align: left;">NRS_KS-10126</td>
+<td style="text-align: left;">2013-04-30</td>
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">39.12843</td>
+<td style="text-align: right;">-95.65402</td>
+<td style="text-align: left;">NAD83</td>
+<td style="text-align: right;">3645992</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5.5500</td>
+<td style="text-align: right;">5.18</td>
+<td style="text-align: left;">TPL</td>
+<td style="text-align: left;">BERW</td>
+<td style="text-align: right;">1.022</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0.2916983</td>
+<td style="text-align: right;">0.9026718</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Let’s massage the table with dplyr to get what we want, including data on the occurences of <em>Argia</em>:</p>
+<ul>
+<li>Select columns of interest, including the <em>Argia</em> occurrence column.</li>
+<li>Remove data related to the EPA’s Wadeable Streams Assessment (2001-2004).</li>
+<li>Convert “CollectionDate” to a date (<code><a href="https://lubridate.tidyverse.org/reference/date.html">lubridate::date()</a></code>) and convert presence/absence to a factor.</li>
+<li>Finally, convert table to a <code>sf</code>object and transform to EPSG:5070.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Flexible code so we could model another taxon</span></span>
+<span><span class="va">genus</span> <span class="op">&lt;-</span> <span class="st">'Argia'</span></span>
+<span></span>
+<span><span class="va">taxon</span> <span class="op">=</span> <span class="va">macros</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">SampleID</span>, </span>
+<span>                <span class="va">ProjectLabel</span>, </span>
+<span>                <span class="va">CollectionDate</span>,  </span>
+<span>                <span class="va">Latitude_dd</span>,</span>
+<span>                <span class="va">Longitude_dd</span>,</span>
+<span>                <span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">genus</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co">#filter(ProjectLabel != 'WSA') %&gt;% </span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>CollectionDate <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/date.html">date</a></span><span class="op">(</span><span class="va">CollectionDate</span><span class="op">)</span>,</span>
+<span>         presence <span class="op">=</span> </span>
+<span>           <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">genus</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Longitude_dd'</span>, <span class="st">'Latitude_dd'</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To visualize the data, we will read in a layer of lower 48 states to give some context. To do this we can use the <code>tigris</code> package. We will also remove non-conterminous states and transform the projection to our favorite - EPSG:5070.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">STUSPS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'HI'</span>, <span class="st">'PR'</span>, <span class="st">'AK'</span>, <span class="st">'MP'</span>, <span class="st">'GU'</span>, <span class="st">'AS'</span>, <span class="st">'VI'</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First, let’s plot the observed presences/absences in the data…</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">states</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">presence</span><span class="op">)</span>,</span>
+<span>          size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>          alpha <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#d9d9d9"</span>, <span class="st">"#08519c"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>…and by NRSA survey period:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">states</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">ProjectLabel</span><span class="op">)</span>,</span>
+<span>          size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>          alpha <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#a6cee3"</span>, <span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span>, <span class="st">"#33a02c"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>For today’s exercise, we’ll narrow down the samples to the northeaster region of the U.S.</p>
+<ul>
+<li>Select states from the northeaster U.S.</li>
+<li>Select NRSA sample sites that intersect with these states.</li>
+<li>Filter to just the 2013/2014 and 2018/2019 sample periods.</li>
+<li>Create a new column for sample year.</li>
+<li>Select desired columns.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="co"># Filter to study region (states)</span></span>
+<span><span class="va">region</span> <span class="op">&lt;-</span> <span class="va">states</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'VT'</span>, <span class="st">'NH'</span>, <span class="st">'ME'</span>, <span class="st">'NY'</span>, <span class="st">'RI'</span>,</span>
+<span>                       <span class="st">'MA'</span>, <span class="st">'CT'</span>, <span class="st">'NJ'</span>, <span class="st">'PA'</span>, <span class="st">'DE'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use region as spatial filter (sf::st_filter()) for taxon of interest</span></span>
+<span><span class="va">taxon_rg</span> <span class="op">&lt;-</span> <span class="va">taxon</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">ProjectLabel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'NRSA1314'</span>, <span class="st">'NRSA1819'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html">year</a></span><span class="op">(</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html">ymd</a></span><span class="op">(</span><span class="va">CollectionDate</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">SampleID</span><span class="op">:</span><span class="va">CollectionDate</span>, <span class="va">presence</span><span class="op">:</span><span class="va">year</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon_rg</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">presence</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#d9d9d9"</span>, <span class="st">"#08519c"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon_rg</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">ProjectLabel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">presence</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; .</span></span>
+<span><span class="co">#&gt;   0   1 </span></span>
+<span><span class="co">#&gt; 485  65</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="predictor-independent-data" class="level3" data-number="7.1.2"><h3 data-number="7.1.2" class="anchored" data-anchor-id="predictor-independent-data">
+<span class="header-section-number">7.1.2</span> Predictor (Independent) Data</h3>
+<ol type="1">
+<li>Obtain list of NHDPlus COMIDs that match sample sites from <code>nhdplusTools</code>
+</li>
+</ol>
+<ul>
+<li>Use NLDI service via StreamCat to get the COMIDs</li>
+<li>Create a vector of COMIDs by splitting the COMID string</li>
+<li>Add COMID to our <em>Argia</em> occurrence table</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_comid.html">sc_get_comid</a></span><span class="op">(</span><span class="va">taxon_rg</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#comids &lt;- read_rds('./data/nrsa_comids.rds')</span></span>
+<span><span class="va">comid_vect</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">comids</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html">str_split</a></span><span class="op">(</span><span class="st">','</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">taxon_rg</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>COMID <span class="op">=</span> <span class="va">comid_vect</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>Get non-varying StreamCat data.</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sc</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">comids</span>,</span>
+<span>              aoi <span class="op">=</span> <span class="st">'watershed'</span>,</span>
+<span>              metric <span class="op">=</span> <span class="st">'bfi, precip8110, wetindex, elev'</span>,</span>
+<span>              showAreaSqKm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="1">
+<li>Get year-specific wetlands within watersheds.</li>
+</ol>
+<ul>
+<li>NLCD contains data on the distribution of herbaceous (pcthbwet) and woody (pctwdwet) wetlands. We will combine them into a single metric representing the % of the watershed comprised of wetlands.</li>
+<li>Duplicate the data, but offset by 1 year so we can 2019 NLCD to 2018 observations (same for 2013 NLCD and 2014 NRSA).</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">wetlands</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">comids</span>,</span>
+<span>              aoi <span class="op">=</span> <span class="st">'watershed'</span>,</span>
+<span>              metric <span class="op">=</span> <span class="st">'pctwdwet2013,pcthbwet2013,pctwdwet2019,pcthbwet2019'</span>,</span>
+<span>              showAreaSqKm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Sum wetland types to create single wetlands metric</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>PCTWETLAND2013WS <span class="op">=</span> <span class="va">PCTHBWET2013WS</span> <span class="op">+</span> <span class="va">PCTWDWET2013WS</span>,</span>
+<span>         PCTWETLAND2019WS <span class="op">=</span> <span class="va">PCTHBWET2019WS</span> <span class="op">+</span> <span class="va">PCTWDWET2019WS</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Reduce columns</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">PCTWETLAND2013WS</span>, <span class="va">PCTWETLAND2019WS</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Create long table w/ column name w/out year</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">COMID</span>, names_to <span class="op">=</span> <span class="st">'tmpcol'</span>, values_to <span class="op">=</span> <span class="st">'PCTWETLANDXXXXWS'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Create new column of year by removing "PCTWETLAND" and "WS" from names</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="va">tmpcol</span>, <span class="st">'PCTWETLAND|WS'</span>, <span class="st">''</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># But some samples have 2014 and 2018 as sample years? How can we trick the data into joining?</span></span>
+<span><span class="co"># We can match 2019 data to 2018 observations by subtracting a year and appending it to the data</span></span>
+<span></span>
+<span><span class="co"># Create tmp table with 1 added or subtracted to year of record</span></span>
+<span><span class="va">tmp_wetlands</span> <span class="op">&lt;-</span> <span class="va">wetlands</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2013</span>, <span class="va">year</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">year</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># rbind() wetlands and tmp_wetlands so we have records to join to 2014 and 2018</span></span>
+<span><span class="va">wetlands</span> <span class="op">&lt;-</span> <span class="va">wetlands</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">tmp_wetlands</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">tmpcol</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="4" type="1">
+<li>Year-specific impervious surfaces within 100-m riparian buffer.</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">riparian_imp</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">comids</span>,</span>
+<span>              aoi <span class="op">=</span> <span class="st">'riparian_watershed'</span>,</span>
+<span>              metric <span class="op">=</span> <span class="st">'pctimp2013, pctimp2019'</span>,</span>
+<span>              showAreaSqKm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">WSAREASQKMRP100</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">COMID</span>, names_to <span class="op">=</span> <span class="st">'tmpcol'</span>, values_to <span class="op">=</span> <span class="st">'PCTIMPXXXXWSRP100'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="va">tmpcol</span>, <span class="st">'PCTIMP|WSRP100'</span>, <span class="st">''</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_imp</span> <span class="op">&lt;-</span> <span class="va">riparian_imp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2013</span>, <span class="va">year</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">year</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">riparian_imp</span> <span class="op">&lt;-</span> <span class="va">riparian_imp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">tmp_imp</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">tmpcol</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="5" type="1">
+<li>PRISM air temperatures for sample periods</li>
+</ol>
+<ul>
+<li>The <code>prism</code> package requires that we set a temporary folder in our work space. Here, we set it to “prism_data” inside of our “data” folder. It will create this folder if it does not already exist.</li>
+<li>We then stack the climate rasters and use <code><a href="https://rspatial.github.io/terra/reference/extract.html">terra::extract()</a></code> to</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(prism)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get these years of PRISM</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">2014</span>, <span class="dv">2018</span>, <span class="dv">2019</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the PRISM directory (creates directory in not present)</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">prism_set_dl_dir</span>(<span class="st">"./data/prism_data"</span>, <span class="at">create =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Download monthly PRISM rasters (tmean)</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prism_monthlys</span>(<span class="st">'tmean'</span>, </span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">years =</span> years, </span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mon =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>, </span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">keepZip =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="er">|</span>                                                                   <span class="er">|</span>   <span class="dv">0</span>%</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="er">|========</span>                                                           <span class="er">|</span>  <span class="dv">12</span>%</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="er">|=================</span>                                                  <span class="er">|</span>  <span class="dv">25</span>%</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="er">|=========================</span>                                          <span class="er">|</span>  <span class="dv">38</span>%</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================================</span>                                 <span class="er">|</span>  <span class="dv">50</span>%</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==========================================</span>                         <span class="er">|</span>  <span class="dv">62</span>%</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================================================</span>                 <span class="er">|</span>  <span class="dv">75</span>%</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===========================================================</span>        <span class="er">|</span>  <span class="dv">88</span>%</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===================================================================|</span> <span class="dv">100</span>%</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Create stack of downloaded PRISM rasters</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>tmn <span class="ot">&lt;-</span> <span class="fu">pd_stack</span>((<span class="fu">prism_archive_subset</span>(<span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">years =</span> years, </span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">mon =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>)))</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract tmean at sample points and massage data</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>tmn <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">extract</span>(tmn, </span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>                      <span class="co"># Transform taxon_rg to CRS of PRISM on the fly</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>                      taxon_rg <span class="sc">%&gt;%</span> </span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(tmn))) <span class="sc">%&gt;%</span></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add COMIDs to extracted values</span></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">COMID =</span> comid_vect, .) <span class="sc">%&gt;%</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove front and back text from PRISM year/month in names</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>( <span class="sc">~</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(., <span class="st">'PRISM_tmean_stable_4kmM3_|_bil'</span>, <span class="st">''</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year</span></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>COMID, <span class="at">names_to =</span> <span class="st">'year_month'</span>, </span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">'TMEANPRISMXXXXPT'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create new column of year</span></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(<span class="fu">ym</span>(year_month))) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Average July and August temperatures </span></span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">TMEANPRISMXXXXPT =</span> <span class="fu">mean</span>(TMEANPRISMXXXXPT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>            <span class="at">.by =</span> <span class="fu">c</span>(COMID, year))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="combine-dependent-and-independent-data" class="level3" data-number="7.1.3"><h3 data-number="7.1.3" class="anchored" data-anchor-id="combine-dependent-and-independent-data">
+<span class="header-section-number">7.1.3</span> Combine Dependent and Independent Data</h3>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">model_data</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sc</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">wetlands</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">riparian_imp</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">WSAREASQKM</span><span class="op">:</span><span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                    WSAREASQKM      ELEVWS WETINDEXWS       BFIWS</span></span>
+<span><span class="co">#&gt; WSAREASQKM         1.00000000  0.19649723 -0.0844127 -0.17679333</span></span>
+<span><span class="co">#&gt; ELEVWS             0.19649723  1.00000000 -0.6020139 -0.56349466</span></span>
+<span><span class="co">#&gt; WETINDEXWS        -0.08441270 -0.60201389  1.0000000  0.40544326</span></span>
+<span><span class="co">#&gt; BFIWS             -0.17679333 -0.56349466  0.4054433  1.00000000</span></span>
+<span><span class="co">#&gt; PRECIP8110WS      -0.15455456 -0.02973549 -0.1213487  0.17231568</span></span>
+<span><span class="co">#&gt; PCTWETLANDXXXXWS  -0.13274790 -0.53982414  0.7838752  0.49003820</span></span>
+<span><span class="co">#&gt; PCTIMPXXXXWSRP100 -0.10603160 -0.39811621  0.1008221  0.07181972</span></span>
+<span><span class="co">#&gt; TMEANPRISMXXXXPT   0.08241251 -0.68038439  0.3688678  0.25976247</span></span>
+<span><span class="co">#&gt;                   PRECIP8110WS PCTWETLANDXXXXWS PCTIMPXXXXWSRP100</span></span>
+<span><span class="co">#&gt; WSAREASQKM         -0.15455456      -0.13274790       -0.10603160</span></span>
+<span><span class="co">#&gt; ELEVWS             -0.02973549      -0.53982414       -0.39811621</span></span>
+<span><span class="co">#&gt; WETINDEXWS         -0.12134865       0.78387523        0.10082210</span></span>
+<span><span class="co">#&gt; BFIWS               0.17231568       0.49003820        0.07181972</span></span>
+<span><span class="co">#&gt; PRECIP8110WS        1.00000000       0.03862313        0.17634436</span></span>
+<span><span class="co">#&gt; PCTWETLANDXXXXWS    0.03862313       1.00000000       -0.04885782</span></span>
+<span><span class="co">#&gt; PCTIMPXXXXWSRP100   0.17634436      -0.04885782        1.00000000</span></span>
+<span><span class="co">#&gt; TMEANPRISMXXXXPT    0.04030682       0.24384288        0.43121267</span></span>
+<span><span class="co">#&gt;                   TMEANPRISMXXXXPT</span></span>
+<span><span class="co">#&gt; WSAREASQKM              0.08241251</span></span>
+<span><span class="co">#&gt; ELEVWS                 -0.68038439</span></span>
+<span><span class="co">#&gt; WETINDEXWS              0.36886778</span></span>
+<span><span class="co">#&gt; BFIWS                   0.25976247</span></span>
+<span><span class="co">#&gt; PRECIP8110WS            0.04030682</span></span>
+<span><span class="co">#&gt; PCTWETLANDXXXXWS        0.24384288</span></span>
+<span><span class="co">#&gt; PCTIMPXXXXWSRP100       0.43121267</span></span>
+<span><span class="co">#&gt; TMEANPRISMXXXXPT        1.00000000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="modeling-occurrece-of-genus-argia" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="modeling-occurrece-of-genus-argia">
+<span class="header-section-number">7.2</span> Modeling occurrece of genus <em>Argia</em>
+</h2>
+<section id="model-formulation" class="level3" data-number="7.2.1"><h3 data-number="7.2.1" class="anchored" data-anchor-id="model-formulation">
+<span class="header-section-number">7.2.1</span> Model formulation</h3>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">formula</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">presence</span> <span class="op">~</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">WSAREASQKM</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">ELEVWS</span> <span class="op">+</span></span>
+<span>  <span class="va">WETINDEXWS</span> <span class="op">+</span></span>
+<span>  <span class="va">BFIWS</span> <span class="op">+</span></span>
+<span>  <span class="va">PRECIP8110WS</span> <span class="op">+</span></span>
+<span>  <span class="va">PCTWETLANDXXXXWS</span> <span class="op">+</span></span>
+<span>  <span class="va">PCTIMPXXXXWSRP100</span> <span class="op">+</span></span>
+<span>  <span class="va">TMEANPRISMXXXXPT</span></span>
+<span></span>
+<span><span class="va">bin_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
+<span>                 data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                 family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
+<span>                 spcov_type <span class="op">=</span> <span class="st">'none'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bin_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                   family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
+<span>                   spcov_type <span class="op">=</span> <span class="st">'exponential'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">bin_mod</span>, <span class="va">bin_spmod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 10</span></span>
+<span><span class="co">#&gt;   model      n     p  npar value   AIC  AICc logLik deviance pseudo.r.squared</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 bin_s…   550     9     3 1394. 1400. 1400.  -697.     201.            0.110</span></span>
+<span><span class="co">#&gt; 2 bin_m…   550     9     1 1409. 1411. 1411.  -704.     342.            0.145</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">bin_spmod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; spglm(formula = formula, family = "binomial", data = model_data, </span></span>
+<span><span class="co">#&gt;     spcov_type = "exponential")</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Deviance Residuals:</span></span>
+<span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">#&gt; -1.4692 -0.4226 -0.2762 -0.1450  2.4044 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (fixed):</span></span>
+<span><span class="co">#&gt;                       Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">#&gt; (Intercept)           8.089431   6.729301   1.202   0.2293    </span></span>
+<span><span class="co">#&gt; I(log10(WSAREASQKM))  0.808323   0.202435   3.993 6.52e-05 ***</span></span>
+<span><span class="co">#&gt; ELEVWS               -0.006700   0.002643  -2.535   0.0112 *  </span></span>
+<span><span class="co">#&gt; WETINDEXWS            0.003059   0.004851   0.631   0.5283    </span></span>
+<span><span class="co">#&gt; BFIWS                -0.032951   0.042665  -0.772   0.4399    </span></span>
+<span><span class="co">#&gt; PRECIP8110WS         -0.003344   0.002894  -1.156   0.2478    </span></span>
+<span><span class="co">#&gt; PCTWETLANDXXXXWS     -0.016386   0.048407  -0.339   0.7350    </span></span>
+<span><span class="co">#&gt; PCTIMPXXXXWSRP100     0.088456   0.047796   1.851   0.0642 .  </span></span>
+<span><span class="co">#&gt; TMEANPRISMXXXXPT     -0.348964   0.149201  -2.339   0.0193 *  </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Pseudo R-squared: 0.1101</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (exponential spatial covariance):</span></span>
+<span><span class="co">#&gt;        de        ie     range </span></span>
+<span><span class="co">#&gt; 3.121e+00 9.212e-03 3.636e+04 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (Dispersion for binomial family):</span></span>
+<span><span class="co">#&gt; dispersion </span></span>
+<span><span class="co">#&gt;          1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="model-performance" class="level3" data-number="7.2.2"><h3 data-number="7.2.2" class="anchored" data-anchor-id="model-performance">
+<span class="header-section-number">7.2.2</span> Model performance</h3>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Function to convert from log odds to probability</span></span>
+<span><span class="va">to_prob</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">prd_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">bin_mod</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'cv_predict'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prd_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">bin_spmod</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'cv_predict'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prd_mod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Area under the curve: 0.7908</span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prd_spmod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Area under the curve: 0.9154</span></span>
+<span></span>
+<span><span class="va">model_data</span> <span class="op">&lt;-</span> <span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prd_mod <span class="op">=</span> <span class="va">prd_mod</span>,</span>
+<span>         prd_spmod <span class="op">=</span> <span class="va">prd_spmod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prd_mod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prd_spmod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section><section id="extra-mapping-predictions" class="level3" data-number="7.2.3"><h3 data-number="7.2.3" class="anchored" data-anchor-id="extra-mapping-predictions">
+<span class="header-section-number">7.2.3</span> EXTRA: Mapping predictions</h3>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">state</span> <span class="op">&lt;-</span> <span class="va">region</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op">==</span> <span class="st">"ME"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use get_nhdplus to access the individual stream sub-catchments</span></span>
+<span><span class="va">pourpoints</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nhdplus.html">get_nhdplus</a></span><span class="op">(</span>AOI <span class="op">=</span> <span class="va">state</span>,</span>
+<span>                            realization <span class="op">=</span> <span class="st">'outlet'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">flowdir</span> <span class="op">==</span> <span class="st">"With Digitized"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pourpoints</span><span class="op">$</span><span class="va">geometry</span>, pch <span class="op">=</span> <span class="fl">19</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="va">prd_comids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">pourpoints</span><span class="op">$</span><span class="va">comid</span>, collapse <span class="op">=</span> <span class="st">','</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sc_prd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>state <span class="op">=</span> <span class="st">'ME'</span>,</span>
+<span>                      aoi <span class="op">=</span> <span class="st">'watershed,riparian_watershed'</span>,</span>
+<span>                      metric <span class="op">=</span> <span class="st">'bfi,precip8110,wetindex,elev,pctwdwet2019,pcthbwet2019,pctimp2019'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>PCTWETLANDXXXXWS <span class="op">=</span> <span class="va">PCTWDWET2019WS</span> <span class="op">+</span> <span class="va">PCTHBWET2019WS</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>PCTIMPXXXXWSRP100 <span class="op">=</span> <span class="va">PCTIMP2019WSRP100</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">WSAREASQKM</span>, <span class="va">ELEVWS</span>, <span class="va">WETINDEXWS</span>, <span class="va">BFIWS</span>, </span>
+<span>         <span class="va">PRECIP8110WS</span>, <span class="va">PCTWETLANDXXXXWS</span>, <span class="va">PCTIMPXXXXWSRP100</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmn_prd</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">pd_stack</span><span class="op">(</span><span class="op">(</span><span class="fu">prism_archive_subset</span><span class="op">(</span><span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
+<span>                                 years <span class="op">=</span> <span class="fl">2019</span>, </span>
+<span>                                 mon <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tmn_prd</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">tmn_prd</span>, </span>
+<span>                 <span class="va">pourpoints</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>                   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">tmn_prd</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/deprecated.html">as.tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>COMID <span class="op">=</span> <span class="va">pourpoints</span><span class="op">$</span><span class="va">comid</span>,</span>
+<span>         TMEANPRISMXXXXPT <span class="op">=</span> <span class="va">PRISM_tmean_stable_4kmM3_201907_bil</span> <span class="op">+</span> <span class="va">PRISM_tmean_stable_4kmM3_201908_bil</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn_prd</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">pourpoints</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span> <span class="op">==</span> <span class="va">comid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">argia_predict</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
+<span>          newdata <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>          local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prediction</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">prediction</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>argia_predict <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section></section><section id="r-code-appendix" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="r-code-appendix">
+<span class="header-section-number">7.3</span> R Code Appendix</h2>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/finsyncR/">finsyncR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/StreamCatTools/">StreamCatTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://xrobin.github.io/pROC/">pROC</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span></span>
+<span><span class="va">macros</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/finsyncR/reference/getInvertData.html">getInvertData</a></span><span class="op">(</span>dataType <span class="op">=</span> <span class="st">"occur"</span>,</span>
+<span>                        taxonLevel <span class="op">=</span> <span class="st">"Genus"</span>,</span>
+<span>                        agency <span class="op">=</span> <span class="st">"EPA"</span>,</span>
+<span>                        lifestage <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                        rarefy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                        rarefyCount <span class="op">=</span> <span class="fl">300</span>,</span>
+<span>                        sharedTaxa <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                        seed <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                        boatableStreams <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">macros</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print an example of the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">macros</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">23</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># Flexible code so we could model another taxon</span></span>
+<span><span class="va">genus</span> <span class="op">&lt;-</span> <span class="st">'Argia'</span></span>
+<span></span>
+<span><span class="va">taxon</span> <span class="op">=</span> <span class="va">macros</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">SampleID</span>, </span>
+<span>                <span class="va">ProjectLabel</span>, </span>
+<span>                <span class="va">CollectionDate</span>,  </span>
+<span>                <span class="va">Latitude_dd</span>,</span>
+<span>                <span class="va">Longitude_dd</span>,</span>
+<span>                <span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">genus</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="co">#filter(ProjectLabel != 'WSA') %&gt;% </span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>CollectionDate <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/date.html">date</a></span><span class="op">(</span><span class="va">CollectionDate</span><span class="op">)</span>,</span>
+<span>         presence <span class="op">=</span> </span>
+<span>           <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">genus</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Longitude_dd'</span>, <span class="st">'Latitude_dd'</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">STUSPS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'HI'</span>, <span class="st">'PR'</span>, <span class="st">'AK'</span>, <span class="st">'MP'</span>, <span class="st">'GU'</span>, <span class="st">'AS'</span>, <span class="st">'VI'</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">states</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">presence</span><span class="op">)</span>,</span>
+<span>          size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>          alpha <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#d9d9d9"</span>, <span class="st">"#08519c"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">states</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">ProjectLabel</span><span class="op">)</span>,</span>
+<span>          size <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>          alpha <span class="op">=</span> <span class="fl">0.75</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#a6cee3"</span>, <span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span>, <span class="st">"#33a02c"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># Filter to study region (states)</span></span>
+<span><span class="va">region</span> <span class="op">&lt;-</span> <span class="va">states</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'VT'</span>, <span class="st">'NH'</span>, <span class="st">'ME'</span>, <span class="st">'NY'</span>, <span class="st">'RI'</span>,</span>
+<span>                       <span class="st">'MA'</span>, <span class="st">'CT'</span>, <span class="st">'NJ'</span>, <span class="st">'PA'</span>, <span class="st">'DE'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use region as spatial filter (sf::st_filter()) for taxon of interest</span></span>
+<span><span class="va">taxon_rg</span> <span class="op">&lt;-</span> <span class="va">taxon</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">ProjectLabel</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'NRSA1314'</span>, <span class="st">'NRSA1819'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html">year</a></span><span class="op">(</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html">ymd</a></span><span class="op">(</span><span class="va">CollectionDate</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">SampleID</span><span class="op">:</span><span class="va">CollectionDate</span>, <span class="va">presence</span><span class="op">:</span><span class="va">year</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon_rg</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">presence</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#d9d9d9"</span>, <span class="st">"#08519c"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">taxon_rg</span>, </span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">ProjectLabel</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">presence</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">comids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_comid.html">sc_get_comid</a></span><span class="op">(</span><span class="va">taxon_rg</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#comids &lt;- read_rds('./data/nrsa_comids.rds')</span></span>
+<span><span class="va">comid_vect</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">comids</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html">str_split</a></span><span class="op">(</span><span class="st">','</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">taxon_rg</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>COMID <span class="op">=</span> <span class="va">comid_vect</span><span class="op">)</span> </span>
+<span><span class="va">sc</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">comids</span>,</span>
+<span>              aoi <span class="op">=</span> <span class="st">'watershed'</span>,</span>
+<span>              metric <span class="op">=</span> <span class="st">'bfi, precip8110, wetindex, elev'</span>,</span>
+<span>              showAreaSqKm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">wetlands</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">comids</span>,</span>
+<span>              aoi <span class="op">=</span> <span class="st">'watershed'</span>,</span>
+<span>              metric <span class="op">=</span> <span class="st">'pctwdwet2013,pcthbwet2013,pctwdwet2019,pcthbwet2019'</span>,</span>
+<span>              showAreaSqKm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Sum wetland types to create single wetlands metric</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>PCTWETLAND2013WS <span class="op">=</span> <span class="va">PCTHBWET2013WS</span> <span class="op">+</span> <span class="va">PCTWDWET2013WS</span>,</span>
+<span>         PCTWETLAND2019WS <span class="op">=</span> <span class="va">PCTHBWET2019WS</span> <span class="op">+</span> <span class="va">PCTWDWET2019WS</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Reduce columns</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">PCTWETLAND2013WS</span>, <span class="va">PCTWETLAND2019WS</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Create long table w/ column name w/out year</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">COMID</span>, names_to <span class="op">=</span> <span class="st">'tmpcol'</span>, values_to <span class="op">=</span> <span class="st">'PCTWETLANDXXXXWS'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Create new column of year by removing "PCTWETLAND" and "WS" from names</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="va">tmpcol</span>, <span class="st">'PCTWETLAND|WS'</span>, <span class="st">''</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># But some samples have 2014 and 2018 as sample years? How can we trick the data into joining?</span></span>
+<span><span class="co"># We can match 2019 data to 2018 observations by subtracting a year and appending it to the data</span></span>
+<span></span>
+<span><span class="co"># Create tmp table with 1 added or subtracted to year of record</span></span>
+<span><span class="va">tmp_wetlands</span> <span class="op">&lt;-</span> <span class="va">wetlands</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2013</span>, <span class="va">year</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">year</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># rbind() wetlands and tmp_wetlands so we have records to join to 2014 and 2018</span></span>
+<span><span class="va">wetlands</span> <span class="op">&lt;-</span> <span class="va">wetlands</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">tmp_wetlands</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">tmpcol</span><span class="op">)</span></span>
+<span><span class="va">riparian_imp</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">comids</span>,</span>
+<span>              aoi <span class="op">=</span> <span class="st">'riparian_watershed'</span>,</span>
+<span>              metric <span class="op">=</span> <span class="st">'pctimp2013, pctimp2019'</span>,</span>
+<span>              showAreaSqKm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">WSAREASQKMRP100</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">COMID</span>, names_to <span class="op">=</span> <span class="st">'tmpcol'</span>, values_to <span class="op">=</span> <span class="st">'PCTIMPXXXXWSRP100'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="va">tmpcol</span>, <span class="st">'PCTIMP|WSRP100'</span>, <span class="st">''</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_imp</span> <span class="op">&lt;-</span> <span class="va">riparian_imp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">year</span> <span class="op">==</span> <span class="fl">2013</span>, <span class="va">year</span> <span class="op">+</span> <span class="fl">1</span>, <span class="va">year</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">riparian_imp</span> <span class="op">&lt;-</span> <span class="va">riparian_imp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">tmp_imp</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">tmpcol</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/prism/">prism</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Get these years of PRISM</span></span>
+<span><span class="va">years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2013</span>, <span class="fl">2014</span>, <span class="fl">2018</span>, <span class="fl">2019</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Set the PRISM directory (creates directory in not present)</span></span>
+<span><span class="fu"><a href="https://docs.ropensci.org/prism/reference/prism_set_dl_dir.html">prism_set_dl_dir</a></span><span class="op">(</span><span class="st">"./data/prism_data"</span>, create <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Download monthly PRISM rasters (tmean)</span></span>
+<span><span class="fu"><a href="https://docs.ropensci.org/prism/reference/get_prism_data.html">get_prism_monthlys</a></span><span class="op">(</span><span class="st">'tmean'</span>, </span>
+<span>                   years <span class="op">=</span> <span class="va">years</span>, </span>
+<span>                   mon <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span>, </span>
+<span>                   keepZip <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create stack of downloaded PRISM rasters</span></span>
+<span><span class="va">tmn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/prism/reference/pd_stack.html">pd_stack</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://docs.ropensci.org/prism/reference/prism_archive_subset.html">prism_archive_subset</a></span><span class="op">(</span><span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
+<span>                                      years <span class="op">=</span> <span class="va">years</span>, </span>
+<span>                                      mon <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Extract tmean at sample points and massage data</span></span>
+<span><span class="va">tmn</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">tmn</span>, </span>
+<span>                      <span class="co"># Transform taxon_rg to CRS of PRISM on the fly</span></span>
+<span>                      <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>                        <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">tmn</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  </span>
+<span>  <span class="co"># Add COMIDs to extracted values</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>COMID <span class="op">=</span> <span class="va">comid_vect</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  </span>
+<span>  <span class="co"># Remove front and back text from PRISM year/month in names</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span> <span class="op">~</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">'PRISM_tmean_stable_4kmM3_|_bil'</span>, <span class="st">''</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="op">!</span><span class="va">COMID</span>, names_to <span class="op">=</span> <span class="st">'year_month'</span>, </span>
+<span>               values_to <span class="op">=</span> <span class="st">'TMEANPRISMXXXXPT'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Create new column of year</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html">year</a></span><span class="op">(</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html">ym</a></span><span class="op">(</span><span class="va">year_month</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Average July and August temperatures </span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>TMEANPRISMXXXXPT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">TMEANPRISMXXXXPT</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
+<span>            .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">model_data</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sc</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">wetlands</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">riparian_imp</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">WSAREASQKM</span><span class="op">:</span><span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">formula</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">presence</span> <span class="op">~</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">WSAREASQKM</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">ELEVWS</span> <span class="op">+</span></span>
+<span>  <span class="va">WETINDEXWS</span> <span class="op">+</span></span>
+<span>  <span class="va">BFIWS</span> <span class="op">+</span></span>
+<span>  <span class="va">PRECIP8110WS</span> <span class="op">+</span></span>
+<span>  <span class="va">PCTWETLANDXXXXWS</span> <span class="op">+</span></span>
+<span>  <span class="va">PCTIMPXXXXWSRP100</span> <span class="op">+</span></span>
+<span>  <span class="va">TMEANPRISMXXXXPT</span></span>
+<span></span>
+<span><span class="va">bin_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
+<span>                 data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                 family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
+<span>                 spcov_type <span class="op">=</span> <span class="st">'none'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bin_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                   family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
+<span>                   spcov_type <span class="op">=</span> <span class="st">'exponential'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">bin_mod</span>, <span class="va">bin_spmod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">bin_spmod</span><span class="op">)</span></span>
+<span><span class="co"># Function to convert from log odds to probability</span></span>
+<span><span class="va">to_prob</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">prd_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">bin_mod</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'cv_predict'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prd_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">bin_spmod</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'cv_predict'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prd_mod</span><span class="op">)</span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prd_spmod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">model_data</span> <span class="op">&lt;-</span> <span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prd_mod <span class="op">=</span> <span class="va">prd_mod</span>,</span>
+<span>         prd_spmod <span class="op">=</span> <span class="va">prd_spmod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prd_mod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prd_spmod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span></span>
+<span><span class="va">state</span> <span class="op">&lt;-</span> <span class="va">region</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op">==</span> <span class="st">"ME"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use get_nhdplus to access the individual stream sub-catchments</span></span>
+<span><span class="va">pourpoints</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nhdplus.html">get_nhdplus</a></span><span class="op">(</span>AOI <span class="op">=</span> <span class="va">state</span>,</span>
+<span>                            realization <span class="op">=</span> <span class="st">'outlet'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">flowdir</span> <span class="op">==</span> <span class="st">"With Digitized"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pourpoints</span><span class="op">$</span><span class="va">geometry</span>, pch <span class="op">=</span> <span class="fl">19</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prd_comids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">pourpoints</span><span class="op">$</span><span class="va">comid</span>, collapse <span class="op">=</span> <span class="st">','</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sc_prd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/StreamCatTools/reference/sc_get_data.html">sc_get_data</a></span><span class="op">(</span>state <span class="op">=</span> <span class="st">'ME'</span>,</span>
+<span>                      aoi <span class="op">=</span> <span class="st">'watershed,riparian_watershed'</span>,</span>
+<span>                      metric <span class="op">=</span> <span class="st">'bfi,precip8110,wetindex,elev,pctwdwet2019,pcthbwet2019,pctimp2019'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>PCTWETLANDXXXXWS <span class="op">=</span> <span class="va">PCTWDWET2019WS</span> <span class="op">+</span> <span class="va">PCTHBWET2019WS</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>PCTIMPXXXXWSRP100 <span class="op">=</span> <span class="va">PCTIMP2019WSRP100</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">WSAREASQKM</span>, <span class="va">ELEVWS</span>, <span class="va">WETINDEXWS</span>, <span class="va">BFIWS</span>, </span>
+<span>         <span class="va">PRECIP8110WS</span>, <span class="va">PCTWETLANDXXXXWS</span>, <span class="va">PCTIMPXXXXWSRP100</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmn_prd</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/prism/reference/pd_stack.html">pd_stack</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://docs.ropensci.org/prism/reference/prism_archive_subset.html">prism_archive_subset</a></span><span class="op">(</span><span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
+<span>                                 years <span class="op">=</span> <span class="fl">2019</span>, </span>
+<span>                                 mon <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tmn_prd</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">tmn_prd</span>, </span>
+<span>                 <span class="va">pourpoints</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>                   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">tmn_prd</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/deprecated.html">as.tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>COMID <span class="op">=</span> <span class="va">pourpoints</span><span class="op">$</span><span class="va">comid</span>,</span>
+<span>         TMEANPRISMXXXXPT <span class="op">=</span> <span class="va">PRISM_tmean_stable_4kmM3_201907_bil</span> <span class="op">+</span> <span class="va">PRISM_tmean_stable_4kmM3_201908_bil</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn_prd</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">pourpoints</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span> <span class="op">==</span> <span class="va">comid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">argia_predict</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
+<span>          newdata <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>          local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prediction</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">prediction</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>argia_predict <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./streamcattools.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">Workshop materials created by Michael Dumelle and Ryan Hill</div>   
+    <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
+  </div>
+</footer>
+
+
+</body></html>

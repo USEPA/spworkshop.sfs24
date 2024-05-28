@@ -1,14 +1,8 @@
----
-title: ""
-format: 
-  html:
-    self-contained: true
-editor: source
-editor_options: 
-  chunk_output_type: console
----
-
 # Watershed Delineation in `R` {#watershed-delineation}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
 
 We will cover accessing geospatial metrics from StreamCat and LakeCat to use as covariates in  analyses. However, these data sources may not have all of the metrics you might wish to use. 
 
@@ -317,3 +311,14 @@ toc()
 :::
 
 In the exercise above, we delineated a watershed from a latitude/longitude, transformed its projection, downloaded land cover raster data for the watershed, transformed its projection, masked and clipped the raster for mapping, and calculated the percent of each land cover type within the watershed boundary -- all under 30 seconds.
+
+
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```

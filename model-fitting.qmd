@@ -1,0 +1,218 @@
+# Model Fitting {#sec-model-fitting}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+Throughout this section, we will use both the `spmodel` package and the `ggplot2` package:
+
+```{r}
+library(spmodel)
+library(ggplot2)
+```
+
+__Goals__: 
+
+* Further explore the `splm()` function using the `moss` data.
+* Connect parameter estimates in the summary output of `splm()` to the spatial linear model.
+
+## Data Introduction
+
+The `moss` data in the `spmodel` package is an `sf` (simple features) object [@pebesma2018sf] that contains observations on heavy metals in mosses near a mining road in Alaska. An `sf` object is a special `data.frame` built for storing spatial information and contains a column called `geometry`. We can view the first few rows of `moss` by running
+
+```{r}
+moss
+```
+
+More information about `moss` can be found by running `help("moss", "spmodel")`.
+
+Our goal is to model the distribution of log zinc concentration (`log_Zn`) using a spatial linear model. We can visualize the distribution of log zinc concentration (`log_Zn`) in `moss` by running
+
+```{r log_zn}
+#| fig-cap: "Distribution of log zinc concentration in the moss data."
+ggplot(moss, aes(color = log_Zn)) +
+  geom_sf(size = 2) +
+  scale_color_viridis_c() +
+  scale_x_continuous(breaks = seq(-163, -164, length.out = 2)) +
+  theme_gray(base_size = 14)
+```
+
+An important predictor variable may be the log of the distance to the haul road, `log_dist2road`, which is measured in meters. Next we use `spmodel` to fit a spatial linear model with with `log_Zn` as the response and `log_dist2road` as a predictor.
+
+## `splm()` Syntax and Output Interpretation
+
+The `splm()` function shares similar syntactic structure with the `lm()` function used to fit linear models without spatial dependence (@eq-lm). `splm()` generally requires at least three arguments
+
+* `formula`: a formula that describes the relationship between the response variable ($\mathbf{y}$) and explanatory variables ($\mathbf{X}$)
+    * `formula` in `splm()` is the same as `formula` in `lm()`
+* `data`: a `data.frame` or `sf` object that contains the response variable, explanatory variables, and spatial information. 
+* `spcov_type`: the spatial covariance type (`"exponential"`, `"matern"`, `"spherical"`, etc)
+    * There are 17 different types
+
+::: {.callout-note}
+## Note
+
+If `data` is an `sf` object, then spatial information is stored in the object's `geometry`. However, if `data` is a `data.frame` or `tibble` (a special `data.frame`), then the names of the variables that represent the x-coordinates and y-coordinates must also be provided as two additional arguments via `xcoord` and `ycoord`.
+:::
+
+We fit a spatial linear model regressing log zinc concentration (`log_Zn`) on log distance to a haul road (`log_dist2road`) using an exponential spatial covariance function by running
+
+```{r}
+spmod <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = "exponential")
+```
+
+```{r spatparms}
+#| echo: false
+spcov_params_val <- coef(spmod, type = "spcov")
+de_val <- as.vector(round(spcov_params_val[["de"]], digits = 3))
+ie_val <- as.vector(round(spcov_params_val[["ie"]], digits = 3))
+range_val <- as.vector(round(spcov_params_val[["range"]], digits = 0))
+eff_range_val <- 3 * range_val
+```
+
+:::{.callout-tip}
+The estimation method in `splm()` is specified by `estmethod`. The default estimation method is restricted maximum likelihood (`"reml"`). Additional options include maximum likelihood `"ml"`, semivariogram-based composite likelihood (`"sv-cl"`) [@curriero1999composite], and semivariogram-based weighted least squares (`"sv-wls"`) [@cressie1985fitting]. When the estimation method is semivariogram-based weighted least squares, the weights are specified by `weights` with a default of Cressie weights ("`cressie"`).
+:::
+
+We summarize the model fit by running
+
+```{r}
+summary(spmod)
+```
+
+The fixed effects coefficient table contains estimates, standard errors, z-statistics, and asymptotic p-values for each fixed effect. From this table, we notice there is evidence that mean log zinc concentration significantly decreases with distance from the haul road (p-value < 2e-16).
+
+We can relate some of the components in the summary output to the model in @eq-splm:
+
+* The values in the `Estimate` column of the `Coefficients (fixed)` table form $\boldsymbol{\hat{\beta}}$, an estimate of $\boldsymbol{\beta}$. 
+* The `de` value of `r de_val` in the `Coefficients (exponential spatial covariance)` table is $\hat{\sigma}^2_{de}$, which is an estimate of $\sigma^2_{de}$, the variance of $\boldsymbol{\tau}$ (commonly called the partial sill).
+* The `ie` value of `r ie_val` in the `Coefficients (exponential spatial covariance)` table is $\hat{\sigma}^2_{ie}$, which is an estimate of $\sigma^2_{ie}$, the variance of $\boldsymbol{\epsilon}$ (commonly called the nugget). 
+* The `range` value of `r format(range_val, big.mark = ",")` in the `Coefficients (exponential spatial covariance)` table is $\hat{\phi}$, which is an estimate of $\phi$ (recall $\phi$ is the range parameter in @eq-Rpoint that controls the behavior of the spatial covariance as a function of distance).
+
+The `summary()` output, while useful, is printed to the R console and not easy to manipulate. The `tidy()` function turns the coefficient table into a `tibble` (i.e., a special `data.frame`) that is easy to manipulate. We tidy the fixed effects by running
+```{r}
+tidy(spmod)
+```
+
+We tidy the spatial covariance parameters by running
+```{r}
+tidy(spmod, effects = "spcov")
+```
+
+The `is_known` column indicates whether the parameter is assumed known. By default, all parameters are assumed unknown. We discuss this more in @sec-features.
+
+::: {.callout-important icon="false"}
+## Exercise
+
+Another data set contained within the `spmodel` package is the `caribou` data set. Read about the `caribou` data with `?caribou`. Then, fit a spatial linear model with 
+
+* `z` as the response and `tarp`, `water`, and the interaction between `tarp` and `water` as predictors
+* a spatial covariance model for the errors of your choosing. You can examine the spatial covariance models available to use in the `spcov_type` argument of `splm()` in the Arguments section of `?splm`.
+* `x` as the `xcoord` and `y` as the `ycoord` (note that the `xcoord` and `ycoord` arguments now need to be specified because `caribou` is a `data.frame` object, not an `sf` object).
+
+After fitting the model, perform an analysis of variance using `anova()` to assess the importance of `tarp`, `water`, and `tarp:water`.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Solution
+
+```{r}
+caribou_mod <- splm(z ~ tarp + water + tarp:water,
+                    data = caribou, spcov_type = "pexponential",
+                    xcoord = x, ycoord = y)
+summary(caribou_mod)
+anova(caribou_mod)
+tidy(anova(caribou_mod))
+```
+:::
+
+## Model Fit and Diagnostics
+
+The quality of model fit can be assessed using a variety of statistics readily available in `spmodel`, including AIC, AICc, and pseudo R-squared. Additionally, model diagnostics such as leverage, fitted values, residuals (several types), and Cook's distance. While both the model fit statistics and the diagnostics can be found with individual functions like `AIC()`, `residuals()`, `cooks.distance()`, etc., they can also be computed using `glance()` (for the model fit statistics) and `augment()` (for the diagnostics).
+
+```{r}
+glance(spmod)
+```
+
+The output from `glance()` shows model fit statistics for the spatial linear model with an exponential covariance structure for the errors. 
+
+::: {.callout-important icon="false"}
+## Exercise
+
+The `glances()` function allows us to compare the model fit statistics for a few different models simultaneously. Use `splm()` to fit a model with a Matérn spatial covariance (by specifying `"matern"` for `spcov_type`) and a model with no spatial covariance (by specifying `"none"` for `spcov_type`). Then, use the `glances()` function, providing each model object as an argument, to compare the model fit statistics of each model.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Solution
+
+```{r}
+mat <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = "matern")
+none <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = "none")
+glances(spmod, mat, none)
+```
+
+We see from the output that (1) the spatial models provide a much better fit to the data than the linear model with independent errors and (2) the extra "smoothness" parameter incorporated in the `"matern"` covariance substantially improves the model fit compared to the `"exponential"` covariance. We are able to tell this by looking at the `AICc`, which `glances()` automatically sorts by (lower values of AIC and AICc indicate a better model fit).
+:::
+
+The `augment()` function provides many model diagnostics statistics in a single `tibble`:
+
+```{r}
+augment(spmod)
+```
+
+`augment()` returns a tibble with many model diagnostics statistics, including 
+
+* `.fitted`, the fitted value, calculated from the estimated fixed effects in the model
+* `.hat`, the Mahalanobis distance, a metric of leverage
+* `.cooksd`, the Cook's distance, a metric of influence
+* `.std.resid`, the standardized residual
+
+If the model is correct, then the standardized residuals have mean 0, standard deviation 1, and are uncorrelated.
+
+The `plot()` function can be used on a fitted model object to construct a few pre-specified plots of these model diagnostics. For example, the following code plots the Cook's distance, a measure of influence, which quantifies each observation's impact on model fit:
+
+```{r}
+plot(spmod, which = 4)
+```
+
+The other 7 plots for model objects fit with `splm()` can be read about in the help: `?plot.spmodel`. 
+
+If the grammar of graphics plotting syntax in `ggplot2` is more familiar, then we can also construct plots with the augmented model:
+
+```{r}
+aug_df <- augment(spmod)
+ggplot(data = aug_df, aes(x = seq_len(nrow(aug_df)),
+                          y = .cooksd)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "Row Number")
+```
+
+::: {.callout-important icon="false"}
+## Exercise
+
+Use `spmodel`'s plot function on the `spmod` object to construct a plot of the fitted spatial covariance vs spatial distance. To learn more about the options for `spmodel`'s plot function, run `?plot.spmodel` or visit [this link](https://usepa.github.io/spmodel/reference/plot.spmodel.html).
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Solution
+
+```{r}
+plot(spmod, which = 7)
+```
+:::
+
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels", "spatparms"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```
+
+

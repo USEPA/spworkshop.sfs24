@@ -13,11 +13,14 @@ book:
       This book was built with <a href="https://quarto.org/">Quarto</a>.
   chapters:
     - index.qmd
-    - before-sfs.qmd
+    - splm.qmd
+    - splm-additional.qmd
+    - spglm.qmd
     - gis-in-r.qmd
     - watershed-delineation.qmd
     - streamcattools.qmd
     - spatial-glm.qmd
+    - references.qmd
 
 bibliography: references.bib
 

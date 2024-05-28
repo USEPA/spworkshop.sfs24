@@ -1,0 +1,525 @@
+# Spatial Linear Models in `spmodel` {#sec-splm}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+Throughout this section, we will use both the `spmodel` package and the `ggplot2` package:
+
+```{r}
+library(spmodel)
+library(ggplot2)
+```
+
+__Goals__:
+
+* Construct and describe the spatial linear model
+    * Review the linear model with independent random errors
+    * Explain how the spatial linear model differs from the linear model with independent random errors.
+    * Explain how modeling for point-referenced data with distance-based model covariances differs from modeling for areal data with neighborhood-based model covariances.
+* Fit a spatial linear model using `spmodel`
+    * Explore the `splm()` function using the `moss` data.
+    * Connect parameter estimates in the summary output of `splm()` to the spatial linear model.
+* Make spatial predictions
+    * Predict the response value at an unobserved location for point-referenced data.
+    * Quantify prediction uncertainty.
+    * Calculate leave-one-out cross-validation residuals.
+    
+:::{.callout-note}
+You may click on any of the functions in this book to be directed to their respective documentation. For example, clicking on `splm()` takes you to the documentation page for the `splm()` function on our website.
+:::
+
+## The Spatial Linear Model
+
+### Reviewing the Nonspatial Linear Model
+
+Before we describe the spatial linear model, we review nonspatial linear models, which many of us are already familiar with (whether we realize it or not). They incredibly flexible statistical tools that encompass all sorts of model types. In fact, multiple linear regression, analysis of variance (ANOVA), splines, polynomial regression, additive models, and mixed effect models are all linear models! Linear models are designed to relate a response variable (i.e., dependent variable) to one or more explanatory variables (i.e., independent variable, predictor variable, covariate) while accounting for random error. More formally, the linear model may be written (for a single observation) as
+$$
+\begin{split} \text{y} & = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k + \epsilon \\
+i & = 1, 2, \dots, k
+\end{split}
+$$ {#eq-lm-01}
+
+where $\text{y}$ is the value of the response variable, $\beta_0$ is the overall intercept, $\beta_i$ is the $i$th fixed effect (sometimes called a "slope") parameter, which captures the average effect on $\text{y}$ resulting from a one-unit increase in $x_i$, the value of the $i$th (of $k$) explanatory variable, and $\epsilon$ is random error. Generalizing this model to $n$ distinct observations yields
+$$
+\begin{split} \text{y}_j & = \beta_0 + \beta_1 x_{1, j} + \beta_2 x_{2, j} + \dots + \beta_k x_{k, j} + \epsilon_j \\
+i & = 1, 2, \dots, k \\
+j & = 1, 2, \dots, n 
+\end{split}
+$$ {#eq-lm-02}
+where the model terms from @eq-lm-01 are now indexed via a subscript $j$ that ranges from one to $n$, the sample size. The index $i$ still ranges from one to $k$, the number of explanatory variables. Linear models are commonly fit in **R** using the `lm()` function.
+
+The model in @eq-lm-02 is sometimes written in matrix notation instead of index notation. Let
+
+$$
+\mathbf{y} = \begin{bmatrix}
+  \text{y}_1 \\
+  \text{y}_2 \\ 
+  \vdots \\
+  \text{y}_j \\
+\end{bmatrix},
+\mathbf{X} = 
+\begin{bmatrix} 
+1 & x_{1, 1} & x_{1, 2} & \dots & x_{1, k} \\
+1 & x_{2, 1} & x_{2, 2} & \dots & x_{2, k} \\
+\vdots & \vdots & \vdots & \vdots & \vdots \\
+1 & x_{n, 1} & x_{n, 2} & \dots & x_{n, k} \\
+\end{bmatrix}, 
+\boldsymbol{\beta} =
+\begin{bmatrix}
+ \beta_0 \\
+ \beta_1 \\
+ \vdots \\
+ \beta_k
+\end{bmatrix}, \text{ and }
+\boldsymbol{\epsilon} =
+\begin{bmatrix}
+ \epsilon_0 \\
+ \epsilon_1 \\
+ \vdots \\
+ \epsilon_j
+\end{bmatrix},
+$$
+where for a sample size $n$, $\mathbf{y}$ is the $n \times 1$ column vector of response variables, $\mathbf{X}$ is the $n \times p$ matrix of explanatory variables (sometimes called the "design" or "model" matrix), $\boldsymbol{\beta}$ is the $p \times 1$ column vector of fixed effects, and $\boldsymbol{\epsilon}$ is the $n \times 1$ column vector of random errors.
+
+Then @eq-lm-02 in matrix notation is written as
+$$
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}.
+$$ {#eq-lm}
+
+There are typically a few assumptions inherent in models built using @eq-lm. First, we typically assume that $\text{E}(\boldsymbol{\epsilon}) = \mathbf{0}$, where $\text{E}(\cdot)$ denotes expectation. Less formally, this means that the average of all random errors is zero. Second, we typically assume $\text{Cov}(\boldsymbol{\epsilon}) = \sigma^2_\epsilon \mathbf{I}$, where $\text{Cov}(\cdot)$ denotes covariance, $\sigma^2_\epsilon$ denotes a variance parameter, and $\mathbf{I}$ denotes the identity matrix. Less formally, this means that each random error is independent of other random errors (i.e., we gain no information about observation two's random error by knowing observation one's random error). Moreover, we also usually assume these random errors are normally distributed.
+
+::: {.callout-tip icon="false"}
+### Linear Modeling Misconceptions 
+
+Misconception one: That linear models can only be used if there are linear relationships between a response variable and an explanatory variable -- this is untrue! Linear models can be constructed to handle nonlinear relationships by leveraging special tools like splines, polynomial regression, and additive models.
+
+Misconception two: That linear models can only be used if the response variable is normally distributed -- this is untrue! Our normality assumption is on the random errors, not the response itself (this is a very important point). We can investigate the plausibility of normally distributed random errors by investigating the residuals of a model (our best guess at these random errors).
+:::
+
+### Introducing the Spatial Linear Model
+
+As mentioned previously, nonspatial linear models are very flexible tools that can capture all sorts of interesting processes. Unfortunately, they do assume that random errors are independent of one another, often unreasonable for spatial data as observations tend to be correlated in space. Ignoring this spatial dependence and fitting nonspatial linear models generally leads to invalid fixed effect inference and poor predictions. Spatial linear models leverage spatial dependence in the random error structure of a linear model, creating models that more accurately reflect the spatial process in study and perform substantially better than nonspatial linear models. Fortunately, incorporating spatial dependence is straightforward using `spmodel`, which we discuss shortly.
+
+More formally, we accommodate spatial dependence in linear models by adding an $n \times 1$ spatial random effect, $\boldsymbol{\tau}$, to @eq-lm, yielding the model
+
+$$ 
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
+$$ {#eq-splm}
+
+where $\boldsymbol{\tau}$ is independent of $\boldsymbol{\epsilon}$, $\text{E}(\boldsymbol{\tau}) = \mathbf{0}$, $\text{Cov}(\boldsymbol{\tau}) = \sigma^2_\tau \mathbf{R}$, and $\mathbf{R}$ is a matrix that determines the spatial dependence structure in $\mathbf{y}$ and depends on a range parameter, $\phi$, which controls the behavior of the spatial covariance as a function of distance. We discuss $\mathbf{R}$ in more detail shortly. The parameter $\sigma^2_\tau$ is called the spatially dependent random error variance or partial sill. The parameter $\sigma^2_\epsilon$ is called the spatially independent random error variance or nugget. These two variance parameters are henceforth more intuitively written as $\sigma^2_{de}$ and $\sigma^2_{ie}$, respectively. The covariance of $\mathbf{y}$ is denoted $\boldsymbol{\Sigma}$ and given by $\sigma^2_{de} \mathbf{R} + \sigma^2_{ie} \mathbf{I}$. The parameters that compose this covariance are contained in the vector $\boldsymbol{\theta}$, which is called the covariance parameter vector.
+
+@eq-splm is called the spatial linear model. The spatial linear model applies to both point-referenced and areal (i.e., lattice) data. Spatial data are point-referenced when the elements in $\mathbf{y}$ are observed at point-locations indexed by x-coordinates and y-coordinates on a spatially continuous surface with an infinite number of locations. For example, consider sampling soil at any point-location in a field. Spatial data are areal when the elements in $\mathbf{y}$ are observed as part of a finite network of polygons whose connections are indexed by a neighborhood structure. For example, the polygons may represent states in a country who are neighbors if they share at least one boundary. 
+
+### Modeling Covariance in the Spatial Linear Model
+
+A primary way in which the model in @eq-splm differs for point-referenced and areal data is the way in which $\mathbf{R}$ in $\text{Cov}(\boldsymbol{\tau}) = \sigma^2_{de} \mathbf{R}$ is modeled. For point-referenced data, the $\mathbf{R}$ matrix is generally constructed using the Euclidean distance between spatial locations. For example, the exponential spatial covariance function generates an $\mathbf{R}$ matrix given by
+
+$$
+\mathbf{R} = \exp(-\mathbf{H} / \phi),
+$$ {#eq-Rpoint}
+
+where $\mathbf{H}$ is a matrix of Euclidean distances among observations and $\phi$ is the range parameter. Some spatial covariance functions have an extra parameter -- one example is the Matérn covariance. Spatial models for point-referenced data are fit in `spmodel` using the `splm()` function.
+
+On the other hand, $\mathbf{R}$ for areal data is often constructed from how the areal polygons are oriented in space. Commonly, a neighborhood structure is used to construct $\mathbf{R}$, where two observations are considered to be "neighbors" if they share a common boundary. In the simultaneous auto-regressive (SAR) model, 
+
+$$
+\mathbf{R} = [(\mathbf{I} - \phi \mathbf{W}) (\mathbf{I} - \phi \mathbf{W}^\top)]^{-1}
+$$ {#eq-Rareal}
+
+where $\mathbf{I}$ is the identity matrix and $\mathbf{W}$ is a weight matrix that describes the neighborhood structure among observations. A popular neighborhood structure is __queen contiguity__, in which two polygons are neighbors if they share a boundary. It is important to clarify that observations are not considered neighbors with themselves.  Spatial models for areal data are fit in `spmodel` using the `spautor()` function.
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Navigate to the Help file for `splm` by running `?splm` or by visiting [this link](https://usepa.github.io/spmodel/reference/splm.html) and scroll down to "Details." Examine the spatial linear model description in the Help file and relate some of the syntax used to the syntax in @eq-splm and @eq-Rpoint.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+The form of the spatial linear model ($\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon}$) is the same in the Help file as the form in Equation @eq-splm. In the help file, $de$ refers to $\sigma^2_{de}$, $ie$ refers to $\sigma^2_{ie}$, and $range$ refers to $\phi$. Finally, in the help file $h$ refers to distance between observations while, in @eq-Rpoint, $\mathbf{H}$ refers to a matrix of these distances for all pairs of observations.
+:::
+
+## Model Fitting
+
+### Data Introduction
+
+The `moss` data in the `spmodel` package is an `sf` (simple features) object [@pebesma2018sf] that contains observations on heavy metals in mosses near a mining road in Alaska. An `sf` object is a special `data.frame` built for storing spatial information and contains a column called `geometry`. We can view the first few rows of `moss` by running
+
+```{r}
+moss
+```
+
+More information about `moss` can be found by running `help("moss", "spmodel")`.
+
+Our goal is to model the distribution of log zinc concentration (`log_Zn`) using a spatial linear model. We can visualize the distribution of log zinc concentration (`log_Zn`) in `moss` by running
+
+```{r log_zn}
+#| fig-cap: "Distribution of log zinc concentration in the moss data."
+ggplot(moss, aes(color = log_Zn)) +
+  geom_sf(size = 2) +
+  scale_color_viridis_c() +
+  scale_x_continuous(breaks = seq(-163, -164, length.out = 2)) +
+  theme_gray(base_size = 14)
+```
+
+An important predictor variable may be the log of the distance to the haul road, `log_dist2road`, which is measured in meters. Later we use `spmodel` to fit a spatial linear model with with `log_Zn` as the response and `log_dist2road` as a predictor.
+
+### `splm()` Syntax and Output Interpretation
+
+The `splm()` function shares similar syntactic structure with the `lm()` function used to fit linear models without spatial dependence (@eq-lm). `splm()` generally requires at least three arguments
+
+* `formula`: a formula that describes the relationship between the response variable ($\mathbf{y}$) and explanatory variables ($\mathbf{X}$)
+    * `formula` in `splm()` is the same as `formula` in `lm()`
+* `data`: a `data.frame` or `sf` object that contains the response variable, explanatory variables, and spatial information. 
+* `spcov_type`: the spatial covariance type (`"exponential"`, `"matern"`, `"spherical"`, etc)
+    * There are 17 different types
+
+::: {.callout-note}
+### Note
+
+If `data` is an `sf` object, then spatial information is stored in the object's `geometry`. However, if `data` is a `data.frame` or `tibble` (a special `data.frame`), then the names of the variables that represent the x-coordinates and y-coordinates must also be provided as two additional arguments via `xcoord` and `ycoord`.
+:::
+
+We fit a spatial linear model regressing log zinc concentration (`log_Zn`) on log distance to a haul road (`log_dist2road`) using an exponential spatial covariance function by running
+
+```{r}
+spmod <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = "exponential")
+```
+
+```{r spatparms}
+#| echo: false
+spcov_params_val <- coef(spmod, type = "spcov")
+de_val <- as.vector(round(spcov_params_val[["de"]], digits = 3))
+ie_val <- as.vector(round(spcov_params_val[["ie"]], digits = 3))
+range_val <- as.vector(round(spcov_params_val[["range"]], digits = 0))
+eff_range_val <- 3 * range_val
+```
+
+:::{.callout-tip}
+The estimation method in `splm()` is specified by `estmethod`. The default estimation method is restricted maximum likelihood (`"reml"`). Additional options include maximum likelihood `"ml"`, semivariogram-based composite likelihood (`"sv-cl"`) [@curriero1999composite], and semivariogram-based weighted least squares (`"sv-wls"`) [@cressie1985fitting]. When the estimation method is semivariogram-based weighted least squares, the weights are specified by `weights` with a default of Cressie weights ("`cressie"`).
+:::
+
+We summarize the model fit by running
+
+```{r}
+summary(spmod)
+```
+
+The fixed effects coefficient table contains estimates, standard errors, z-statistics, and asymptotic p-values for each fixed effect. From this table, we notice there is evidence that mean log zinc concentration significantly decreases with distance from the haul road (p-value < 2e-16).
+
+We can relate some of the components in the summary output to the model in @eq-splm:
+
+* The values in the `Estimate` column of the `Coefficients (fixed)` table form $\boldsymbol{\hat{\beta}}$, an estimate of $\boldsymbol{\beta}$. 
+* The `de` value of `r de_val` in the `Coefficients (exponential spatial covariance)` table is $\hat{\sigma}^2_{de}$, which is an estimate of $\sigma^2_{de}$, the variance of $\boldsymbol{\tau}$ (commonly called the partial sill).
+* The `ie` value of `r ie_val` in the `Coefficients (exponential spatial covariance)` table is $\hat{\sigma}^2_{ie}$, which is an estimate of $\sigma^2_{ie}$, the variance of $\boldsymbol{\epsilon}$ (commonly called the nugget). 
+* The `range` value of `r format(range_val, big.mark = ",")` in the `Coefficients (exponential spatial covariance)` table is $\hat{\phi}$, which is an estimate of $\phi$ (recall $\phi$ is the range parameter in @eq-Rpoint that controls the behavior of the spatial covariance as a function of distance).
+
+The pseudo R-squared emulates the R-squared from nonspatial linear models, quantifying the proportion of variability in the model explained by the fixed effects. Via `varcomp()`, we can identify how much variability is attributed to distinct parts of the model:
+```{r}
+varcomp(spmod)
+```
+
+We see most of the variability is explained by the fixed effects (pseudo R-squared) and the spatially dependent random error (`de`), while little variability is independent (`ie`).
+
+The `summary()` output, while useful, is printed to the R console and not easy to manipulate. The `tidy()` function turns the coefficient table into a `tibble` (i.e., a special `data.frame`) that is easy to manipulate. We tidy the fixed effects by running
+```{r}
+tidy(spmod)
+```
+
+We tidy the spatial covariance parameters by running
+```{r}
+tidy(spmod, effects = "spcov")
+```
+
+The `is_known` column indicates whether the parameter is assumed known. By default, all parameters are assumed unknown. We discuss this more in @sec-features.
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Another data set contained within the `spmodel` package is the `caribou` data set. Read about the `caribou` data with `?caribou`. Then, fit a spatial linear model with 
+
+* `z` as the response and `tarp`, `water`, and the interaction between `tarp` and `water` as predictors
+* a spatial covariance model for the errors of your choosing. You can examine the spatial covariance models available to use in the `spcov_type` argument of `splm()` in the Arguments section of `?splm`.
+* `x` as the `xcoord` and `y` as the `ycoord` (note that the `xcoord` and `ycoord` arguments now need to be specified because `caribou` is a `data.frame` object, not an `sf` object).
+
+After fitting the model, perform an analysis of variance using `anova()` to assess the importance of `tarp`, `water`, and `tarp:water`.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+```{r}
+caribou_mod <- splm(z ~ tarp + water + tarp:water,
+                    data = caribou, spcov_type = "pexponential",
+                    xcoord = x, ycoord = y)
+summary(caribou_mod)
+anova(caribou_mod)
+tidy(anova(caribou_mod))
+```
+:::
+
+### Model Fit and Diagnostics
+
+The quality of model fit can be assessed using a variety of statistics readily available in `spmodel`, including AIC, AICc, and pseudo R-squared. Additionally, model diagnostics such as leverage, fitted values, residuals (several types), and Cook's distance. While both the model fit statistics and the diagnostics can be found with individual functions like `AIC()`, `residuals()`, `cooks.distance()`, etc., they can also be computed using `glance()` (for the model fit statistics) and `augment()` (for the diagnostics).
+
+```{r}
+glance(spmod)
+```
+
+The output from `glance()` shows model fit statistics for the spatial linear model with an exponential covariance structure for the errors. 
+
+The `augment()` function provides many model diagnostics statistics in a single `tibble`:
+
+```{r}
+augment(spmod)
+```
+
+`augment()` returns a tibble with many model diagnostics statistics, including 
+
+* `.fitted`, the fitted value, calculated from the estimated fixed effects in the model
+* `.hat`, the Mahalanobis distance, a metric of leverage
+* `.cooksd`, the Cook's distance, a metric of influence
+* `.std.resid`, the standardized residual
+
+If the model is correct, then the standardized residuals have mean 0, standard deviation 1, and are uncorrelated.
+
+The `plot()` function can be used on a fitted model object to construct a few pre-specified plots of these model diagnostics. For example, the following code plots the Cook's distance, a measure of influence, which quantifies each observation's impact on model fit:
+
+```{r}
+plot(spmod, which = 4)
+```
+
+The other 7 plots for model objects fit with `splm()` can be read about in the help: `?plot.spmodel`. 
+
+If the grammar of graphics plotting syntax in `ggplot2` is more familiar, then we can also construct plots with the augmented model:
+
+```{r}
+aug_df <- augment(spmod)
+ggplot(data = aug_df, aes(x = seq_len(nrow(aug_df)), y = .cooksd)) +
+  geom_point() +
+  theme_minimal() +
+  labs(x = "Row Number")
+```
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Use `spmodel`'s plot function on the `spmod` object to construct a plot of the fitted spatial covariance vs spatial distance. To learn more about the options for `spmodel`'s plot function, run `?plot.spmodel` or visit [this link](https://usepa.github.io/spmodel/reference/plot.spmodel.html).
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+```{r}
+plot(spmod, which = 7)
+```
+:::
+
+### Model Comparison
+
+So far we have relied on the intuition that the spatial model performs better than a nonspatial one, but we have not yet communicated this empirically. We fit a nonspatial linear model using `splm()` with `spcov_type = "none"` (this is equivalent to a model fit using `lm()`, but using `splm()` provides access to other helper functions in `spmodel)`:
+```{r}
+none <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = "none")
+```
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Compare the output of the `none` model fit using `splm()` to a model via using `lm()`. Do you get the same estimates and standard errors?
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+```{r}
+summary(none)
+lmod <- lm(formula = log_Zn ~ log_dist2road, data = moss)
+summary(lmod)
+```
+
+The estimates and standard errors are the same. For small sample sizes, the p-values may be slightly different because `spmodel` uses a reference z-distribution while `lm()` uses a  reference t-distribution.
+:::
+
+
+The `glances()` function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc, which are commonly used to select a "best" model -- the lower the AIC/AICc, the better the model. `glances()` automatically orders the models by AICc:
+```{r}
+glances(spmod, none)
+```
+
+The AIC and AICc are significantly lower for the spatial model, which suggest the spatial model fits the data better than the nonspatial model.
+
+::: {.callout-caution}
+### Caution
+
+The default estimation method is restricted maximum likelihood (`estmethod = "reml"`). Models fit using REML can only be compared using AIC/AICc when the models have the same set of explanatory variables. Models with different sets of explanatory variables can be compared via AIC/AICc when fitting using maximum likelihood (`estmethod = "ml"`). AIC/AICc are not defined for models fit using `estmethod = "sv-wls"` or `estmethod = "sv-cl"`.
+
+:::
+
+Another approach to model selection is leave-one-out cross validation [@hastie2009elements]. In leave-one-out cross validation, a single observation is removed from the data, the model is re-fit, and a prediction is made for the held-out observation. Then, a loss metric like mean-squared-prediction error (MSPE) is computed and used to evaluate model fit. The lower the mean-squared-prediction error, the better the model fit. 
+```{r}
+loocv(spmod)
+loocv(none)
+```
+
+`loocv()` returns several useful fit statistics:
+
+* `bias`: The average difference between the observed value and its leave-one-out prediction. This should be close to zero for well-fitting models.
+* `MSPE`: The mean squared prediction error between the observed value and its leave-one-out prediction.
+* `RMSPE`: The square root of `MSPE`.
+* `cor2`: The squared correlation between the observed value and its leave-one-out prediction. This can be viewed as a "predictive" R-squared, emulating the "squared correlation" interpretation of R-squared in nonspatial linear models. 
+
+::: {.callout-caution}
+### Caution
+
+We do not recommend using pseudo R-squared as a criteria by which to compare models, as it is simply a descriptive statistic that provides insight model fit. The "predictive" R-squared statistic (`cor2` in `loocv()`) is a type of R-squared statistic that can be compared across models.Instead, consider the `cor2` statistic, which is a type of R-squared statistic that is generally comparable across models. 
+
+:::
+
+#### Some Model Selection Strategies
+
+
+
+## Spatial Prediction
+
+### Data Introduction
+
+The `moose` data in the `spmodel` package contains observations from a moose survey in Alaska. The Alaska Department of Fish and Game performed the survey on 218 spatial locations throughout the region of interest. Our goal is to predict the moose count in 100 spatial locations in the `moose_pred` data frame that were not surveyed. Both `elev`, the elevation of the spatial location, and `strat`, a stratification variable based on landscape metrics that is either `"L"` for Low or `"M"` for medium, are possible predictors for moose `count`.
+
+```{r}
+moose
+```
+
+We visualize the moose counts by running
+
+```{r}
+ggplot(data = moose, aes(colour = count)) +
+  geom_sf() +
+  scale_colour_viridis_c(limits = c(0, 40)) +
+  theme_minimal()
+```
+
+From our plot, we see that there are a large number of observed moose counts at or near 0. Therefore, perhaps a generalized linear model in the Poisson or negative binomial family might be more appropriate for this particular data set. We will come back to this issue in @sec-spglm; however, for this section, we assume that a standard spatial linear model is appropriate.
+
+::: {.callout-note}
+### Note
+
+We also see in the plot that the spatial locations in the survey were clearly not randomly selected. Random selection of spatial locations is only required for inference in design-based analyses. For model-based analyses, random selection of spatial locations is not necessarily an assumption (@brus2021statistical; @dumelle2022comparison).
+:::
+
+### Moose Count Predictions
+
+In this section, we show how to use `predict()` and `augment()` to perform spatial prediction (also called Kriging) for point-referenced data from a model fit with `splm()`. First, we fit a spatial model to the `moose` data with a `"spherical"` spatial covariance and `elev`, `strat`, and their interaction as predictors in the model:
+
+```{r}
+moosemod <- splm(count ~ elev * strat, data = moose,
+                  spcov_type = "spherical")
+tidy(moosemod)
+```
+
+::: {.callout-tip}
+`elev * strat` is shorthand for `elev + strat + elev:strat`.
+:::
+
+We then use `predict()` to predict the moose `count` at the spatial locations in `moose_preds`. The `predict()` function for models fit with `splm()` works in the same way as it does for models fit with `lm()`. We provide `predict()` with the fitted model object, along with a `newdata` argument that is an `sf` object, `data.frame`, or `tibble` that contains the locations at which to predict. `newdata` must have the same predictors as those used to fit the spatial model. We see that `moose_preds` contains the predictors (`elev` and `strat`) and the locations at which to predict:
+```{r}
+moose_preds
+```
+
+
+```{r}
+#| results: false
+
+# results omitted
+predict(moosemod, newdata = moose_preds)
+```
+
+The output of `predict()` (not rendered in this document) gives predicted moose counts for the 100 unobserved spatial locations in `moose_preds`.
+
+::: {.callout-note}
+### Note
+
+Examining some of the predictions, we see that a few are negative. These unreasonable negative values are a further indication that we should use a spatial generalized linear model in @sec-spglm.
+:::
+
+The `augment()` function can also be used to obtain predictions for unobserved locations. While the required arguments to `augment()` are the same as the arguments used in `predict()` (the name of the fitted model object along with a `newdata` data frame), the output of `augment()` is an `sf` object with predictions in the `.fitted` column. Often, using `augment()` is more convenient than using `predict()`, as `augment()` returns an object with predictions alongside the spatial locations and any predictors used in the model.
+
+```{r}
+moose_aug <- augment(moosemod, newdata = moose_preds)
+moose_aug
+```
+
+We can construct a plot of the predictions with
+
+```{r}
+ggplot(data = moose, aes(colour = count)) +
+  geom_sf(alpha = 0.4) +
+  geom_sf(data = moose_aug, aes(colour = .fitted)) +
+  scale_colour_viridis_c(limits = c(0, 40)) +
+  theme_minimal()
+```
+
+In the plot, the observed counts are also shown with faded points. We see that, most of the predictions are at or near 0, but spatial locations that are close in proximity to observed counts that are very large have a higher predicted count (for example, the point in the southwest region that is directly south of the observed count coloured yellow is predicted to be around 10).
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Examine the help file `?augment.spmodel` or by visiting [this link](https://usepa.github.io/spmodel/reference/augment.spmodel.html) and create site-wise 99% prediction intervals for the unsampled locations found in `moose_preds`.
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+```{r}
+augment(moosemod, newdata = moose_preds, interval = "prediction",
+        level = 0.99)
+```
+
+:::
+
+### Cross Validation
+
+Recall the `loocv()` function can be used to perform leave-one-out cross validation on a fitted model object.
+
+```{r}
+loocv(moosemod)
+```
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Fit a model with `count` as the response variable from the `moose` data with a `"spherical"` spatial covariance model for the random errors but no predictors as fixed effects. Compare the MSPE from leave-one-out cross-validation for this model with the previously fit `moosemod`. Which model is better, according to the leave-one-out cross-validation criterion? 
+
+Then, for the model with the lower MSPE, obtain the leave-one-out cross validation predictions and their standard errors. Hint: run `?loocv` or visit [this link](https://usepa.github.io/spmodel/reference/loocv.html).
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+```{r}
+moose_int <- splm(count ~ 1, data = moose,
+                  spcov_type = "spherical")
+loocv(moose_int)
+```
+
+```{r}
+#| results: hide
+
+# results omitted
+loocv(moosemod, cv_predict = TRUE, se.fit = TRUE)
+```
+
+:::
+
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels", "spatparms"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```

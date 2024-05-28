@@ -1,0 +1,181 @@
+# Generalized Linear Models {#sec-spglm}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+Throughout this section, we will use the `spmodel` package and the `ggplot2` package:
+
+```{r}
+library(spmodel)
+library(ggplot2)
+```
+
+__Goals__: 
+
+* Explain how modeling spatial covariance fits within the structure of a generalized linear model.
+* Use the `spglm()` function in `spmodel` to fit generalized linear models for various model families (i.e., response distributions).
+* Discuss how the additional spmodel features from the previous section apply to spatial generalized linear models.
+
+## The Spatial Generalized Linear Model
+
+As with spatial linear models, spatial generalized linear models can be fit in `spmodel` for point-referenced and areal data. A generalized linear model essentially uses the right-hand-side of @eq-splm as a model for a function of the mean of the response vector $\mathbf{y}$. More formally, the spatial generalized linear model can be written as
+$$
+g(\boldsymbol{\mu}) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
+$$
+where $g(\boldsymbol{\mu})$ is the link function that "links" a function of the mean of $\mathbf{y}$ to $\mathbf{X} \boldsymbol{\beta}$, $\boldsymbol{\tau}$, and $\boldsymbol{\epsilon}$. For example, in a spatial Poisson generalized linear model, each element of $\mathbf{y}$, $y_i$, is modeled as a Poisson random variable with mean $\mu_i$. Denoting the vector of means as $\boldsymbol{\mu}$, the log of the mean vector of $\mathbf{y}$ is then modeled as
+
+$$
+\text{log}(\boldsymbol{\mu}) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
+$$
+
+where the $\text{log()}$ function is applied element-wise over the mean vector $\boldsymbol{\mu}$, which is the expected value of $\mathbf{y}$. In this example, the link function used is the log link. In the binomial generalized linear model family, a popular link function is the logit link, so that the model for the mean of a binomial response vector is
+
+$$
+\text{log}\left(\frac{\boldsymbol{\mu}}{1 - \boldsymbol{\mu}}\right) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
+$$
+@tbl-links shows the resposne distributions, data types, and link functions available in `spmodel`.
+
+| Distribution      | Data Type  | Link Function |
+|-------------------|------------|---------------|
+| Poisson           | Count      | Log           |
+| Negative Binomial | Count      | Log           |
+| Binomial          | Binary     | Logit         |
+| Beta              | Proportion | Logit         |
+| Gamma             | Skewed     | Log           |
+| Inverse Gaussian  | Skewed     | Log           |
+
+: Response distributions and link functions available in `spmodel` {#tbl-links}
+
+## Model Fitting
+
+The `spglm()` function is used to fit spatial generalized linear models for point-referenced data, and the `spgautor()` function is used to fit spatial generalized linear models for areal data. `spglm()` and `spgautor()` share similar syntax with `splm()` and `spautor()`, respectively, though one additional argument is required:
+
+* `family`: The generalized linear model family (i.e., the distribution of $\mathbf{y}$). The `family` argument can be `binomial`, `beta`, `Poisson`, `nbinomial`, `Gamma`, or `inverse.gaussian`.
+
+::: {.callout-note}
+## Note
+
+The `family` argument in `spglm()` and `spgautor()` uses similar syntax as the `family` argument in `glm()`. One difference, however, is that the link function for the `spmodel` functions is fixed. For binomial and beta responses, that link is the logit link function, while for Poisson, negative binomial, gamma, and inverse gaussian responses, that link is the log link function.
+:::
+
+While spatial generalized linear models can be fit to both point-referenced and areal data, we focus only on fitting spatial generalized linear models to point-referenced data with `spglm()` for the remainder of this section. Models are fit using a novel application of the Laplace approximation -- @hoef2023marginal provide further details.
+
+We observed in @sec-prediction that a generalized linear model may be a better choice for the `count` data in the Alaska `moose`. We specify a Poisson spatial generalized linear model with the following:
+
+```{r}
+poismod <- spglm(count ~ elev * strat, data = moose,
+               family = poisson, spcov_type = "spherical")
+summary(poismod)
+```
+
+As with spatial linear models, the broom functions `tidy()`, `glance()` and `augment()`, as well as many other generic functions like `plot()`, are available for spatial generalized linear models. For example, we glance at the fitted model by running
+```{r}
+glance(poismod)
+```
+
+::: {.callout-important icon="false"}
+## Exercise
+
+Fit a spatial negative binomial model to the `moose` data with `count` as the response and `elev`, `strat`, and their interaction as predictors. The negative binomial model relaxes the assumption in the spatial Poisson generalized linear model that the mean of a response variable $Y_i$ and the variance of a response variable $Y_i$ must be equal. Obtain a summary of the fitted model. Then compare their fits using `loocv()`. Which model is preferable?
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Exercise Solution
+
+```{r}
+nbmod <- spglm(count ~ elev * strat, data = moose,
+               family = nbinomial, spcov_type = "spherical")
+loocv(poismod)
+loocv(nbmod)
+```
+
+`nbmod` has the lower `loocv()` error, suggesting it is a better fit to the data.
+
+:::
+
+## Prediction
+
+We can also make predictions of the mean function at unobserved locations. For example, we can use `poismod` to predict the mean number of moose (on the link scale) at the spatial locations in `moose_preds` using `predict()` by running:
+
+```{r}
+#| results: hide
+
+# results omitted
+predict(poismod, newdata = moose_preds)
+```
+
+We can also use `augment()`:
+
+```{r}
+augment(poismod, newdata = moose_preds)
+```
+
+By default, `predict()` and `augment()` return predictions on the link scale. We return predictions on the response scale by running
+
+```{r}
+augmod <- augment(poismod, newdata = moose_preds, type = "response")
+```
+
+And we can visualize these predictions by running
+```{r}
+ggplot(augmod, aes(color = .fitted)) +
+  geom_sf() +
+  scale_color_viridis_c(limits = c(0, 40)) +
+  theme_gray(base_size = 14)
+```
+
+
+::: {.callout-important icon="false"}
+## Exercise
+
+Use `spglm()` to fit a spatial logistic regression model to the `moose` data using `presence` as the response variable and a Cauchy covariance function. Then, find the predicted probabilities that moose are present at the spatial locations in `moose_preds` (Hint: Use the `type` argument in `predict()` or `augment()`).
+
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+## Exercise Solution
+
+```{r}
+binmod <- spglm(presence ~ elev * strat, data = moose,
+               family = binomial, spcov_type = "cauchy")
+augment(binmod, newdata = moose_preds, type = "response")
+```
+
+:::
+
+## Additional Modeling Features
+
+All advanced features available in `spmodel` for spatial linear models are also available for spatial generalized linear models. This means that spatial generalized linear models in `spmodel` can accommodate big spatial data (though far less than in the linear model case), fixing spatial covariance parameters, fitting and predicting for multiple models, non-spatial random effects (on the link scale), partition factors, anisotropy (on the link scale), and prediction. `spmodel` has a variety of additional simulation functions used to simulate binary, proportion, count, and skewed data:
+
+* Binary data: `sprbinom()`
+* Proportion data: `sprbeta()`
+* Count data: `sprpois()` and `sprnbinom()`
+* Skewed data: `sprgamma()` and `sprinvgauss()`
+
+With these simulation functions, the spatial covariance parameters and mean vector are specified on the appropriate link scale. For `sprbinom()` and `sprbeta()`, this is the logit link scale. For the other functions, this is the log link scale. We simulate one realization of Poisson data where on the link scale, the mean is zero and the spatial covariance structure is specified via `params`, by running
+```{r}
+params <- spcov_params("exponential", de = 1, ie = 0.5, range = 5e5)
+sulfate$p <- sprpois(params, data = sulfate)
+```
+
+We visualize this realization by running
+```{r}
+ggplot(sulfate, aes(color = p)) +
+  geom_sf() +
+  scale_color_viridis_c() +
+  theme_gray(base_size = 14)
+```
+
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```
+
+

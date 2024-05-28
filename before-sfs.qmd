@@ -1,11 +1,22 @@
 ---
-title: "Before SFS"
-format: 
+title: "Before SFS 2024"
+author: "Michael Dumelle and Ryan Hill"
+format:
   html:
-    self-contained: true
+    code-fold: false
+    toc: true
+    toc-depth: 3
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+    fig_caption: yes
+    df-print: paged
+embed-resources: true
 editor: source
 editor_options: 
   chunk_output_type: console
+execute:
+  message: false
 ---
 
 # Welcome {#sec-intro .unnumbered}
@@ -14,12 +25,19 @@ Hello and welcome! The purpose of this site is to provide workshop materials for
 
 It is our hope that this workshop will provide attendees with the conceptual and practical knowledge to incorporate geospatial analyses into their `R` workflow to improve the interpretation of spatial data. In particular, this workshop will focus on the R package `spmodel`.
 
-__What is `spmodel`?__ The `spmodel` `R` package [@dumelle2023spmodel] can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that `spmodel` can do include:
+__What is `spmodel`?__ The `spmodel` `R` package can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that `spmodel` can do include:
 
 * Fit spatial linear and generalized linear models for point-referenced and areal (lattice) data
 * Compare model fits and inspect model diagnostics
 * Predict at unobserved spatial locations (i.e., Kriging)
 * And much more!
+
+::: {.callout-tip}
+## `spmodel` Website
+
+`spmodel`'s [website](https://usepa.github.io/spmodel/) contains all the resources you need to get started using the software.
+
+:::
 
 __Why use `spmodel`?__ There are many great spatial modeling packages in `R`. A few reasons to use `spmodel` for spatial analysis are that:
 
@@ -38,7 +56,7 @@ __Michael Dumelle__ (he/him/his) is a statistician for the United States Environ
 
 __Ryan Hill__ (he/him/his) is an aquatic ecologist with the U.S. EPA Office of Research and Development. He is interested in how watershed conditions drive differences in freshwater diversity and water quality across the United States. He has worked extensively with federal physical, chemical, and biological datasets to gain insights into the factors affecting water quality and biotic condition of freshwaters across the conterminous US. He has also worked to develop and distribute large datasets of geospatial watershed metrics of streams and lakes for the Agency (EPA’s StreamCat and LakeCat datasets). 
 
-## Volunteer Introduction 
+## Support Introduction 
 
 __Lara Jansen__ (she/her/hers) is an aquatic community ecologist and an ORISE postdoctoral fellow working on predictive models of benthic macroinvertebrate communities across the conterminous US in relation to watershed factors. Lara completed her PhD in Environmental Science at Portland State University in 2023, studying the drivers and dynamics of harmful algal blooms in mountain lakes with Dr. Angela Strecker.She obtained a MS in Natural Resource Sciences at Cal Poly Humboldt University with a thesis focused on the downstream impacts of dam flow regulation on benthic macroinvertebrate and algal communities. 
 
@@ -84,6 +102,7 @@ install.packages('FedData')
 install.packages('tidyterra')
 install.packages('jsonlite')
 install.packages('geojson')
+install.packages('geojsonio')
 install.packages('maps')
 ```
 
@@ -93,15 +112,15 @@ Finally, we will use three new `R` packages developed by researchers at the U.S.
 
 `spmodel` - The [spmodel](https://github.com/USEPA/spmodel) package is the basis of this workshop. Although this package is available on the CRAN, we will use the version from GitHub with the latest updates.  
 
-![spmodel hex sticker.](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/spmodel_hex_rancho_300dpi_cropped_2in.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+![](figures/spmodel_hex_rancho_300dpi_cropped_2in.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
 `StreamCatTools` - The [StreamCatTools](https://github.com/USEPA/StreamCatTools/) package retrieves StreamCat and LakeCat data via an API.
 
-![StreamCatTools hex sticker.](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+![](figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
 `finsyncR` - The [finsyncR](https://github.com/USEPA/finsyncR) package greatly facilitates the retrieval and harmonization of EPA and USGS stream macroinvertebrate and fish data.
 
-![finsyncR hex sticker.](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="left"}
+![](figures/finsyncR.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
 To install these packages:
 
@@ -111,11 +130,12 @@ install.packages('spmodel')
 
 # Install remotes package to allow GitHub installation of finsyncR and StreamCatTools
 install.packages('remotes')
-remotes::install_github('USEPA/finsyncR', build_vignette = TRUE)
+remotes::install_github('USEPA/finsyncR', build_vignettes = TRUE)
 remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
 ```
 
 ## How to follow along with material
+
 This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository XXX INSERT LINK WHEN READY](), or simply clone directly and open the corresponding .qmd files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
 
 ## See you soon!
