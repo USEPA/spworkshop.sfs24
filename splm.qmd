@@ -345,7 +345,7 @@ The estimates and standard errors are the same. For small sample sizes, the p-va
 :::
 
 
-The `glances()` function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc, which are commonly used to select a "best" model -- the lower the AIC/AICc, the better the model. `glances()` automatically orders the models by AICc:
+The `glances()` function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc [@akaike1974new], which are commonly used to select a "best" model -- the lower the AIC/AICc, the better the model. The AICc is more appropriate for small samples, but for large samples AIC/AICc are nearly equivalent. `glances()` automatically orders the models by AICc:
 ```{r}
 glances(spmod, none)
 ```
@@ -357,6 +357,24 @@ The AIC and AICc are significantly lower for the spatial model, which suggest th
 
 The default estimation method is restricted maximum likelihood (`estmethod = "reml"`). Models fit using REML can only be compared using AIC/AICc when the models have the same set of explanatory variables. Models with different sets of explanatory variables can be compared via AIC/AICc when fitting using maximum likelihood (`estmethod = "ml"`). AIC/AICc are not defined for models fit using `estmethod = "sv-wls"` or `estmethod = "sv-cl"`.
 
+:::
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Use the likelihood ratio test (run `help("anova.spmod", "spmodel")`) to determine whether the spatial model outperforms the nonspatial model.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+The likelihood ratio test can be used here because 1) the models are "nested" within one another (i.e., the nonspatial linear model is a special case of the spatial linear model with `de` set to zero) and 2) because `estmethod = "reml"`, the fixed effect structure is the same (like AIC/AICc, to compare models with varying fixed effect structures, use `estmethod = "ml"`).
+
+```{r}
+anova(spmod, none)
+```
+
+The small p-value ($p < 0.001$) indicates that the spatial model is a significantly better fit to the data.
 :::
 
 Another approach to model selection is leave-one-out cross validation [@hastie2009elements]. In leave-one-out cross validation, a single observation is removed from the data, the model is re-fit, and a prediction is made for the held-out observation. Then, a loss metric like mean-squared-prediction error (MSPE) is computed and used to evaluate model fit. The lower the mean-squared-prediction error, the better the model fit. 
@@ -381,7 +399,7 @@ We do not recommend using pseudo R-squared as a criteria by which to compare mod
 
 #### Some Model Selection Strategies
 
-
+TEXT TEXT TEXT TEXT
 
 ## Spatial Prediction
 

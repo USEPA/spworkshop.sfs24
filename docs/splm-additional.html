@@ -80,6 +80,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -182,13 +201,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
     </ul>
 </div>
 </nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
    
   <ul>
-<li><a href="#big-spatial-data" id="toc-big-spatial-data" class="nav-link active" data-scroll-target="#big-spatial-data"><span class="toc-section-number">2.1</span>  Big Spatial Data</a></li>
+<li>
+<a href="#big-spatial-data" id="toc-big-spatial-data" class="nav-link active" data-scroll-target="#big-spatial-data"><span class="toc-section-number">2.1</span>  Big Spatial Data</a>
+  <ul>
+<li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting"><span class="toc-section-number">2.1.1</span>  Model Fitting</a></li>
+  <li><a href="#local-prediction" id="toc-local-prediction" class="nav-link" data-scroll-target="#local-prediction"><span class="toc-section-number">2.1.2</span>  Local Prediction</a></li>
+  </ul>
+</li>
   <li>
 <a href="#additional-arguments" id="toc-additional-arguments" class="nav-link" data-scroll-target="#additional-arguments"><span class="toc-section-number">2.2</span>  Additional Arguments</a>
   <ul>
@@ -263,8 +293,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
 <li>Use the <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> function in <code>spmodel</code> to fit a spatial linear model to areal data.
 <ul>
-<li>Connect parameter estimates in the summary output of <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> to the spatial linear model introduced in <a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a> in <a href="#sec-splm"><span class="quarto-unresolved-ref">sec-splm</span></a>.</li>
-<li>Apply some of the other functions introduced in <a href="#sec-model-fitting"><span class="quarto-unresolved-ref">sec-model-fitting</span></a> to a model object fit with <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>.</li>
+<li>Connect parameter estimates in the summary output of <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> to the spatial linear model introduced in <a href="splm.html#eq-splm">Equation&nbsp;<span>1.4</span></a> in <a href="splm.html"><span>Chapter&nbsp;1</span></a>.</li>
+<li>Apply some of the other functions introduced in <span class="quarto-unresolved-ref">?sec-model-fitting</span> to a model object fit with <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>.</li>
 </ul>
 </li>
 <li>Simulate spatial Gaussian data using <code><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm()</a></code>
@@ -272,23 +302,178 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <section id="big-spatial-data" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="big-spatial-data">
 <span class="header-section-number">2.1</span> Big Spatial Data</h2>
-</section><section id="additional-arguments" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="additional-arguments">
+<p>For large observed data sets, fitting spatial linear models or making predictions is challenging because these operations require products that involve <span class="math inline">\(\boldsymbol{\Sigma}^{-1}\)</span>, which are computationally challenging to obtain. Typically, samples sizes approaching around 10,000 make model fitting or prediction infeasible on a standard computer in a reasonable amount of time (your definition of this may vary). This necessitates the use of model fitting and prediction tools that work for large data sets. <code>spmodel</code> offers big data methods for model fitting and prediction for point-referenced data via the <code>local</code> argument to <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> and <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code>.</p>
+<section id="model-fitting" class="level3" data-number="2.1.1"><h3 data-number="2.1.1" class="anchored" data-anchor-id="model-fitting">
+<span class="header-section-number">2.1.1</span> Model Fitting</h3>
+<p><code>spmodel</code> implements “local” spatial indexing as described by <span class="citation" data-cites="hoef2023indexing">Ver Hoef et al. (<a href="references.html#ref-hoef2023indexing" role="doc-biblioref">2023</a>)</span>. Observations are first assigned an index. Then for the purposes of model fitting, observations with different indexes are assumed uncorrelated. Assuming observations with different indexes are uncorrelated induces sparsity in the covariance matrix, which greatly reduces the computational time required for operations that involve <span class="math inline">\(\mathbf{\Sigma}^{-1}\)</span>. Models fit using spatial indexing are capable of fitting models with hundreds of thousands of observations relatively quickly. <span class="citation" data-cites="hoef2023indexing">Ver Hoef et al. (<a href="references.html#ref-hoef2023indexing" role="doc-biblioref">2023</a>)</span> showed that in a variety of scenarios, spatial indexing yielded fixed effect confidence intervals with proper coverage.</p>
+<p>To illustrate spatial indexing in <code>spmodel</code>, we first simulate a response variable <code>sim_response</code> with <code>5000</code> observations at random spatial locations in the unit square (<code>sim_coords</code>). Then we place the response and coordinates in a <code>data.frame</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">18072023</span><span class="op">)</span></span>
+<span><span class="va">sim_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_params.html">spcov_params</a></span><span class="op">(</span><span class="st">"exponential"</span>, de <span class="op">=</span> <span class="fl">7</span>, ie <span class="op">=</span> <span class="fl">2</span>, range <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">5000</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">sim_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm</a></span><span class="op">(</span><span class="va">sim_params</span>, data <span class="op">=</span> <span class="va">sim_coords</span>,</span>
+<span>                        xcoord <span class="op">=</span> <span class="va">x</span>, ycoord <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
+<span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">sim_coords</span>, <span class="va">sim_response</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We visualize the data by running</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sim_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color <span class="op">=</span> <span class="va">sim_response</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_c</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-simdata" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure"><p><img src="splm-additional_files/figure-html/fig-simdata-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.1: Distribution of simulated data</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We provide more detail regarding using <code>spmodel</code> to simulate data later on in this section.</p>
+</div>
+</div>
+<p>We then use <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> to fit a spatial model to <code>sim_data</code>, providing the <code>xcoord</code> and <code>ycoord</code> arguments because <code>sim_data</code> is a <code>data.frame</code>, not an <code>sf</code> object. To implement spatial indexing, we use the <code>local</code> argument to <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. Setting <code>local</code> to <code>TRUE</code> chooses default spatial indexing settings. We fit the model and time it by running</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fit_start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">bdmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">sim_response</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">sim_data</span>,</span>
+<span>     spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
+<span>     xcoord <span class="op">=</span> <span class="va">x</span>, ycoord <span class="op">=</span> <span class="va">y</span>,</span>
+<span>     local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">fit_end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">fit_end_time</span> <span class="op">-</span> <span class="va">fit_start_time</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    6.40    1.00    8.11</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The model with <code>5000</code> observations is fit in just 8.11 seconds.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When the sample size is larger than 5000 observations, <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> implements spatial indexing by default, as fitting time without spatial indexing becomes lengthy. This behavior can be overridden by explicitly setting <code>local</code> to <code>FALSE</code>.</p>
+</div>
+</div>
+<p>A summary of the model fit yields</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">bdmod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; splm(formula = sim_response ~ 1, data = sim_data, spcov_type = "exponential", </span></span>
+<span><span class="co">#&gt;     xcoord = x, ycoord = y, local = TRUE)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Residuals:</span></span>
+<span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">#&gt; -8.1637 -2.1133 -0.1934  1.8122  9.1225 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (fixed):</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)  </span></span>
+<span><span class="co">#&gt; (Intercept)   -3.416      1.759  -1.942   0.0522 .</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (exponential spatial covariance):</span></span>
+<span><span class="co">#&gt;     de     ie  range </span></span>
+<span><span class="co">#&gt; 6.6169 1.9898 0.6247</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The other way to specify <code>local</code> in <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> is via a list object, which offers much more control and customization over the spatial indexing. To learn more, read about <code>local</code> in <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>’s help page by running <code><a href="https://usepa.github.io/spmodel/reference/splm.html">?splm</a></code>.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Even for two separate data sets with the same sample size fit on the same machine, the computational time required to fit models via spatial indexing varies, depending on many factors like the number of iterations required for convergence and the number of observations assigned to each spatial index.</p>
+</div>
+</div>
+</section><section id="local-prediction" class="level3" data-number="2.1.2"><h3 data-number="2.1.2" class="anchored" data-anchor-id="local-prediction">
+<span class="header-section-number">2.1.2</span> Local Prediction</h3>
+<p>Using the fitted model, <span class="citation" data-cites="hoef2023indexing">Ver Hoef et al. (<a href="references.html#ref-hoef2023indexing" role="doc-biblioref">2023</a>)</span> evaluates the performance of local neighborhood prediction. Local neighborhood prediction only uses some of the observed data to predict for an unobserved location of interest. Local neighborhood prediction is capable of making predictions of hundreds of thousands of observations relatively quickly. <span class="citation" data-cites="hoef2023indexing">Ver Hoef et al. (<a href="references.html#ref-hoef2023indexing" role="doc-biblioref">2023</a>)</span> showed that in a variety of scenarios, local neighborhood prediction yielded prediction intervals with proper coverage.</p>
+<p>To illustrate local neighborhood prediction in <code>spmodel</code>, we first simulate <code>3000</code> new random spatial locations in the unit square (<code>sim_coords</code>). Then we place the coordinates in a <code>data.frame</code> and visualize:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">n_pred</span> <span class="op">&lt;-</span> <span class="fl">3000</span></span>
+<span><span class="va">x_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_pred</span><span class="op">)</span></span>
+<span><span class="va">y_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_pred</span><span class="op">)</span></span>
+<span><span class="va">sim_preds</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_pred</span>, y <span class="op">=</span> <span class="va">y_pred</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To implement local neighborhood prediction, we use the <code>local</code> argument to <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (or <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>). Setting <code>local</code> in <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (or <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>) to <code>TRUE</code> chooses default local neighborhood prediction settings. We compute local neighborhood predictions at the unobserved locations in <code>sim_preds</code> and time it by running</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pred_start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sim_preds</span><span class="op">$</span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bdmod</span>, newdata <span class="op">=</span> <span class="va">sim_preds</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">pred_end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pred_end_time</span> <span class="op">-</span> <span class="va">pred_start_time</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;   15.08    1.16   19.52</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>3000</code> predictions are computed in just 19.52 seconds. We visualize them by running</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sim_preds</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color <span class="op">=</span> <span class="va">preds</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_c</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-simpreds" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure"><p><img src="splm-additional_files/figure-html/fig-simpreds-1.png" class="img-fluid figure-img" width="672"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2.2: Distribution of local neighborhood predictions using the model fit to the large simulated data set.</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>These predictions at the unobserved locations closely match the pattern of the observed data.</p>
+<p>The other way to specify <code>local</code> in <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (or <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>) is via a list object, which offers much more control and customization over the local neighborhood prediction. To learn more, read about <code>local</code> in <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code>’s (or <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>’s) help page by running <code><a href="https://usepa.github.io/spmodel/reference/predict.spmodel.html">?predict.spmodel</a></code> (or <code><a href="https://usepa.github.io/spmodel/reference/augment.spmodel.html">?augment.spmodel</a></code>).</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv()</a></code> also has a <code>local</code> argument for large data sets that is structured the same as <code>local</code> for <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (and <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>).</p>
+</div>
+</div>
+</section></section><section id="additional-arguments" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="additional-arguments">
 <span class="header-section-number">2.2</span> Additional Arguments</h2>
 <section id="multiple-models" class="level3" data-number="2.2.1"><h3 data-number="2.2.1" class="anchored" data-anchor-id="multiple-models">
 <span class="header-section-number">2.2.1</span> Multiple Models</h3>
 <p><code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> fits multiple models simultaneously when <code>spcov_type</code> is a vector with more than one element:</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">spmods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span>,</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">spmods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span>,</span>
 <span>              spcov_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exponential"</span>, <span class="st">"gaussian"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><code>spmods</code> is a list with two elements: <code>exponential</code>, using the exponential spatial covariance; and <code>gaussian</code>, using the Gaussian spatial covariance.</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "exponential" "gaussian"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><code>spmods</code> is natural to combine with <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> to glance at each model fit:</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 10</span></span>
 <span><span class="co">#&gt;   model      n     p  npar value   AIC  AICc logLik deviance pseudo.r.squared</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span></span>
@@ -310,7 +495,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -319,10 +504,10 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">$</span><span class="va">gaussian</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span>, conf.level <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">$</span><span class="va">gaussian</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span>, conf.level <span class="op">=</span> <span class="fl">0.90</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
 <span><span class="co">#&gt;   term          estimate std.error statistic p.value conf.low conf.high</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
@@ -340,7 +525,7 @@ Exercise Solution
 <span class="header-section-number">2.2.2</span> Non-Spatial Random Effects</h3>
 <p>In the <code>moss</code> data, there are actually some spatial locations that have more than one measurement due to multiple samples being collected at a single location or due to a single sample being tested multiple times in the laboratory. The <code>sample</code> variable indexes the spatial location:</p>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moss</span></span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moss</span></span>
 <span><span class="co">#&gt; Simple feature collection with 365 features and 7 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -362,9 +547,9 @@ Exercise Solution
 <span><span class="co">#&gt; # ℹ 355 more rows</span></span>
 <span><span class="co">#&gt; # ℹ 1 more variable: geometry &lt;POINT [m]&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We might expect Zinc concentration to be correlated within a spatial location; therefore, we might want to add <code>sample</code> as a non-spatial random effect (here, an intercept random effect) to the model with <code>log_Zn</code> as the response and <code>log_dist2road</code> as the predictor. The <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> function allows non-spatial random effects to be incorporated with the <code>random</code> argument, which takes a formula specification that is similar in syntax as the <code>nlme</code> <span class="citation" data-cites="pinheiro2006mixed">(<a href="#ref-pinheiro2006mixed" role="doc-biblioref"><strong>pinheiro2006mixed?</strong></a>)</span> and <code>lme4</code> <span class="citation" data-cites="bates2015lme4">(<a href="#ref-bates2015lme4" role="doc-biblioref"><strong>bates2015lme4?</strong></a>)</span> packages.</p>
+<p>We might expect Zinc concentration to be correlated within a spatial location; therefore, we might want to add <code>sample</code> as a non-spatial random effect (here, an intercept random effect) to the model with <code>log_Zn</code> as the response and <code>log_dist2road</code> as the predictor. The <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> function allows non-spatial random effects to be incorporated with the <code>random</code> argument, which takes a formula specification that is similar in syntax as the <code>nlme</code> <span class="citation" data-cites="pinheiro2006mixed">(<a href="references.html#ref-pinheiro2006mixed" role="doc-biblioref"><strong>pinheiro2006mixed?</strong></a>)</span> and <code>lme4</code> <span class="citation" data-cites="bates2015lme4">(<a href="references.html#ref-bates2015lme4" role="doc-biblioref"><strong>bates2015lme4?</strong></a>)</span> packages.</p>
 <div class="cell">
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">randint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">randint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>                data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>                random <span class="op">=</span> <span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">sample</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -380,7 +565,7 @@ Tip
 <div class="callout-body-container callout-body">
 <p>For the <code>randint</code> model, in the <code>random</code> argument, <code>sample</code> is shorthand for <code>(1 | sample)</code>. So the <code>randint</code> model could be written more concisely as</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">randint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">randint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>                      data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>                      random <span class="op">=</span> <span class="op">~</span> <span class="va">sample</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -388,7 +573,7 @@ Tip
 </div>
 <p>The summary output now shows an estimate of the variance of the random intercepts, in addition to the estimated fixed effects and estimated spatial covariance parameters.</p>
 <div class="cell">
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">randint</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">randint</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
 <span><span class="co">#&gt; splm(formula = log_Zn ~ log_dist2road, data = moss, spcov_type = "exponential", </span></span>
@@ -417,7 +602,7 @@ Tip
 </div>
 <p>And, <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> shows that the model with the random intercepts is a better fit to the data than the model without random intercepts.</p>
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>              data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"exponential"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">randint</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 10</span></span>
@@ -428,7 +613,7 @@ Tip
 </div>
 <p>As another example, we might consider a model that also has random intercepts for <code>year</code>, or, a model that also has both random intercepts for <code>year</code> and random slopes for <code>log_dist2road</code> within <code>year</code>:</p>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">yearint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">yearint</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>                      data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>                      random <span class="op">=</span> <span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">sample</span> <span class="op">+</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">yearsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
@@ -438,7 +623,7 @@ Tip
 </div>
 <p><code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> shows that, of these four models, the model that includes random intercepts for <code>sample</code>, random intercepts for <code>year</code>, and random slopes for <code>year</code> is best, according to the AIC and AICc metrics.</p>
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">randint</span>, <span class="va">yearint</span>, <span class="va">yearsl</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">randint</span>, <span class="va">yearint</span>, <span class="va">yearsl</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 10</span></span>
 <span><span class="co">#&gt;   model      n     p  npar value   AIC  AICc logLik deviance pseudo.r.squared</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span></span>
@@ -474,7 +659,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -483,10 +668,10 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nospcov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nospcov</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>                    data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>                    random <span class="op">=</span> <span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">sample</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>                      <span class="op">(</span><span class="va">log_dist2road</span> <span class="op">|</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
@@ -509,7 +694,7 @@ Exercise Solution
 <span class="header-section-number">2.2.3</span> Anisotropy</h3>
 <p>By default, <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> uses isotropic spatial covariance. Spatial covariance is isotropic if it behaves similarly in all directions. A spatial covariance is (geometrically) anisotropic if it does not behave similarly in all directions. Anisotropic models require estimation of two additional parameters: <code>rotate</code> and <code>scale</code>, which control the behavior of the spatial covariance as a function of distance and direction.</p>
 <div class="cell">
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aniso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">aniso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>              data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>              anisotropy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">aniso</span></span>
@@ -530,7 +715,7 @@ Exercise Solution
 </div>
 <p>We can again use glances to compare the model that allows for anisotropy with the isotropic model:</p>
 <div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">aniso</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">aniso</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 10</span></span>
 <span><span class="co">#&gt;   model     n     p  npar value   AIC  AICc logLik deviance pseudo.r.squared</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;</span></span>
@@ -552,7 +737,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -561,12 +746,12 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aniso</span>, which <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aniso</span>, which <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="splm-additional_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+<p><img src="splm-additional_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>A clockwise rotation of this level curve by <code>rotate</code> followed by a scaling of the minor axis by the reciprocal of <code>scale</code> yields a spatial covariance that is isotropic.</p>
@@ -577,7 +762,7 @@ Exercise Solution
 <span class="header-section-number">2.2.4</span> Partition Factors</h3>
 <p>A partition factor is a categorical (or factor) variable that forces observations in different levels of the partition factor to be uncorrelated. The <code>year</code> variable in <code>moss</code> has two levels, <code>2001</code> and <code>2006</code>, which correspond to the year of measurement. Suppose the goal is to fit a model that assumes observations from the same year are spatially correlated but observations from different years are not spatially correlated. In this context, <code>year</code> is a partition factor. We fit this model by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>,</span>
 <span>             data <span class="op">=</span> <span class="va">moss</span>, spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
 <span>             partition_factor <span class="op">=</span> <span class="op">~</span> <span class="va">year</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -587,7 +772,7 @@ Exercise Solution
 <p>By default, <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> estimates all unknown covariance parameters. However, we can also fix covariance parameters at known values with the <code>spcov_initial</code> argument for spatial covariance parameters and with the <code>randcov_initial</code> argument for non-spatial covariance parameters.</p>
 <p>As an example, suppose that we want to fit a <code>"spherical"</code> covariance model to the moss data, but that, we want to fix the <code>range</code> at <code>20000</code> units so that errors from spatial locations more than 20000 units apart are not spatially correlated. We first create an <code>spcov_initial</code> object with the <code><a href="https://usepa.github.io/spmodel/reference/spcov_initial.html">spcov_initial()</a></code> function:</p>
 <div class="cell">
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">init_spher</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_initial.html">spcov_initial</a></span><span class="op">(</span><span class="st">"spherical"</span>, range <span class="op">=</span> <span class="fl">20000</span>, known <span class="op">=</span> <span class="st">"range"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">init_spher</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_initial.html">spcov_initial</a></span><span class="op">(</span><span class="st">"spherical"</span>, range <span class="op">=</span> <span class="fl">20000</span>, known <span class="op">=</span> <span class="st">"range"</span><span class="op">)</span></span>
 <span><span class="va">init_spher</span></span>
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; range </span></span>
@@ -602,7 +787,7 @@ Exercise Solution
 </div>
 <p>Within the function call, we specify that, for a <code>"spherical"</code> covariance, we would like to set the <code>range</code> parameter to <code>20000</code> and for that value to be known and therefore fixed in any subsequent estimation. We then provide <code>init_spher</code> as an argument to <code>spcov_initial</code> in <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>:</p>
 <div class="cell">
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span>,</span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span>,</span>
 <span>     spcov_initial <span class="op">=</span> <span class="va">init_spher</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
@@ -633,7 +818,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -642,10 +827,10 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">init_no_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_initial.html">spcov_initial</a></span><span class="op">(</span><span class="st">"spherical"</span>, ie <span class="op">=</span> <span class="fl">0</span>, known <span class="op">=</span> <span class="st">"ie"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">init_no_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_initial.html">spcov_initial</a></span><span class="op">(</span><span class="st">"spherical"</span>, ie <span class="op">=</span> <span class="fl">0</span>, known <span class="op">=</span> <span class="st">"ie"</span><span class="op">)</span></span>
 <span><span class="va">no_ie</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span>,</span>
 <span>              spcov_initial <span class="op">=</span> <span class="va">init_no_ie</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">no_ie</span><span class="op">)</span></span>
@@ -677,7 +862,7 @@ Exercise Solution
 <span class="header-section-number">2.2.6</span> Random Forest Spatial Residual Models</h3>
 <p>Random forests are a popular machine-learning modeling tool. The random forest spatial residual model available in <code>spmodel</code> combines random forest modeling and spatial linear models. First, the model is fit using random forests and fitted values are obtained. Then the response residuals are used to fit a spatial linear model. Predictions at unobserved locations are computed as the sum of the random forest prediction and the predicted (i.e., Kriged) response residual from the spatial linear model. Suppose we split the <code>moss</code> data into training and test data sets, with the goal of predicting <code>log_Zn</code> in the test data.</p>
 <div class="cell">
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">NROW</a></span><span class="op">(</span><span class="va">moss</span><span class="op">)</span></span>
 <span><span class="va">n_train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fl">0.75</span> <span class="op">*</span> <span class="va">n</span><span class="op">)</span></span>
 <span><span class="va">n_test</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">-</span> <span class="va">n_train</span></span>
@@ -687,12 +872,12 @@ Exercise Solution
 </div>
 <p>We fit a random forest spatial residual model to the test data by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rfsrmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splmRF.html">splmRF</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, <span class="va">moss_train</span>,</span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rfsrmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splmRF.html">splmRF</a></span><span class="op">(</span><span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, <span class="va">moss_train</span>,</span>
 <span>                  spcov_type <span class="op">=</span> <span class="st">"exponential"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We make predictions for the test data by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">rfsrmod</span>, <span class="va">moss_test</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
@@ -709,7 +894,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -718,10 +903,10 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">rfsrmod</span>, newdata <span class="op">=</span> <span class="va">moss_test</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">rfsrmod</span>, newdata <span class="op">=</span> <span class="va">moss_test</span><span class="op">)</span></span>
 <span><span class="va">errors</span> <span class="op">&lt;-</span> <span class="va">moss_test</span><span class="op">$</span><span class="va">log_Zn</span> <span class="op">-</span> <span class="va">preds</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">errors</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.1849228</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -736,15 +921,15 @@ Exercise Solution
 <p>Throughout the section, we will use the <code>seal</code> data in the <code>spmodel</code> package. The <code>seal</code> data is an <code>sf</code> object with a <code>POLYGON</code> geometry. There are 62 polygons in the data, some of which have non-missing values of <code>log_trend</code>, which is the log of the estimated harbor-seal trends that were calculated from abundance data.</p>
 <p>The following code generates a visualization of the <code>seal</code> data: polygons that are grey have a missing value for <code>log_trend</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">seal</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">log_trend</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">seal</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">log_trend</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="splm-additional_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="splm-additional_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Our goal is to fit a spatial autoregressive model (<a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a> and <a href="#eq-Rareal">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rareal</span></a>) to the <code>log_trend</code> response variable with the <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> function. Then, we will use the fitted model to predict the <code>log_trend</code> for sites where <code>log_trend</code> is not recorded.</p>
+<p>Our goal is to fit a spatial autoregressive model (<a href="splm.html#eq-splm">Equation&nbsp;<span>1.4</span></a> and <a href="splm.html#eq-Rareal">Equation&nbsp;<span>1.6</span></a>) to the <code>log_trend</code> response variable with the <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> function. Then, we will use the fitted model to predict the <code>log_trend</code> for sites where <code>log_trend</code> is not recorded.</p>
 </section><section id="spautor-syntax-and-output-interpretation" class="level3" data-number="2.3.2"><h3 data-number="2.3.2" class="anchored" data-anchor-id="spautor-syntax-and-output-interpretation">
 <span class="header-section-number">2.3.2</span> <code>spautor()</code> Syntax and Output Interpretation</h3>
 <p>The syntax for fitting a model to areal data with <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> is very similar to that used for <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. Again, there are generally at least three required arguments:</p>
@@ -764,7 +949,7 @@ Exercise Solution
 </ul>
 <p>We can fit a conditional auto-regressive (CAR) model with</p>
 <div class="cell">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor</a></span><span class="op">(</span><span class="va">log_trend</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"car"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor</a></span><span class="op">(</span><span class="va">log_trend</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"car"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
@@ -787,11 +972,11 @@ Exercise Solution
 <div class="cell">
 
 </div>
-<p>We can relate some of the components in the summary output to the model in <a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a> and <a href="#eq-Rareal">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rareal</span></a>:</p>
+<p>We can relate some of the components in the summary output to the model in <a href="splm.html#eq-splm">Equation&nbsp;<span>1.4</span></a> and <a href="splm.html#eq-Rareal">Equation&nbsp;<span>1.6</span></a>:</p>
 <ul>
 <li>the value in the <code>Estimate</code> column of the <code>Coefficients (fixed)</code> table form <span class="math inline">\(\boldsymbol{\hat{\beta}}\)</span>, an estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span>.</li>
 <li>the <code>de</code> value of 0.033 in the <code>Coefficients (car spatial covariance)</code> table is <span class="math inline">\(\hat{\sigma}^2_{de}\)</span>, which is an estimate of <span class="math inline">\(\sigma^2_{de}\)</span>, the variance of <span class="math inline">\(\boldsymbol{\tau}\)</span>.</li>
-<li>the <code>range</code> value of 0.42 in the <code>Coefficients (car spatial covariance)</code> table is <span class="math inline">\(\hat{\phi}\)</span>, an estimate of <span class="math inline">\(\phi\)</span> in <a href="#eq-Rareal">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rareal</span></a>.</li>
+<li>the <code>range</code> value of 0.42 in the <code>Coefficients (car spatial covariance)</code> table is <span class="math inline">\(\hat{\phi}\)</span>, an estimate of <span class="math inline">\(\phi\)</span> in <a href="splm.html#eq-Rareal">Equation&nbsp;<span>1.6</span></a>.</li>
 </ul>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -806,13 +991,13 @@ Note
 <p>By default, <span class="math inline">\(\sigma^2_{ie}\)</span> is assumed to be <code>0</code> for autoregressive models and hence, <code>ie</code> is omitted from the summary output.</p>
 </div>
 </div>
-<p>Though the weight matrix <span class="math inline">\(\mathbf{W}\)</span> in <a href="#eq-Rareal">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rareal</span></a> used in the model does not appear in the summary output, we can pull the weight matrix from the <code>sealmod</code> object with</p>
+<p>Though the weight matrix <span class="math inline">\(\mathbf{W}\)</span> in <a href="splm.html#eq-Rareal">Equation&nbsp;<span>1.6</span></a> used in the model does not appear in the summary output, we can pull the weight matrix from the <code>sealmod</code> object with</p>
 <div class="cell">
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span><span class="op">$</span><span class="va">W</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span><span class="op">$</span><span class="va">W</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>By default, <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> uses <strong>queen contiguity</strong> to form the weight matrix: observations are “neighbors” if they share at least one boundary (even if that boundary is a single point). Recall that observations are not considered neighbors with themselves. Also by default, <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> row standardizes the weight matrix so that each of the rows in <span class="math inline">\(\mathbf{W}\)</span> sum to <span class="math inline">\(1\)</span>. Row standardization of the weight matrix is performed by default because doing so results in “nice” properties of the resulting covariance matrix <span class="citation" data-cites="ver2018spatial">(<a href="#ref-ver2018spatial" role="doc-biblioref"><strong>ver2018spatial?</strong></a>)</span>. The first row of the weight matrix is</p>
+<p>By default, <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> uses <strong>queen contiguity</strong> to form the weight matrix: observations are “neighbors” if they share at least one boundary (even if that boundary is a single point). Recall that observations are not considered neighbors with themselves. Also by default, <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code> row standardizes the weight matrix so that each of the rows in <span class="math inline">\(\mathbf{W}\)</span> sum to <span class="math inline">\(1\)</span>. Row standardization of the weight matrix is performed by default because doing so results in “nice” properties of the resulting covariance matrix <span class="citation" data-cites="ver2018spatial">(<a href="references.html#ref-ver2018spatial" role="doc-biblioref"><strong>ver2018spatial?</strong></a>)</span>. The first row of the weight matrix is</p>
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span><span class="op">$</span><span class="va">W</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span><span class="op">$</span><span class="va">W</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt;  [1] 0.0000000 0.3333333 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000</span></span>
 <span><span class="co">#&gt;  [8] 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000</span></span>
 <span><span class="co">#&gt; [15] 0.0000000 0.3333333 0.0000000 0.0000000 0.0000000 0.0000000 0.0000000</span></span>
@@ -828,7 +1013,7 @@ Note
 </section><section id="additional-analysis" class="level3" data-number="2.3.3"><h3 data-number="2.3.3" class="anchored" data-anchor-id="additional-analysis">
 <span class="header-section-number">2.3.3</span> Additional Analysis</h3>
 <p>Most of the helper functions for models fit with <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> are also useful for models fit with <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>. Additionally, most of the additional arguments for <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> are also additional arguments for <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>.</p>
-<p>Of the functions mentioned in <a href="#sec-model-fitting"><span class="quarto-unresolved-ref">sec-model-fitting</span></a>, the following are also available to use on a model fit with <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>:</p>
+<p>Of the functions mentioned in <span class="quarto-unresolved-ref">?sec-model-fitting</span>, the following are also available to use on a model fit with <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>:</p>
 <ul>
 <li>
 <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>, <code><a href="https://generics.r-lib.org/reference/glance.html">glance()</a></code>, and <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code>
@@ -837,7 +1022,7 @@ Note
 </li>
 <li>model diagnostics statistics with <code><a href="https://rdrr.io/r/stats/influence.measures.html">cooks.distance()</a></code>, <code><a href="https://rdrr.io/r/stats/residuals.html">residuals()</a></code>, <code><a href="https://rdrr.io/r/stats/fitted.values.html">fitted()</a></code>, etc.</li>
 </ul>
-<p>Of the arguments mentioned in <a href="#sec-model-fitting"><span class="quarto-unresolved-ref">sec-model-fitting</span></a>, <code>spcov_initial</code> and <code>random</code> are available for <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>.</p>
+<p>Of the arguments mentioned in <span class="quarto-unresolved-ref">?sec-model-fitting</span>, <code>spcov_initial</code> and <code>random</code> are available for <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -865,7 +1050,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -874,10 +1059,10 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] -30.87584</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           2           3           4           5           6           7 </span></span>
@@ -901,13 +1086,13 @@ Exercise Solution
 <p>Prediction of response values for unobserved polygons with areal data requires that the polygons with missing response values be included in the <code>data</code> argument supplied to <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>. The reason for this requirement is that exclusion of these polygons changes the underlying neighborhood structure of the data, and, therefore changes the covariance matrix.</p>
 <p>For areal data, we can obtain predictions for unobserved polygons using <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> on the fitted model object or <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> on the fitted model object, specifying the <code>newdata</code> argument to be <code>mod$newdata</code>. Both approaches are given below:</p>
 <div class="cell">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor</a></span><span class="op">(</span><span class="va">log_trend</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"car"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor</a></span><span class="op">(</span><span class="va">log_trend</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"car"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">sealmod</span>, newdata <span class="op">=</span> <span class="va">sealmod</span><span class="op">$</span><span class="va">newdata</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">sealmod</span>, newdata <span class="op">=</span> <span class="va">sealmod</span><span class="op">$</span><span class="va">newdata</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Simple feature collection with 28 features and 2 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -953,13 +1138,13 @@ Exercise
 <div class="callout-body-container callout-body">
 <p>Verify that the fitted autoregressive model with the <code>seal</code> data changes when the polygons with missing response values are excluded from the <code>data</code> argument in <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>. The following code creates a data without the polygons with missing values:</p>
 <div class="cell">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">is_missing</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">seal</span><span class="op">$</span><span class="va">log_trend</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">is_missing</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">seal</span><span class="op">$</span><span class="va">log_trend</span><span class="op">)</span></span>
 <span><span class="va">seal_nomiss</span> <span class="op">&lt;-</span> <span class="va">seal</span><span class="op">[</span><span class="op">!</span><span class="va">is_missing</span>, , <span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -968,10 +1153,10 @@ Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-23" class="callout-23-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod_nomiss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor</a></span><span class="op">(</span><span class="va">log_trend</span> <span class="op">~</span> <span class="fl">1</span>,</span>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealmod_nomiss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor</a></span><span class="op">(</span><span class="va">log_trend</span> <span class="op">~</span> <span class="fl">1</span>,</span>
 <span>                          data <span class="op">=</span> <span class="va">seal_nomiss</span>, spcov_type <span class="op">=</span> <span class="st">"car"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">sealmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1007,9 +1192,9 @@ Exercise Solution
 </div>
 </section><section id="spatial-generalized-autoregressive-mdoels" class="level3" data-number="2.3.5"><h3 data-number="2.3.5" class="anchored" data-anchor-id="spatial-generalized-autoregressive-mdoels">
 <span class="header-section-number">2.3.5</span> Spatial Generalized Autoregressive Mdoels</h3>
-<p>In <a href="#sec-spglm"><span class="quarto-unresolved-ref">sec-spglm</span></a> we discussed how to formulate spatial generalized linear models using <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code>, building off the construction of spatial linear models fit using <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. Similarly, we can formulate spatial generalized autoregressive models using <code><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor()</a></code>, building off the construction of spatial autoregressive models fit using <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>. Spatial generalized autoregressive models can be fit to binomial, proportion, count, and skewed data by providing the <code>family</code> argument, as with the models fit using <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> in <a href="#sec-spglm"><span class="quarto-unresolved-ref">sec-spglm</span></a>. For example, we model <code>exp(log_trend)</code> (which is strictly positive) as a gamma random variable with the simultaneous autoregressive spatial covariance by running</p>
+<p>In <a href="spglm.html"><span>Chapter&nbsp;3</span></a> we discussed how to formulate spatial generalized linear models using <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code>, building off the construction of spatial linear models fit using <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. Similarly, we can formulate spatial generalized autoregressive models using <code><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor()</a></code>, building off the construction of spatial autoregressive models fit using <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>. Spatial generalized autoregressive models can be fit to binomial, proportion, count, and skewed data by providing the <code>family</code> argument, as with the models fit using <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> in <a href="spglm.html"><span>Chapter&nbsp;3</span></a>. For example, we model <code>exp(log_trend)</code> (which is strictly positive) as a gamma random variable with the simultaneous autoregressive spatial covariance by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealgmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">log_trend</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="va">Gamma</span>,</span>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealgmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">log_trend</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="va">Gamma</span>,</span>
 <span>                  data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"sar"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">sealgmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1042,7 +1227,7 @@ Exercise Solution
 <span class="header-section-number">2.4.1</span> Simulating Spatial Gaussian Data</h3>
 <p>We simulate Gaussian spatial data using <code><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm()</a></code>. <code><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm()</a></code> is similar in structure to <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code> for simulating non-spatial Gaussian data. The first argument to <code><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm()</a></code> is <code>spcov_params</code>, which is a spatial covariance parameter object created with <code><a href="https://usepa.github.io/spmodel/reference/spcov_params.html">spcov_params()</a></code>:</p>
 <div class="cell">
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_params.html">spcov_params</a></span><span class="op">(</span><span class="st">"exponential"</span>, de <span class="op">=</span> <span class="fl">1</span>, ie <span class="op">=</span> <span class="fl">0.5</span>, range <span class="op">=</span> <span class="fl">5e5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_params.html">spcov_params</a></span><span class="op">(</span><span class="st">"exponential"</span>, de <span class="op">=</span> <span class="fl">1</span>, ie <span class="op">=</span> <span class="fl">0.5</span>, range <span class="op">=</span> <span class="fl">5e5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
@@ -1059,28 +1244,28 @@ Note
 </div>
 <p><code><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm()</a></code> simulates data at each location in <code>data</code> for each of <code>n</code> samples (specified via <code>n</code>) with some mean vector (specified via <code>mean</code>). We simulate one realization of zero-mean Gaussian data with spatial covariance structure from <code>params</code> at each location in the <code>sulfate</code> data by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">sulfate</span><span class="op">$</span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm</a></span><span class="op">(</span><span class="va">params</span>, data <span class="op">=</span> <span class="va">sulfate</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We visualize this realization by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sulfate</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sulfate</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">z</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_c</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="splm-additional_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid" width="672"></p>
+<p><img src="splm-additional_files/figure-html/unnamed-chunk-44-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>We visualize an empirical semivariogram of this realization by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">esv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/esv.html">esv</a></span><span class="op">(</span><span class="va">z</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">sulfate</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">esv_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/esv.html">esv</a></span><span class="op">(</span><span class="va">z</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">sulfate</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">esv_out</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">dist</span>, y <span class="op">=</span> <span class="va">gamma</span>, size <span class="op">=</span> <span class="va">np</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html">lims</a></span><span class="op">(</span>y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="splm-additional_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid" width="672"></p>
+<p><img src="splm-additional_files/figure-html/unnamed-chunk-45-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="callout-caution callout callout-style-default callout-captioned">
@@ -1102,8 +1287,43 @@ Caution
 
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">18072023</span><span class="op">)</span></span>
+<span><span class="va">sim_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spcov_params.html">spcov_params</a></span><span class="op">(</span><span class="st">"exponential"</span>, de <span class="op">=</span> <span class="fl">7</span>, ie <span class="op">=</span> <span class="fl">2</span>, range <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">5000</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">sim_coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/sprnorm.html">sprnorm</a></span><span class="op">(</span><span class="va">sim_params</span>, data <span class="op">=</span> <span class="va">sim_coords</span>,</span>
+<span>                        xcoord <span class="op">=</span> <span class="va">x</span>, ycoord <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
+<span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">sim_coords</span>, <span class="va">sim_response</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sim_data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color <span class="op">=</span> <span class="va">sim_response</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_c</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span>
+<span><span class="va">fit_start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">bdmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">sim_response</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">sim_data</span>,</span>
+<span>     spcov_type <span class="op">=</span> <span class="st">"exponential"</span>,</span>
+<span>     xcoord <span class="op">=</span> <span class="va">x</span>, ycoord <span class="op">=</span> <span class="va">y</span>,</span>
+<span>     local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">fit_end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">fit_end_time</span> <span class="op">-</span> <span class="va">fit_start_time</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">bdmod</span><span class="op">)</span></span>
+<span><span class="va">n_pred</span> <span class="op">&lt;-</span> <span class="fl">3000</span></span>
+<span><span class="va">x_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_pred</span><span class="op">)</span></span>
+<span><span class="va">y_pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n_pred</span><span class="op">)</span></span>
+<span><span class="va">sim_preds</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_pred</span>, y <span class="op">=</span> <span class="va">y_pred</span><span class="op">)</span></span>
+<span><span class="va">pred_start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sim_preds</span><span class="op">$</span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bdmod</span>, newdata <span class="op">=</span> <span class="va">sim_preds</span>, local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">pred_end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">pred_end_time</span> <span class="op">-</span> <span class="va">pred_start_time</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sim_preds</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, color <span class="op">=</span> <span class="va">preds</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_c</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span>
 <span><span class="va">spmods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span>,</span>
 <span>              spcov_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"exponential"</span>, <span class="st">"gaussian"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">spmods</span><span class="op">)</span></span>
@@ -1209,6 +1429,11 @@ Caution
 </div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-hoef2023indexing" class="csl-entry" role="doc-biblioentry">
+Ver Hoef, Jay M, Michael Dumelle, Matt Higham, Erin E Peterson, and Daniel J Isaak. 2023. <span>“Indexing and Partitioning the Spatial Linear Model for Large Data Sets.”</span> <em>Plos One</em> 18 (11): e0291906.
+</div>
+</div>
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

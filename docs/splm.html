@@ -845,7 +845,7 @@ Solution
 </div>
 </div>
 </div>
-<p>The <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc, which are commonly used to select a “best” model – the lower the AIC/AICc, the better the model. <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> automatically orders the models by AICc:</p>
+<p>The <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc <span class="citation" data-cites="akaike1974new">(<a href="references.html#ref-akaike1974new" role="doc-biblioref">Akaike 1974</a>)</span>, which are commonly used to select a “best” model – the lower the AIC/AICc, the better the model. The AICc is more appropriate for small samples, but for large samples AIC/AICc are nearly equivalent. <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> automatically orders the models by AICc:</p>
 <div class="cell">
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">none</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 10</span></span>
@@ -868,9 +868,49 @@ Caution
 <p>The default estimation method is restricted maximum likelihood (<code>estmethod = "reml"</code>). Models fit using REML can only be compared using AIC/AICc when the models have the same set of explanatory variables. Models with different sets of explanatory variables can be compared via AIC/AICc when fitting using maximum likelihood (<code>estmethod = "ml"</code>). AIC/AICc are not defined for models fit using <code>estmethod = "sv-wls"</code> or <code>estmethod = "sv-cl"</code>.</p>
 </div>
 </div>
+<div class="callout-important callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use the likelihood ratio test (run <code>help("anova.spmod", "spmodel")</code>) to determine whether the spatial model outperforms the nonspatial model.</p>
+</div>
+</div>
+<div class="callout-important callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The likelihood ratio test can be used here because 1) the models are “nested” within one another (i.e., the nonspatial linear model is a special case of the spatial linear model with <code>de</code> set to zero) and 2) because <code>estmethod = "reml"</code>, the fixed effect structure is the same (like AIC/AICc, to compare models with varying fixed effect structures, use <code>estmethod = "ml"</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">none</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Likelihood Ratio Test</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Response: log_Zn</span></span>
+<span><span class="co">#&gt;               Df   Chi2 Pr(&gt;Chi2)    </span></span>
+<span><span class="co">#&gt; spmod vs none  2 266.85 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The small p-value (<span class="math inline">\(p &lt; 0.001\)</span>) indicates that the spatial model is a significantly better fit to the data.</p>
+</div>
+</div>
+</div>
 <p>Another approach to model selection is leave-one-out cross validation <span class="citation" data-cites="hastie2009elements">(<a href="references.html#ref-hastie2009elements" role="doc-biblioref">Hastie et al. 2009</a>)</span>. In leave-one-out cross validation, a single observation is removed from the data, the model is re-fit, and a prediction is made for the held-out observation. Then, a loss metric like mean-squared-prediction error (MSPE) is computed and used to evaluate model fit. The lower the mean-squared-prediction error, the better the model fit.</p>
 <div class="cell">
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">spmod</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">spmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 4</span></span>
 <span><span class="co">#&gt;      bias  MSPE RMSPE  cor2</span></span>
 <span><span class="co">#&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
@@ -907,13 +947,14 @@ Caution
 </div>
 <section id="some-model-selection-strategies" class="level4" data-number="1.2.4.1"><h4 data-number="1.2.4.1" class="anchored" data-anchor-id="some-model-selection-strategies">
 <span class="header-section-number">1.2.4.1</span> Some Model Selection Strategies</h4>
+<p>TEXT TEXT TEXT TEXT</p>
 </section></section></section><section id="spatial-prediction" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="spatial-prediction">
 <span class="header-section-number">1.3</span> Spatial Prediction</h2>
 <section id="data-introduction-1" class="level3" data-number="1.3.1"><h3 data-number="1.3.1" class="anchored" data-anchor-id="data-introduction-1">
 <span class="header-section-number">1.3.1</span> Data Introduction</h3>
 <p>The <code>moose</code> data in the <code>spmodel</code> package contains observations from a moose survey in Alaska. The Alaska Department of Fish and Game performed the survey on 218 spatial locations throughout the region of interest. Our goal is to predict the moose count in 100 spatial locations in the <code>moose_pred</code> data frame that were not surveyed. Both <code>elev</code>, the elevation of the spatial location, and <code>strat</code>, a stratification variable based on landscape metrics that is either <code>"L"</code> for Low or <code>"M"</code> for medium, are possible predictors for moose <code>count</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose</span></span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose</span></span>
 <span><span class="co">#&gt; Simple feature collection with 218 features and 4 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -934,12 +975,12 @@ Caution
 </div>
 <p>We visualize the moose counts by running</p>
 <div class="cell">
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">moose</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">moose</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_colour_viridis_c</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="splm_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+<p><img src="splm_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>From our plot, we see that there are a large number of observed moose counts at or near 0. Therefore, perhaps a generalized linear model in the Poisson or negative binomial family might be more appropriate for this particular data set. We will come back to this issue in <a href="spglm.html"><span>Chapter&nbsp;3</span></a>; however, for this section, we assume that a standard spatial linear model is appropriate.</p>
@@ -960,7 +1001,7 @@ Note
 <span class="header-section-number">1.3.2</span> Moose Count Predictions</h3>
 <p>In this section, we show how to use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> and <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> to perform spatial prediction (also called Kriging) for point-referenced data from a model fit with <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. First, we fit a spatial model to the <code>moose</code> data with a <code>"spherical"</code> spatial covariance and <code>elev</code>, <code>strat</code>, and their interaction as predictors in the model:</p>
 <div class="cell">
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moosemod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">elev</span> <span class="op">*</span> <span class="va">strat</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moosemod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">elev</span> <span class="op">*</span> <span class="va">strat</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
 <span>                  spcov_type <span class="op">=</span> <span class="st">"spherical"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">moosemod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 5</span></span>
@@ -986,7 +1027,7 @@ Tip
 </div>
 <p>We then use <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> to predict the moose <code>count</code> at the spatial locations in <code>moose_preds</code>. The <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> function for models fit with <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> works in the same way as it does for models fit with <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>. We provide <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> with the fitted model object, along with a <code>newdata</code> argument that is an <code>sf</code> object, <code>data.frame</code>, or <code>tibble</code> that contains the locations at which to predict. <code>newdata</code> must have the same predictors as those used to fit the spatial model. We see that <code>moose_preds</code> contains the predictors (<code>elev</code> and <code>strat</code>) and the locations at which to predict:</p>
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose_preds</span></span>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose_preds</span></span>
 <span><span class="co">#&gt; Simple feature collection with 100 features and 2 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -1006,7 +1047,7 @@ Tip
 <span><span class="co">#&gt; 10 105.3125     L POINT (391343.9 1483791)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">moosemod</span>, newdata <span class="op">=</span> <span class="va">moose_preds</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The output of <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (not rendered in this document) gives predicted moose counts for the 100 unobserved spatial locations in <code>moose_preds</code>.</p>
@@ -1025,7 +1066,7 @@ Note
 </div>
 <p>The <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> function can also be used to obtain predictions for unobserved locations. While the required arguments to <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> are the same as the arguments used in <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (the name of the fitted model object along with a <code>newdata</code> data frame), the output of <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> is an <code>sf</code> object with predictions in the <code>.fitted</code> column. Often, using <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> is more convenient than using <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code>, as <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> returns an object with predictions alongside the spatial locations and any predictors used in the model.</p>
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose_aug</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">moosemod</span>, newdata <span class="op">=</span> <span class="va">moose_preds</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose_aug</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">moosemod</span>, newdata <span class="op">=</span> <span class="va">moose_preds</span><span class="op">)</span></span>
 <span><span class="va">moose_aug</span></span>
 <span><span class="co">#&gt; Simple feature collection with 100 features and 3 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
@@ -1049,13 +1090,13 @@ Note
 </div>
 <p>We can construct a plot of the predictions with</p>
 <div class="cell">
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">moose</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">moose</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">moose_aug</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">.fitted</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_colour_viridis_c</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="splm_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="splm_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>In the plot, the observed counts are also shown with faded points. We see that, most of the predictions are at or near 0, but spatial locations that are close in proximity to observed counts that are very large have a higher predicted count (for example, the point in the southwest region that is directly south of the observed count coloured yellow is predicted to be around 10).</p>
@@ -1073,7 +1114,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -1082,10 +1123,10 @@ Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">moosemod</span>, newdata <span class="op">=</span> <span class="va">moose_preds</span>, interval <span class="op">=</span> <span class="st">"prediction"</span>,</span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">moosemod</span>, newdata <span class="op">=</span> <span class="va">moose_preds</span>, interval <span class="op">=</span> <span class="st">"prediction"</span>,</span>
 <span>        level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Simple feature collection with 100 features and 5 fields</span></span>
 <span><span class="co">#&gt; Geometry type: POINT</span></span>
@@ -1114,7 +1155,7 @@ Solution
 <span class="header-section-number">1.3.3</span> Cross Validation</h3>
 <p>Recall the <code><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv()</a></code> function can be used to perform leave-one-out cross validation on a fitted model object.</p>
 <div class="cell">
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">moosemod</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">moosemod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 4</span></span>
 <span><span class="co">#&gt;        bias  MSPE RMSPE  cor2</span></span>
 <span><span class="co">#&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
@@ -1135,7 +1176,7 @@ Exercise
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -1144,10 +1185,10 @@ Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-23" class="callout-23-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose_int</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moose_int</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
 <span>                  spcov_type <span class="op">=</span> <span class="st">"spherical"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">moose_int</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 4</span></span>
@@ -1156,7 +1197,7 @@ Solution
 <span><span class="co">#&gt; 1 -0.00798  33.6  5.79 0.0801</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">moosemod</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
@@ -1168,7 +1209,7 @@ Solution
 
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">moss</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">moss</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">log_Zn</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1203,6 +1244,7 @@ Solution
 <span><span class="va">lmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">log_Zn</span> <span class="op">~</span> <span class="va">log_dist2road</span>, data <span class="op">=</span> <span class="va">moss</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">lmod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">none</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">none</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">spmod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">none</span><span class="op">)</span></span>
 <span><span class="va">moose</span></span>
@@ -1235,6 +1277,9 @@ Solution
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-akaike1974new" class="csl-entry" role="doc-biblioentry">
+Akaike, Hirotugu. 1974. <span>“A New Look at the Statistical Model Identification.”</span> <em>IEEE Transactions on Automatic Control</em> 19 (6): 716–23.
+</div>
 <div id="ref-brus2021statistical" class="csl-entry" role="doc-biblioentry">
 Brus, Dick J. 2021. <span>“Statistical Approaches for Spatial Sample Survey: Persistent Misconceptions and New Developments.”</span> <em>European Journal of Soil Science</em> 72 (2): 686–703.
 </div>
