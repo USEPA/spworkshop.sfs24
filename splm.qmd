@@ -253,7 +253,7 @@ After fitting the model, perform an analysis of variance using `anova()` to asse
 
 ```{r}
 caribou_mod <- splm(z ~ tarp + water + tarp:water,
-                    data = caribou, spcov_type = "pexponential",
+                    data = caribou, spcov_type = "spherical",
                     xcoord = x, ycoord = y)
 summary(caribou_mod)
 anova(caribou_mod)
