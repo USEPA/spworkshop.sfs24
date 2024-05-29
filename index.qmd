@@ -36,8 +36,14 @@ __Workshop Summary.__ The `spmodel` `R` package can be used to fit, summarize, a
 
 ## Workshop Agenda
  
-- 9:00am - 10:00am EDT: XYZ
-- 10:00am - 11:00am EDT: XYZ
+- 9:00am - 9:30am ET: Introductions and Motivating Examples
+- 9:30am - 11:30am ET: Spatial Modeling in `R`
+- 11:30am - 12:30pm ET: Geospatial Analysis in `R`
+- 12:30pm - 1:30pm ET: Lunch
+- 1:30pm - 2:30pm ET: Geospatial Analysis in `R`
+- 2:30pm - 3:30pm ET: Applications to Real Aquatic Data
+- 3:30pm - 4:00pm ET: Questions and Wrap Up
+
 
 ## Author Introduction
 
