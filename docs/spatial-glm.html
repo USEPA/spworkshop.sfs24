@@ -144,7 +144,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Welcome</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -944,7 +944,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>         TMEANPRISMXXXXPT <span class="op">=</span> <span class="op">(</span><span class="va">PRISM_tmean_stable_4kmM3_201907_bil</span> <span class="op">+</span> <span class="va">PRISM_tmean_stable_4kmM3_201908_bil</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">new_jersey</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn_prd</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">pourpoints</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span> <span class="op">==</span> <span class="va">comid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -955,16 +955,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span></span>
 <span><span class="va">argia_predict</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
-<span>          newdata <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>          newdata <span class="op">=</span> <span class="va">new_jersey</span>,</span>
 <span>          local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">prediction</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">new_jersey</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">new_jersey</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>argia_predict <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_jersey</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span>,</span>
 <span>          size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1281,7 +1281,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>         TMEANPRISMXXXXPT <span class="op">=</span> <span class="op">(</span><span class="va">PRISM_tmean_stable_4kmM3_201907_bil</span> <span class="op">+</span> <span class="va">PRISM_tmean_stable_4kmM3_201908_bil</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">new_jersey</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn_prd</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">pourpoints</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span> <span class="op">==</span> <span class="va">comid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1292,16 +1292,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span></span>
 <span><span class="va">argia_predict</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
-<span>          newdata <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>          newdata <span class="op">=</span> <span class="va">new_jersey</span>,</span>
 <span>          local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">to_prob</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">prediction</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">new_jersey</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">new_jersey</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>argia_predict <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">new_jersey</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span>,</span>
 <span>          size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
