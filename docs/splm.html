@@ -163,7 +163,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Welcome</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -178,7 +178,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -235,7 +235,7 @@ div.csl-indent {
   </ul>
 </li>
   <li>
-<a href="#spatial-prediction" id="toc-spatial-prediction" class="nav-link" data-scroll-target="#spatial-prediction"><span class="toc-section-number">1.3</span>  Spatial Prediction</a>
+<a href="#sec-sp-pred" id="toc-sec-sp-pred" class="nav-link" data-scroll-target="#sec-sp-pred"><span class="toc-section-number">1.3</span>  Spatial Prediction</a>
   <ul>
 <li><a href="#data-introduction-1" id="toc-data-introduction-1" class="nav-link" data-scroll-target="#data-introduction-1"><span class="toc-section-number">1.3.1</span>  Data Introduction</a></li>
   <li><a href="#moose-count-predictions" id="toc-moose-count-predictions" class="nav-link" data-scroll-target="#moose-count-predictions"><span class="toc-section-number">1.3.2</span>  Moose Count Predictions</a></li>
@@ -961,7 +961,7 @@ Tip
 <p>If you don’t know which spatial covariance types to start with, try <code>spcov_type = "exponential"</code> and <code>spcov_type = "gaussian"</code>. These two are well-understood and have notably different covariance behavior for observations that are close to one another. It is not uncommon to see little difference in model fit between spatial models while still seeing a dramatic difference in model fit between spatial models and nonspatial models. To see a list of all spatial covariance types, run <code><a href="https://usepa.github.io/spmodel/reference/splm.html">help("splm", "spmodel")</a></code> or visit <a href="https://usepa.github.io/spmodel/reference/splm.html">this link</a>.</p>
 </div>
 </div>
-</section></section></section><section id="spatial-prediction" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="spatial-prediction">
+</section></section></section><section id="sec-sp-pred" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="sec-sp-pred">
 <span class="header-section-number">1.3</span> Spatial Prediction</h2>
 <p>We could use <code>spmod</code> from the <code>moss</code> data to make spatial predictions of log Zinc at different locations of interest near the haul road. However, to familiarize ourselves with more of the example data sets in <code>spmodel</code>, we will switch gears and use the <code>moose</code> data to build a model and make spatial predictions at the locations in <code>moose_preds</code>.</p>
 <section id="data-introduction-1" class="level3" data-number="1.3.1"><h3 data-number="1.3.1" class="anchored" data-anchor-id="data-introduction-1">
@@ -1456,7 +1456,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
       <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introduction</span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

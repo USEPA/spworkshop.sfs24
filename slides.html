@@ -1166,12 +1166,117 @@ Ryan Hill
   <p class="date">6/2/24</p>
 </section><section id="welcome" class="slide level2"><h2>Welcome!</h2>
 <ol type="1">
-<li><p>Please visit link to follow to view the workshop’s accompanying workbook</p></li>
-<li><p>Install and load R packages by visiting “Setup” in the workbook’s “Welcome” section</p></li>
+<li><p>Please visit <a href="https://usepa.github.io/spatial.sfs2024/">https://usepa.github.io/spatial.sfs2024/</a> to view the workshop’s accompanying workbook</p></li>
+<li><p>If necessary, install and load R packages by visiting “Setup” in the workbook’s “Welcome” section</p></li>
 <li><p>(Optional) Download the workshop slides (instructions in the workbook’s “Welcome” section)</p></li>
-<li><p>(Optional) Fill out the poll so we can better understand attendee’s level of experience handling spatial data</p></li>
 <li><p>Follow along and have fun!</p></li>
-</ol></section><section id="acknowledgements" class="slide level2"><h2>Acknowledgements</h2>
+</ol></section><section id="who-are-we" class="slide level2"><h2>Who Are We?</h2>
+<p><strong>Michael Dumelle</strong> (he/him/his) is a statistician for the United States Environmental Protection Agency (USEPA). He works primarily on facilitating the survey design and analysis of USEPA’s National Aquatic Resource Surveys (NARS), which characterize the condition of waters across the United States. His primary research interests are in spatial statistics, survey design, environmental and ecological applications, and software development.</p>
+</section><section id="who-are-we-1" class="slide level2"><h2>Who Are We?</h2>
+<p><strong>Ryan Hill</strong> (he/him/his) is an aquatic ecologist with the U.S. EPA Office of Research and Development. He is interested in how watershed conditions drive differences in freshwater diversity and water quality across the United States. He has worked extensively with federal physical, chemical, and biological datasets to gain insights into the factors affecting water quality and biotic condition of freshwaters across the conterminous US. He has also worked to develop and distribute large datasets of geospatial watershed metrics of streams and lakes for the Agency (EPA’s StreamCat and LakeCat datasets).</p>
+</section><section id="who-are-we-2" class="slide level2"><h2>Who Are We?</h2>
+<p><strong>Lara Jansen</strong> (she/her/hers) is an aquatic community ecologist and an ORISE postdoctoral fellow working on predictive models of benthic macroinvertebrate communities across the conterminous US in relation to watershed factors. Lara completed her PhD in Environmental Science at Portland State University in 2023, studying the drivers and dynamics of harmful algal blooms in mountain lakes with Dr. Angela Strecker.She obtained a MS in Natural Resource Sciences at Cal Poly Humboldt University with a thesis focused on the downstream impacts of dam flow regulation on benthic macroinvertebrate and algal communities.</p>
+</section><section id="who-are-we-3" class="slide level2"><h2>Who Are We?</h2>
+<p><strong>Wade Boys</strong> (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade is a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.</p>
+</section><section id="disclaimer" class="slide level2"><h2>Disclaimer</h2>
+<p>The views expressed in this workshop are those of the authors and do not necessarily represent the views or policies of the U.S. Environmental Protection Agency. Any mention of trade names, products, or services does not imply an endorsement by the U.S. government or the U.S. Environmental Protection Agency. The U.S. Environmental Protection Agency does not endorse any commercial products, services, or enterprises.</p>
+</section><section id="what-is-spmodel" class="slide level2"><h2>What is <code>spmodel</code>?</h2>
+<p><code>spmodel</code> is an <code>R</code> package to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that <code>spmodel</code> can do include:</p>
+<div>
+<ul>
+<li class="fragment">Fit spatial linear and generalized linear models for point-referenced and areal (lattice) data</li>
+<li class="fragment">Compare model fits and inspect model diagnostics</li>
+<li class="fragment">Predict at unobserved spatial locations (i.e., Kriging)</li>
+<li class="fragment">And much more!</li>
+</ul>
+</div>
+</section><section id="why-use-spmodel" class="slide level2"><h2>Why use <code>spmodel</code>?</h2>
+<p>There are many great spatial modeling packages in <code>R</code>. A few reasons to use <code>spmodel</code> for spatial analysis are that:</p>
+<div>
+<ul>
+<li class="fragment">
+<code>spmodel</code> syntax is similar to base <code>R</code> syntax for functions like <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>, <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code>, and <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code>, making the transition from fitting non-spatial models to spatial models relatively seamless.</li>
+<li class="fragment">There are a wide variety of <code>spmodel</code> capabilities that give the user significant control over the specific spatial model being fit.</li>
+<li class="fragment">
+<code>spmodel</code> is compatible with other modern <code>R</code> packages like <code>broom</code> and <code>sf</code>.</li>
+</ul>
+</div>
+</section><section><section id="spatial-linear-models-in-spmodel" class="title-slide slide level1 center"><h1>Spatial Linear Models in <code>spmodel</code>
+</h1>
+
+</section><section id="goals" class="slide level2"><h2>Goals</h2>
+<div class="goals">
+<ol type="1">
+<li>Construct and describe the spatial linear model</li>
+<li>Fit a spatial linear model using <code>spmodel</code>
+</li>
+<li>Make spatial predictions at unobserved locations (i.e., Kriging).</li>
+</ol>
+</div>
+</section><section id="construct-and-describe-the-spatial-linear-model" class="slide level2"><h2>Construct and Describe the Spatial Linear Model</h2>
+<div class="goals">
+<ol type="1">
+<li>Review the nonspatial linear model with independent random errors.</li>
+<li>Explain how the spatial linear model differs from the linear model with independent random errors.</li>
+<li>Explain how modeling for point-referenced data with distance-based model covariances differs from modeling for areal data with neighborhood-based model covariances.</li>
+</ol>
+</div>
+</section><section id="nonspatial-linear-models" class="slide level2"><h2>Nonspatial Linear Models</h2>
+<ul>
+<li><p>Nonspatial linear models are incredibly flexible tools that quantify the relationship between a response variable and a set of explanatory variables</p></li>
+<li><p>Examples of nonspatial linear models: multiple linear regression, analysis of variance (ANOVA), splines, polynomial regression, additive models, and mixed effect models</p></li>
+</ul>
+<p><span class="math display">\[
+\begin{split} \text{y} &amp; = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k + \epsilon \\
+i &amp; = 1, 2, \dots, k
+\end{split}
+\]</span></p>
+</section><section id="nonspatial-linear-models-1" class="slide level2"><h2>Nonspatial Linear Models</h2>
+<p>Generalizing becomes</p>
+<p><span class="math display">\[
+\begin{split} \text{y}_j &amp; = \beta_0 + \beta_1 x_{1, j} + \beta_2 x_{2, j} + \dots + \beta_k x_{k, j} + \epsilon_j \\
+i &amp; = 1, 2, \dots, k \\
+j &amp; = 1, 2, \dots, n
+\end{split}
+\]</span></p>
+</section><section id="nonspatial-linear-models-2" class="slide level2"><h2>Nonspatial Linear Models</h2>
+<p>Matrix notation:</p>
+<p><span class="math display">\[
+\mathbf{y} = \begin{bmatrix}
+  \text{y}_1 \\
+  \text{y}_2 \\
+  \vdots \\
+  \text{y}_j \\
+\end{bmatrix},
+\mathbf{X} =
+\begin{bmatrix}
+1 &amp; x_{1, 1} &amp; x_{1, 2} &amp; \dots &amp; x_{1, k} \\
+1 &amp; x_{2, 1} &amp; x_{2, 2} &amp; \dots &amp; x_{2, k} \\
+\vdots &amp; \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+1 &amp; x_{n, 1} &amp; x_{n, 2} &amp; \dots &amp; x_{n, k} \\
+\end{bmatrix},
+\]</span></p>
+</section><section id="nonspatial-linear-models-3" class="slide level2"><h2>Nonspatial Linear Models</h2>
+<p>Matrix notation:</p>
+<p><span class="math display">\[
+\boldsymbol{\beta} =
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_k
+\end{bmatrix}, \text{ and }
+\boldsymbol{\epsilon} =
+\begin{bmatrix}
+\epsilon_0 \\
+\epsilon_1 \\
+\vdots \\
+\epsilon_j
+\end{bmatrix},
+\]</span> The nonspatial linear model is written as <span class="math display">\[
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}.
+\]</span></p>
+</section><section id="acknowledgements" class="slide level2"><h2>Acknowledgements</h2>
 <ul>
 <li>Thank you so much for attending!</li>
 <li>Questions?</li>
@@ -1179,7 +1284,7 @@ Ryan Hill
 <div class="footer footer-default">
 
 </div>
-</section>
+</section></section>
 </div>
   </div>
 

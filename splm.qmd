@@ -14,13 +14,13 @@ library(ggplot2)
 __Goals__:
 
 * Construct and describe the spatial linear model
-    * Review the linear model with independent random errors
+    * Review the nonspatial linear model with independent random errors.
     * Explain how the spatial linear model differs from the linear model with independent random errors.
     * Explain how modeling for point-referenced data with distance-based model covariances differs from modeling for areal data with neighborhood-based model covariances.
 * Fit a spatial linear model using `spmodel`
     * Explore the `splm()` function using the `moss` data.
     * Connect parameter estimates in the summary output of `splm()` to the spatial linear model.
-* Make spatial predictions
+* Make spatial predictions at unobserved locations (i.e., Kriging)
     * Predict the response value at an unobserved location for point-referenced data.
     * Quantify prediction uncertainty.
     * Calculate leave-one-out cross-validation residuals.
