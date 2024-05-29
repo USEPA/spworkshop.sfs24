@@ -170,8 +170,27 @@ $$
 $$
 The nonspatial linear model is written as
 $$
-\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}.
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}
 $$
+
+## Your Turn
+
+::: task
+Introduce yourself to one (or more) neighbor(s)! What kinds of data have you used statistical modeling for? Have you ever used linear models via `lm()` in **R**?
+:::
+
+```{r}
+#| echo: false
+
+countdown(minutes = 3)
+```
+
+## Spatial Linear Models
+
+* Ignoring this spatial dependence and fitting nonspatial linear models (for spatially dependent data) generally leads to invalid fixed effect inference and poor predictions
+* Spatial linear models leverage spatial dependence to improve model fit.
+* Models historically challenging, theoretically and computationally
+* Fortunately, `spmodel` makes it straightforward to implement these models.
 
 ## Acknowledgements
 

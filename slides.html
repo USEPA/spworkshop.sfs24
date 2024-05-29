@@ -1136,6 +1136,486 @@ display: block;
 margin-left: auto;
 margin-right: 0; }
 </style>
+<style type="text/css">.countdown {background: inherit;position: absolute;cursor: pointer;font-size: 3rem;line-height: 1;border-color: #ddd;border-width: 3px;border-style: solid;border-radius: 15px;box-shadow: 0px 4px 10px 0px rgba(50, 50, 50, 0.4);-webkit-box-shadow: 0px 4px 10px 0px rgba(50, 50, 50, 0.4);margin: 0.6em;padding: 10px 15px;text-align: center;z-index: 10;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;}.countdown {display: flex;align-items: center;justify-content: center;}.countdown .countdown-time {background: none;font-size: 100%;padding: 0;}.countdown-digits {color: inherit;}.countdown.running {border-color: #2A9B59FF;background-color: #43AC6A;}.countdown.running .countdown-digits {color: #002F14FF;}.countdown.finished {border-color: #DE3000FF;background-color: #F04124;}.countdown.finished .countdown-digits {color: #4A0900FF;}.countdown.running.warning {border-color: #CEAC04FF;background-color: #E6C229;}.countdown.running.warning .countdown-digits {color: #3A2F02FF;}.countdown.running.blink-colon .countdown-digits.colon {opacity: 0.1;}.countdown:not(.running) .countdown-controls {display: none;}.countdown-controls {position: absolute;top: -0.5rem;right: -0.5rem;left: -0.5rem;display: flex;justify-content: space-between;margin: 0;padding: 0;}.countdown-controls > button {font-size: 1.5rem;width: 1rem;height: 1rem;display: inline-block;display: flex;flex-direction: column;align-items: center;justify-content: center;font-family: monospace;padding: 10px;margin: 0;background: inherit;border: 2px solid;border-radius: 100%;transition: 50ms transform ease-in-out, 150ms opacity ease-in;--countdown-transition-distance: 10px;}.countdown .countdown-controls > button:last-child {transform: translate(calc(-1 * var(--countdown-transition-distance)), var(--countdown-transition-distance));opacity: 0;color: #002F14FF;background-color: #43AC6A;border-color: #2A9B59FF;}.countdown .countdown-controls > button:first-child {transform: translate(var(--countdown-transition-distance), var(--countdown-transition-distance));opacity: 0;color: #4A0900FF;background-color: #F04124;border-color: #DE3000FF;}.countdown.running:hover .countdown-controls > button,.countdown.running:focus-within .countdown-controls > button{transform: translate(0, 0);opacity: 1;}.countdown.running:hover .countdown-controls > button:hover,.countdown.running:focus-within .countdown-controls > button:hover{transform: translate(0, calc(var(--countdown-transition-distance) / -2));box-shadow: 0px 2px 5px 0px rgba(50, 50, 50, 0.4);-webkit-box-shadow: 0px 2px 5px 0px rgba(50, 50, 50, 0.4);}.countdown.running:hover .countdown-controls > button:active,.countdown.running:focus-within .countdown-controls > button:active{transform: translate(0, calc(var(--coutndown-transition-distance) / -5));}.countdown.countdown-fullscreen {z-index: 0;}.countdown-fullscreen.running .countdown-controls {top: 1rem;left: 0;right: 0;justify-content: center;}.countdown-fullscreen.running .countdown-controls > button + button {margin-left: 1rem;}</style>
+<script>/* globals Shiny,Audio */
+class CountdownTimer {
+  constructor (el, opts) {
+    if (typeof el === 'string' || el instanceof String) {
+      el = document.querySelector(el)
+    }
+
+    if (el.counter) {
+      return el.counter
+    }
+
+    const minutes = parseInt(el.querySelector('.minutes').innerText || '0')
+    const seconds = parseInt(el.querySelector('.seconds').innerText || '0')
+    const duration = minutes * 60 + seconds
+
+    function attrIsTrue (x) {
+      if (x === true) return true
+      return !!(x === 'true' || x === '' || x === '1')
+    }
+
+    this.element = el
+    this.duration = duration
+    this.end = null
+    this.is_running = false
+    this.warn_when = parseInt(el.dataset.warnWhen) || -1
+    this.update_every = parseInt(el.dataset.updateEvery) || 1
+    this.play_sound = attrIsTrue(el.dataset.playSound)
+    this.blink_colon = attrIsTrue(el.dataset.blinkColon)
+    this.startImmediately = attrIsTrue(el.dataset.startImmediately)
+    this.timeout = null
+    this.display = { minutes, seconds }
+
+    if (opts.src_location) {
+      this.src_location = opts.src_location
+    }
+
+    this.addEventListeners()
+  }
+
+  addEventListeners () {
+    const self = this
+
+    if (this.startImmediately) {
+      if (window.remark && window.slideshow) {
+        // Remark (xaringan) support
+        const isOnVisibleSlide = () => {
+          return document.querySelector('.remark-visible').contains(self.element)
+        }
+        if (isOnVisibleSlide()) {
+          self.start()
+        } else {
+          let started_once = 0
+          window.slideshow.on('afterShowSlide', function () {
+            if (started_once > 0) return
+            if (isOnVisibleSlide()) {
+              self.start()
+              started_once = 1
+            }
+          })
+        }
+      } else if (window.Reveal) {
+        // Revealjs (quarto) support
+        const isOnVisibleSlide = () => {
+          const currentSlide = document.querySelector('.reveal .slide.present')
+          return currentSlide ? currentSlide.contains(self.element) : false
+        }
+        if (isOnVisibleSlide()) {
+          self.start()
+        } else {
+          const revealStartTimer = () => {
+            if (isOnVisibleSlide()) {
+              self.start()
+              window.Reveal.off('slidechanged', revealStartTimer)
+            }
+          }
+          window.Reveal.on('slidechanged', revealStartTimer)
+        }
+      } else if (window.IntersectionObserver) {
+        // All other situtations use IntersectionObserver
+        const onVisible = (element, callback) => {
+          new window.IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.intersectionRatio > 0) {
+                callback(element)
+                observer.disconnect()
+              }
+            })
+          }).observe(element)
+        }
+        onVisible(this.element, el => el.countdown.start())
+      } else {
+        // or just start the timer as soon as it's initialized
+        this.start()
+      }
+    }
+
+    function haltEvent (ev) {
+      ev.preventDefault()
+      ev.stopPropagation()
+    }
+    function isSpaceOrEnter (ev) {
+      return ev.code === 'Space' || ev.code === 'Enter'
+    }
+    function isArrowUpOrDown (ev) {
+      return ev.code === 'ArrowUp' || ev.code === 'ArrowDown'
+    }
+
+    ;['click', 'touchend'].forEach(function (eventType) {
+      self.element.addEventListener(eventType, function (ev) {
+        haltEvent(ev)
+        self.is_running ? self.stop() : self.start()
+      })
+    })
+    this.element.addEventListener('keydown', function (ev) {
+      if (ev.code === "Escape") {
+        self.reset()
+        haltEvent(ev)
+      }
+      if (!isSpaceOrEnter(ev) && !isArrowUpOrDown(ev)) return
+      haltEvent(ev)
+      if (isSpaceOrEnter(ev)) {
+        self.is_running ? self.stop() : self.start()
+        return
+      }
+
+      if (!self.is_running) return
+
+      if (ev.code === 'ArrowUp') {
+        self.bumpUp()
+      } else if (ev.code === 'ArrowDown') {
+        self.bumpDown()
+      }
+    })
+    this.element.addEventListener('dblclick', function (ev) {
+      haltEvent(ev)
+      if (self.is_running) self.reset()
+    })
+    this.element.addEventListener('touchmove', haltEvent)
+
+    const btnBumpDown = this.element.querySelector('.countdown-bump-down')
+    ;['click', 'touchend'].forEach(function (eventType) {
+      btnBumpDown.addEventListener(eventType, function (ev) {
+        haltEvent(ev)
+        if (self.is_running) self.bumpDown()
+      })
+    })
+    btnBumpDown.addEventListener('keydown', function (ev) {
+      if (!isSpaceOrEnter(ev) || !self.is_running) return
+      haltEvent(ev)
+      self.bumpDown()
+    })
+
+    const btnBumpUp = this.element.querySelector('.countdown-bump-up')
+    ;['click', 'touchend'].forEach(function (eventType) {
+      btnBumpUp.addEventListener(eventType, function (ev) {
+        haltEvent(ev)
+        if (self.is_running) self.bumpUp()
+      })
+    })
+    btnBumpUp.addEventListener('keydown', function (ev) {
+      if (!isSpaceOrEnter(ev) || !self.is_running) return
+      haltEvent(ev)
+      self.bumpUp()
+    })
+    this.element.querySelector('.countdown-controls').addEventListener('dblclick', function (ev) {
+      haltEvent(ev)
+    })
+  }
+
+  remainingTime () {
+    const remaining = this.is_running
+      ? (this.end - Date.now()) / 1000
+      : this.remaining || this.duration
+
+    let minutes = Math.floor(remaining / 60)
+    let seconds = Math.ceil(remaining - minutes * 60)
+
+    if (seconds > 59) {
+      minutes = minutes + 1
+      seconds = seconds - 60
+    }
+
+    return { remaining, minutes, seconds }
+  }
+
+  start () {
+    if (this.is_running) return
+
+    this.is_running = true
+
+    if (this.remaining) {
+      // Having a static remaining time indicates timer was paused
+      this.end = Date.now() + this.remaining * 1000
+      this.remaining = null
+    } else {
+      this.end = Date.now() + this.duration * 1000
+    }
+
+    this.reportStateToShiny('start')
+
+    this.element.classList.remove('finished')
+    this.element.classList.add('running')
+    this.update(true)
+    this.tick()
+  }
+
+  tick (run_again) {
+    if (typeof run_again === 'undefined') {
+      run_again = true
+    }
+
+    if (!this.is_running) return
+
+    const { seconds: secondsWas } = this.display
+    this.update()
+
+    if (run_again) {
+      const delay = (this.end - Date.now() > 10000) ? 1000 : 250
+      this.blinkColon(secondsWas)
+      this.timeout = setTimeout(this.tick.bind(this), delay)
+    }
+  }
+
+  blinkColon (secondsWas) {
+    // don't blink unless option is set
+    if (!this.blink_colon) return
+    // warn_when always updates the seconds
+    if (this.warn_when > 0 && Date.now() + this.warn_when > this.end) {
+      this.element.classList.remove('blink-colon')
+      return
+    }
+    const { seconds: secondsIs } = this.display
+    if (secondsIs > 10 || secondsWas !== secondsIs) {
+      this.element.classList.toggle('blink-colon')
+    }
+  }
+
+  update (force) {
+    if (typeof force === 'undefined') {
+      force = false
+    }
+
+    const { remaining, minutes, seconds } = this.remainingTime()
+
+    const setRemainingTime = (selector, time) => {
+      const timeContainer = this.element.querySelector(selector)
+      if (!timeContainer) return
+      time = Math.max(time, 0)
+      timeContainer.innerText = String(time).padStart(2, 0)
+    }
+
+    if (this.is_running && remaining < 0.25) {
+      this.stop()
+      setRemainingTime('.minutes', 0)
+      setRemainingTime('.seconds', 0)
+      this.playSound()
+      return
+    }
+
+    const should_update = force ||
+      Math.round(remaining) < this.warn_when ||
+      Math.round(remaining) % this.update_every === 0
+
+    if (should_update) {
+      this.element.classList.toggle('warning', remaining <= this.warn_when)
+      this.display = { minutes, seconds }
+      setRemainingTime('.minutes', minutes)
+      setRemainingTime('.seconds', seconds)
+    }
+  }
+
+  stop () {
+    const { remaining } = this.remainingTime()
+    if (remaining > 1) {
+      this.remaining = remaining
+    }
+    this.element.classList.remove('running')
+    this.element.classList.remove('warning')
+    this.element.classList.remove('blink-colon')
+    this.element.classList.add('finished')
+    this.is_running = false
+    this.end = null
+    this.reportStateToShiny('stop')
+    this.timeout = clearTimeout(this.timeout)
+  }
+
+  reset () {
+    this.stop()
+    this.remaining = null
+    this.update(true)
+    this.reportStateToShiny('reset')
+    this.element.classList.remove('finished')
+    this.element.classList.remove('warning')
+  }
+
+  setValues (opts) {
+    if (typeof opts.warn_when !== 'undefined') {
+      this.warn_when = opts.warn_when
+    }
+    if (typeof opts.update_every !== 'undefined') {
+      this.update_every = opts.update_every
+    }
+    if (typeof opts.blink_colon !== 'undefined') {
+      this.blink_colon = opts.blink_colon
+      if (!opts.blink_colon) {
+        this.element.classList.remove('blink-colon')
+      }
+    }
+    if (typeof opts.play_sound !== 'undefined') {
+      this.play_sound = opts.play_sound
+    }
+    if (typeof opts.duration !== 'undefined') {
+      this.duration = opts.duration
+      if (this.is_running) {
+        this.reset()
+        this.start()
+      }
+    }
+    this.reportStateToShiny('update')
+    this.update(true)
+  }
+
+  bumpTimer (val, round) {
+    round = typeof round === 'boolean' ? round : true
+    const { remaining } = this.remainingTime()
+    let newRemaining = remaining + val
+    if (newRemaining <= 0) {
+      this.setRemaining(0)
+      this.stop()
+      return
+    }
+    if (round && newRemaining > 10) {
+      newRemaining = Math.round(newRemaining / 5) * 5
+    }
+    this.setRemaining(newRemaining)
+    this.reportStateToShiny(val > 0 ? 'bumpUp' : 'bumpDown')
+    this.update(true)
+  }
+
+  bumpUp (val) {
+    if (!this.is_running) {
+      console.error('timer is not running')
+      return
+    }
+    this.bumpTimer(
+      val || this.bumpIncrementValue(),
+      typeof val === 'undefined'
+    )
+  }
+
+  bumpDown (val) {
+    if (!this.is_running) {
+      console.error('timer is not running')
+      return
+    }
+    this.bumpTimer(
+      val || -1 * this.bumpIncrementValue(),
+      typeof val === 'undefined'
+    )
+  }
+
+  setRemaining (val) {
+    if (!this.is_running) {
+      console.error('timer is not running')
+      return
+    }
+    this.end = Date.now() + val * 1000
+    this.update(true)
+  }
+
+  playSound () {
+    let url = this.play_sound
+    if (!url) return
+    if (typeof url === 'boolean') {
+      const src = this.src_location
+        ? this.src_location.replace('/countdown.js', '')
+        : 'libs/countdown'
+      url = src + '/smb_stage_clear.mp3'
+    }
+    const sound = new Audio(url)
+    sound.play()
+  }
+
+  bumpIncrementValue (val) {
+    val = val || this.remainingTime().remaining
+    if (val <= 30) {
+      return 5
+    } else if (val <= 300) {
+      return 15
+    } else if (val <= 3000) {
+      return 30
+    } else {
+      return 60
+    }
+  }
+
+  reportStateToShiny (action) {
+    if (!window.Shiny) return
+
+    const inputId = this.element.id
+    const data = {
+      event: {
+        action,
+        time: new Date().toISOString()
+      },
+      timer: {
+        is_running: this.is_running,
+        end: this.end ? new Date(this.end).toISOString() : null,
+        remaining: this.remainingTime()
+      }
+    }
+
+    function shinySetInputValue () {
+      if (!window.Shiny.setInputValue) {
+        setTimeout(shinySetInputValue, 100)
+        return
+      }
+      window.Shiny.setInputValue(inputId, data)
+    }
+
+    shinySetInputValue()
+  }
+}
+
+(function () {
+  const CURRENT_SCRIPT = document.currentScript.getAttribute('src')
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const els = document.querySelectorAll('.countdown')
+    if (!els || !els.length) {
+      return
+    }
+    els.forEach(function (el) {
+      el.countdown = new CountdownTimer(el, { src_location: CURRENT_SCRIPT })
+    })
+
+    if (window.Shiny) {
+      Shiny.addCustomMessageHandler('countdown:update', function (x) {
+        if (!x.id) {
+          console.error('No `id` provided, cannot update countdown')
+          return
+        }
+        const el = document.getElementById(x.id)
+        el.countdown.setValues(x)
+      })
+
+      Shiny.addCustomMessageHandler('countdown:start', function (id) {
+        const el = document.getElementById(id)
+        if (!el) return
+        el.countdown.start()
+      })
+
+      Shiny.addCustomMessageHandler('countdown:stop', function (id) {
+        const el = document.getElementById(id)
+        if (!el) return
+        el.countdown.stop()
+      })
+
+      Shiny.addCustomMessageHandler('countdown:reset', function (id) {
+        const el = document.getElementById(id)
+        if (!el) return
+        el.countdown.reset()
+      })
+
+      Shiny.addCustomMessageHandler('countdown:bumpUp', function (id) {
+        const el = document.getElementById(id)
+        if (!el) return
+        el.countdown.bumpUp()
+      })
+
+      Shiny.addCustomMessageHandler('countdown:bumpDown', function (id) {
+        const el = document.getElementById(id)
+        if (!el) return
+        el.countdown.bumpDown()
+      })
+    }
+  })
+})()
+</script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -1274,9 +1754,29 @@ j &amp; = 1, 2, \dots, n
 \epsilon_j
 \end{bmatrix},
 \]</span> The nonspatial linear model is written as <span class="math display">\[
-\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}.
+\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}
 \]</span></p>
-</section><section id="acknowledgements" class="slide level2"><h2>Acknowledgements</h2>
+</section><section id="your-turn" class="slide level2"><h2>Your Turn</h2>
+<div class="task">
+<p>Introduce yourself to one (or more) neighbor(s)! What kinds of data have you used statistical modeling for? Have you ever used linear models via <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> in <strong>R</strong>?</p>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="countdown" id="timer_c32ce571" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls">
+<button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
+</div>
+<code class="countdown-time"><span class="countdown-digits minutes">03</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+</div>
+</div>
+</section><section id="spatial-linear-models" class="slide level2"><h2>Spatial Linear Models</h2>
+<ul>
+<li>Ignoring this spatial dependence and fitting nonspatial linear models (for spatially dependent data) generally leads to invalid fixed effect inference and poor predictions</li>
+<li>Spatial linear models leverage spatial dependence to improve model fit.</li>
+<li>Models historically challenging, theoretically and computationally</li>
+<li>Fortunately, <code>spmodel</code> makes it straightforward to implement these models.</li>
+</ul></section><section id="acknowledgements" class="slide level2"><h2>Acknowledgements</h2>
 <ul>
 <li>Thank you so much for attending!</li>
 <li>Questions?</li>
