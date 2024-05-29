@@ -436,7 +436,7 @@ tmn_prd <-
          TMEANPRISMXXXXPT = (PRISM_tmean_stable_4kmM3_201907_bil + PRISM_tmean_stable_4kmM3_201908_bil)/2) |> 
   select(COMID, TMEANPRISMXXXXPT)
 
-prediction <- sc_prd |> 
+new_jersey <- sc_prd |> 
   left_join(tmn_prd, join_by(COMID)) |>
   left_join(pourpoints, join_by(COMID == comid)) |> 
   st_as_sf() |> 
@@ -447,16 +447,16 @@ prediction <- sc_prd |>
 
 argia_predict <- 
   predict(bin_spmod, 
-          newdata = prediction,
+          newdata = new_jersey,
           local = TRUE) |> 
   to_prob()
 
-prediction <-
-  prediction |> 
+new_jersey <-
+  new_jersey |> 
   mutate(argia_predict = argia_predict)
 
 ggplot() +
-  geom_sf(data = prediction,
+  geom_sf(data = new_jersey,
           aes(color = argia_predict),
           size = 0.9) +
   scale_color_distiller(palette = 'YlOrRd', direction = 2) +
