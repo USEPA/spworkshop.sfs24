@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.269">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Spatial Analysis and Statistical Modeling with R and spmodel - 3&nbsp; Generalized Linear Models</title>
+<title>Spatial Analysis and Statistical Modeling with R and spmodel - 3&nbsp; Spatial Generalized Linear Models in spmodel</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -80,6 +80,25 @@ code span.st { color: #4070a0; } /* String */
 code span.va { color: #19177c; } /* Variable */
 code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
 </style>
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -123,7 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -159,7 +178,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -195,14 +214,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul>
 <li><a href="#the-spatial-generalized-linear-model" id="toc-the-spatial-generalized-linear-model" class="nav-link active" data-scroll-target="#the-spatial-generalized-linear-model"><span class="toc-section-number">3.1</span>  The Spatial Generalized Linear Model</a></li>
   <li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting"><span class="toc-section-number">3.2</span>  Model Fitting</a></li>
-  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction"><span class="toc-section-number">3.3</span>  Prediction</a></li>
-  <li><a href="#additional-modeling-features" id="toc-additional-modeling-features" class="nav-link" data-scroll-target="#additional-modeling-features"><span class="toc-section-number">3.4</span>  Additional Modeling Features</a></li>
-  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">3.5</span>  R Code Appendix</a></li>
+  <li><a href="#spatial-prediction" id="toc-spatial-prediction" class="nav-link" data-scroll-target="#spatial-prediction"><span class="toc-section-number">3.3</span>  Spatial Prediction</a></li>
+  <li><a href="#additional-spmodel-features" id="toc-additional-spmodel-features" class="nav-link" data-scroll-target="#additional-spmodel-features"><span class="toc-section-number">3.4</span>  Additional <code>spmodel</code> Features</a></li>
+  <li><a href="#spatial-generalized-autoregressive-mdoels" id="toc-spatial-generalized-autoregressive-mdoels" class="nav-link" data-scroll-target="#spatial-generalized-autoregressive-mdoels"><span class="toc-section-number">3.5</span>  Spatial Generalized Autoregressive Mdoels</a></li>
+  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">3.6</span>  R Code Appendix</a></li>
   </ul></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title"><span id="sec-spglm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></span></h1>
+<h1 class="title"><span id="sec-spglm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></span></h1>
 </div>
 
 
@@ -226,21 +246,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Goals</strong>:</p>
 <ul>
 <li>Explain how modeling spatial covariance fits within the structure of a generalized linear model.</li>
-<li>Use the <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> function in <code>spmodel</code> to fit generalized linear models for various model families (i.e., response distributions).</li>
-<li>Discuss how the additional spmodel features from the previous section apply to spatial generalized linear models.</li>
+<li>Use the <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> and <code><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor()</a></code> functions in <code>spmodel</code> to fit generalized linear models for various model families (i.e., response distributions).</li>
+<li>Discuss how the additional <code>spmodel</code> features from the previous section apply to spatial generalized linear models.</li>
 </ul>
 <section id="the-spatial-generalized-linear-model" class="level2" data-number="3.1"><h2 data-number="3.1" class="anchored" data-anchor-id="the-spatial-generalized-linear-model">
 <span class="header-section-number">3.1</span> The Spatial Generalized Linear Model</h2>
 <p>As with spatial linear models, spatial generalized linear models can be fit in <code>spmodel</code> for point-referenced and areal data. A generalized linear model essentially uses the right-hand-side of <a href="splm.html#eq-splm">Equation&nbsp;<span>1.4</span></a> as a model for a function of the mean of the response vector <span class="math inline">\(\mathbf{y}\)</span>. More formally, the spatial generalized linear model can be written as <span class="math display">\[
 g(\boldsymbol{\mu}) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
-\]</span> where <span class="math inline">\(g(\boldsymbol{\mu})\)</span> is the link function that “links” a function of the mean of <span class="math inline">\(\mathbf{y}\)</span> to <span class="math inline">\(\mathbf{X} \boldsymbol{\beta}\)</span>, <span class="math inline">\(\boldsymbol{\tau}\)</span>, and <span class="math inline">\(\boldsymbol{\epsilon}\)</span>. For example, in a spatial Poisson generalized linear model, each element of <span class="math inline">\(\mathbf{y}\)</span>, <span class="math inline">\(y_i\)</span>, is modeled as a Poisson random variable with mean <span class="math inline">\(\mu_i\)</span>. Denoting the vector of means as <span class="math inline">\(\boldsymbol{\mu}\)</span>, the log of the mean vector of <span class="math inline">\(\mathbf{y}\)</span> is then modeled as</p>
+\]</span> where <span class="math inline">\(g(\boldsymbol{\mu})\)</span> is the link function that “links” a function of the mean of <span class="math inline">\(\mathbf{y}\)</span> to <span class="math inline">\(\mathbf{X} \boldsymbol{\beta}\)</span>, <span class="math inline">\(\boldsymbol{\tau}\)</span>, and <span class="math inline">\(\boldsymbol{\epsilon}\)</span>. For example, in a spatial Poisson generalized linear model, each element of <span class="math inline">\(\mathbf{y}\)</span>, <span class="math inline">\(\text{y}_i\)</span>, is modeled as a Poisson random variable with mean <span class="math inline">\(\mu_i\)</span>. Denoting the vector of means as <span class="math inline">\(\boldsymbol{\mu}\)</span>, the log of the mean vector of <span class="math inline">\(\mathbf{y}\)</span> is then modeled as</p>
 <p><span class="math display">\[
 \text{log}(\boldsymbol{\mu}) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
 \]</span></p>
 <p>where the <span class="math inline">\(\text{log()}\)</span> function is applied element-wise over the mean vector <span class="math inline">\(\boldsymbol{\mu}\)</span>, which is the expected value of <span class="math inline">\(\mathbf{y}\)</span>. In this example, the link function used is the log link. In the binomial generalized linear model family, a popular link function is the logit link, so that the model for the mean of a binomial response vector is</p>
 <p><span class="math display">\[
 \text{log}\left(\frac{\boldsymbol{\mu}}{1 - \boldsymbol{\mu}}\right) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
-\]</span> <a href="#tbl-links">Table&nbsp;<span>3.1</span></a> shows the resposne distributions, data types, and link functions available in <code>spmodel</code>.</p>
+\]</span> <a href="#tbl-links">Table&nbsp;<span>3.1</span></a> shows the response distributions, data types, and link functions available in <code>spmodel</code>.</p>
 <div id="tbl-links" class="anchored">
 <table class="table">
 <caption>Table&nbsp;3.1: Response distributions and link functions available in <code>spmodel</code>
@@ -304,8 +324,8 @@ Note
 <p>The <code>family</code> argument in <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> and <code><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor()</a></code> uses similar syntax as the <code>family</code> argument in <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code>. One difference, however, is that the link function for the <code>spmodel</code> functions is fixed. For binomial and beta responses, that link is the logit link function, while for Poisson, negative binomial, gamma, and inverse gaussian responses, that link is the log link function.</p>
 </div>
 </div>
-<p>While spatial generalized linear models can be fit to both point-referenced and areal data, we focus only on fitting spatial generalized linear models to point-referenced data with <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> for the remainder of this section. Models are fit using a novel application of the Laplace approximation – <span class="citation" data-cites="hoef2023marginal">(<a href="references.html#ref-hoef2023marginal" role="doc-biblioref"><strong>hoef2023marginal?</strong></a>)</span> provide further details.</p>
-<p>We observed in <span class="quarto-unresolved-ref">?sec-prediction</span> that a generalized linear model may be a better choice for the <code>count</code> data in the Alaska <code>moose</code>. We specify a Poisson spatial generalized linear model with the following:</p>
+<p>While spatial generalized linear models can be fit to both point-referenced and areal data, we focus only on fitting spatial generalized linear models to point-referenced data with <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> for the remainder of this section. Models are fit using a novel application of the Laplace approximation – <span class="citation" data-cites="hoef2023marginal">Ver Hoef et al. (<a href="references.html#ref-hoef2023marginal" role="doc-biblioref">2023</a>)</span> provide further details.</p>
+<p>We observed in <span class="quarto-unresolved-ref">?sec-sp-pred</span> that a generalized linear model may be a better choice for the <code>count</code> data in the Alaska <code>moose</code>. We specify a Poisson spatial generalized linear model with the following:</p>
 <div class="cell">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">poismod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">elev</span> <span class="op">*</span> <span class="va">strat</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
 <span>               family <span class="op">=</span> <span class="va">poisson</span>, spcov_type <span class="op">=</span> <span class="st">"spherical"</span><span class="op">)</span></span>
@@ -356,7 +376,7 @@ Exercise
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Fit a spatial negative binomial model to the <code>moose</code> data with <code>count</code> as the response and <code>elev</code>, <code>strat</code>, and their interaction as predictors. The negative binomial model relaxes the assumption in the spatial Poisson generalized linear model that the mean of a response variable <span class="math inline">\(Y_i\)</span> and the variance of a response variable <span class="math inline">\(Y_i\)</span> must be equal. Obtain a summary of the fitted model. Then compare their fits using <code><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv()</a></code>. Which model is preferable?</p>
+<p>Fit a spatial negative binomial model to the <code>moose</code> data with <code>count</code> as the response and <code>elev</code>, <code>strat</code>, and their interaction as predictors. The negative binomial model relaxes the assumption in the spatial Poisson generalized linear model that the mean of a response variable <span class="math inline">\(\text{y}_i\)</span> and the variance of a response variable <span class="math inline">\(text{y}_i\)</span> must be equal. Obtain a summary of the fitted model. Then compare their fits using <code><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv()</a></code>. Which model is preferable based on the leave-one-out MSPE?</p>
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
@@ -389,8 +409,8 @@ Exercise Solution
 </div>
 </div>
 </div>
-</section><section id="prediction" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="prediction">
-<span class="header-section-number">3.3</span> Prediction</h2>
+</section><section id="spatial-prediction" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="spatial-prediction">
+<span class="header-section-number">3.3</span> Spatial Prediction</h2>
 <p>We can also make predictions of the mean function at unobserved locations. For example, we can use <code>poismod</code> to predict the mean number of moose (on the link scale) at the spatial locations in <code>moose_preds</code> using <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> by running:</p>
 <div class="cell">
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># results omitted</span></span>
@@ -485,9 +505,9 @@ Exercise Solution
 </div>
 </div>
 </div>
-</section><section id="additional-modeling-features" class="level2" data-number="3.4"><h2 data-number="3.4" class="anchored" data-anchor-id="additional-modeling-features">
-<span class="header-section-number">3.4</span> Additional Modeling Features</h2>
-<p>All advanced features available in <code>spmodel</code> for spatial linear models are also available for spatial generalized linear models. This means that spatial generalized linear models in <code>spmodel</code> can accommodate big spatial data (though far less than in the linear model case), fixing spatial covariance parameters, fitting and predicting for multiple models, non-spatial random effects (on the link scale), partition factors, anisotropy (on the link scale), and prediction. <code>spmodel</code> has a variety of additional simulation functions used to simulate binary, proportion, count, and skewed data:</p>
+</section><section id="additional-spmodel-features" class="level2" data-number="3.4"><h2 data-number="3.4" class="anchored" data-anchor-id="additional-spmodel-features">
+<span class="header-section-number">3.4</span> Additional <code>spmodel</code> Features</h2>
+<p>All advanced features available in <code>spmodel</code> for spatial linear models are also available for spatial generalized linear models. This means that spatial generalized linear models in <code>spmodel</code> can accommodate big spatial data (though far less than in the spatial linear model case), fixing spatial covariance parameters, fitting and predicting for multiple models, non-spatial random effects (on the link scale), partition factors, anisotropy (on the link scale), and prediction. <code>spmodel</code> has a variety of additional simulation functions used to simulate binary, proportion, count, and skewed data:</p>
 <ul>
 <li>Binary data: <code><a href="https://usepa.github.io/spmodel/reference/sprbinom.html">sprbinom()</a></code>
 </li>
@@ -513,13 +533,43 @@ Exercise Solution
 <p><img src="spglm_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section><section id="r-code-appendix" class="level2" data-number="3.5"><h2 data-number="3.5" class="anchored" data-anchor-id="r-code-appendix">
-<span class="header-section-number">3.5</span> R Code Appendix</h2>
+</section><section id="spatial-generalized-autoregressive-mdoels" class="level2" data-number="3.5"><h2 data-number="3.5" class="anchored" data-anchor-id="spatial-generalized-autoregressive-mdoels">
+<span class="header-section-number">3.5</span> Spatial Generalized Autoregressive Mdoels</h2>
+<p>So far we discussed how to formulate spatial generalized linear models using <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code>, building off the construction of spatial linear models fit using <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. Similarly, we can formulate spatial generalized autoregressive models using <code><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor()</a></code>, building off the construction of spatial autoregressive models fit using <code><a href="https://usepa.github.io/spmodel/reference/spautor.html">spautor()</a></code>. Spatial generalized autoregressive models can be fit to binomial, proportion, count, and skewed data by providing the <code>family</code> argument, as with the models fit using <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code>. For example, we model <code>exp(log_trend)</code> (which is strictly positive) as a gamma random variable with the simultaneous autoregressive spatial covariance by running</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sealgmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">log_trend</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="va">Gamma</span>,</span>
+<span>                  data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"sar"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">sealgmod</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; spgautor(formula = exp(log_trend) ~ 1, family = Gamma, data = seal, </span></span>
+<span><span class="co">#&gt;     spcov_type = "sar")</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Deviance Residuals:</span></span>
+<span><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">#&gt; -0.31970 -0.10003  0.04354  0.07266  0.20661 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (fixed):</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error z value Pr(&gt;|z|)   </span></span>
+<span><span class="co">#&gt; (Intercept) -0.07106    0.02203  -3.226  0.00126 **</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (sar spatial covariance):</span></span>
+<span><span class="co">#&gt;        de     range     extra </span></span>
+<span><span class="co">#&gt; 3.783e-04 2.164e-03 4.106e-05 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Coefficients (Dispersion for Gamma family):</span></span>
+<span><span class="co">#&gt; dispersion </span></span>
+<span><span class="co">#&gt;      61.89</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="r-code-appendix" class="level2" data-number="3.6"><h2 data-number="3.6" class="anchored" data-anchor-id="r-code-appendix">
+<span class="header-section-number">3.6</span> R Code Appendix</h2>
 <div class="cell">
 
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">poismod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">elev</span> <span class="op">*</span> <span class="va">strat</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
 <span>               family <span class="op">=</span> <span class="va">poisson</span>, spcov_type <span class="op">=</span> <span class="st">"spherical"</span><span class="op">)</span></span>
@@ -545,10 +595,18 @@ Exercise Solution
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sulfate</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_c</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_gray</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></span>
+<span><span class="va">sealgmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spgautor.html">spgautor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">log_trend</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="va">Gamma</span>,</span>
+<span>                  data <span class="op">=</span> <span class="va">seal</span>, spcov_type <span class="op">=</span> <span class="st">"sar"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">sealgmod</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-hoef2023marginal" class="csl-entry" role="doc-biblioentry">
+Ver Hoef, Jay M, Eryn Blagg, Michael Dumelle, Philip M Dixon, Dale L Zimmerman, and Paul Conn. 2023. <span>“Marginal Inference for Hierarchical Generalized Linear Mixed Models with Patterned Covariance Matrices Using the Laplace Approximation.”</span> <em>arXiv Preprint arXiv:2305.02978</em>.
+</div>
+</div>
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
