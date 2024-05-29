@@ -208,6 +208,13 @@ $$
 * Applies to point-referenced (e.g., locations in a field) and areal data (e.g., counties in a state)
 * `splm()` and `spautor()`
 
+## Fit a Spatial Linear Model Using `spmodel`
+
+::: goals
+1. Explore the `splm()` function using the `moss` data.
+2. Connect parameter estimates in the summary output of `splm()` to the spatial linear model.
+:::
+
 ## The `moss` Data
 
 The `moss` data contains a variable for log Zinc concentration for moss samples collected near a mining road in Alaska.
@@ -228,7 +235,9 @@ ggplot(moss, aes(color = log_Zn)) +
 
 ```{r}
 #| echo: false
-moss |> dplyr::slice(1:3) |> dplyr::select(sideroad, log_dist2road, log_Zn) |>
+moss |> 
+  dplyr::slice(1:3) |> 
+  dplyr::select(sideroad, log_dist2road, log_Zn) |>
   knitr::kable(digits = 2)
 ```
 
@@ -282,16 +291,33 @@ tidy(spmod, effects = "spcov")
 
 * `range`: A parameter that controls the distance-decay rate of the spatial covariance
 
+## Model Fit
+
+The `glance()` function returns columns with the sample size (`n`), number of fixed effects (`p`), number of estimated covariance parameters (`npar`), optimization criteria minimum (`value`), AIC (`AIC)`, AICc (`AICc`), log-likelihood (`loglik`), deviance (`deviance`), and pseudo R-squared (`pseudo.r.squared`)
+
+```{r}
+glance(spmod)
+```
+
+## Model Diagnostics
+
+The `augment()` function returns columns with
+
+-   `.fitted`, the fitted value, calculated from the estimated fixed effects in the model
+-   `.resid`, the raw residual (observed minus fitted)
+-   `.hat`, the Mahalanobis distance, a metric of leverage
+-   `.cooksd`, the Cook's distance, a metric of influence
+-   `.std.resid`, the standardized residual
+
+```{r}
+#| output-location: slide
+augment(spmod)
+```
+
 ## Your Turn
 
 ::: task
-Another data set contained within the `spmodel` package is the `caribou` data set. Fit a spatial linear model with
-
--   `z` as the response and `tarp`, `water`, and the interaction between `tarp` and `water` as predictors
--   a spatial covariance model of the `"spherical"` type
--   `x` as the `xcoord` and `y` as the `ycoord`
-
-After fitting the model, perform an analysis of variance using `anova()` to assess the importance of `tarp`, `water`, and `tarp:water`. If you would like, compare with your neighbors.
+Run the `fitted()`, `residuals()`, `hatvalues()`, `cooks.distance()`, and `rstandard()` functions and verify they return the same values as `augment()`.
 :::
 
 ```{r}
@@ -299,6 +325,37 @@ After fitting the model, perform an analysis of variance using `anova()` to asse
 
 countdown(minutes = 5)
 ```
+
+## Plotting Model Objects
+
+The `plot()` function can be used on a fitted model object to construct a few pre-specified plots of these model diagnostics. For example, the following code plots the Cook's distance, a measure of influence, which quantifies each observation's impact on model fit:
+
+```{r}
+#| output-location: slide
+#| fig-align: center
+
+plot(spmod, which = 4)
+```
+
+Powerful to combine diagnostics with spatial visualizations via `augment()`
+
+## Your Turn
+
+Use `spmodel`'s plot function on the `spmod` object to construct a plot of the fitted spatial covariance vs spatial distance. To learn more about the options for `spmodel`'s plot function, run `?plot.spmodel`.
+
+```{r}
+#| echo: false
+
+countdown(minutes = 3)
+```
+
+## Spatial Prediction (i.e., Kriging)
+
+::: goals
+1. Predict the response value at an unobserved location for point-referenced data using the `moose` data.
+2. Quantify prediction uncertainty.
+3. Perform leave-one-out cross-validation
+:::
 
 ## Acknowledgements
 

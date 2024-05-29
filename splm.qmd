@@ -23,7 +23,7 @@ __Goals__:
 * Make spatial predictions at unobserved locations (i.e., Kriging)
     * Predict the response value at an unobserved location for point-referenced data.
     * Quantify prediction uncertainty.
-    * Calculate leave-one-out cross-validation residuals.
+    * Perform leave-one-out cross-validation.
     
 :::{.callout-note}
 You may click on any of the functions in this book to be directed to their respective documentation. For example, clicking on `splm()` takes you to the documentation page for the `splm()` function on our website.
@@ -280,11 +280,34 @@ augment(spmod)
 `augment()` returns a tibble with many model diagnostics statistics, including 
 
 * `.fitted`, the fitted value, calculated from the estimated fixed effects in the model
+* `.resid`, the raw residual (observed minus fitted)
 * `.hat`, the Mahalanobis distance, a metric of leverage
 * `.cooksd`, the Cook's distance, a metric of influence
 * `.std.resid`, the standardized residual
 
 If the model is correct, then the standardized residuals have mean 0, standard deviation 1, and are uncorrelated.
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Many helper functions in `spmodel` exist that operate on `splm()` objects (to see a list, visit [this link](https://usepa.github.io/spmodel/reference/index.html)). Run the `fitted()`, `residuals()`, `hatvalues()`, `cooks.distance()`, and `rstandard()` functions and verify they return the same values as `augment()`.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+```{r}
+fits <- tibble::tibble(
+  .fitted = fitted(spmod),
+  .resid = residuals(spmod),
+  .hat = hatvalues(spmod),
+  .cooksd = cooks.distance(spmod),
+  .std.resid = rstandard(spmod)
+)
+fits
+augment(spmod)
+```
+:::
 
 The `plot()` function can be used on a fitted model object to construct a few pre-specified plots of these model diagnostics. For example, the following code plots the Cook's distance, a measure of influence, which quantifies each observation's impact on model fit:
 
