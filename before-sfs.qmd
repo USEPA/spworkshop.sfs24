@@ -45,11 +45,6 @@ __Why use `spmodel`?__ There are many great spatial modeling packages in `R`. A 
 * There are a wide variety of `spmodel` capabilities that give the user significant control over the specific spatial model being fit.
 * `spmodel` is compatible with other modern `R` packages like `broom` and `sf`.
 
-## Workshop Agenda
- 
-- 9:00am - 10:00am EDT: XYZ
-- 10:00am - 11:00am EDT: XYZ
- 
 ## Instructor Introduction 
 
 __Michael Dumelle__ (he/him/his) is a statistician for the United States Environmental Protection Agency (USEPA). He works primarily on facilitating the survey design and analysis of USEPA’s National Aquatic Resource Surveys (NARS), which characterize the condition of waters across the United States. His primary research interests are in spatial statistics, survey design, environmental and ecological applications, and software development.
@@ -64,13 +59,15 @@ __Wade Boys__ (he/him/his) is a graduate student at the University of Arkansas b
 
 ## Setup
 
+We highly recommend that you follow along and execute code on your personal laptop. However, if you would prefer, you may follow along with a workbook we will make available prior to the workshop that contains all of the necessary code and outpupt.
+
 ### Install R and RTools
 
-Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have `R`, `Rtools`, and `RStudio`. Please install at least R version > 4.0 and the compatible version of `RTools`: [R CRAN](https://cran.r-project.org/).`Rtools` will be necessary to install non-CRAN repositories from GitHub (see below).
+Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have `R`, `Rtools`, and `RStudio`. Please install at least [R version >= 4.0](https://cran.r-project.org/) and the compatible version of [RTools](https://cran.r-project.org/bin/windows/Rtools/).`RTools` will be necessary to install non-CRAN repositories from GitHub (see below).
 
 ### Install RStudio
 
-Please also make sure you have the latest version of Posit's [`RStudio`](https://posit.co/products/open-source/rstudio/) installed.
+There are many graphical user interfaces (GUIs) that make it easier to interact with `R`. We recommend using Posit's `RStudio`](https://posit.co/products/open-source/rstudio/).
 
 ### Install R Packages
 
@@ -110,7 +107,7 @@ install.packages('maps')
 
 Finally, we will use three new `R` packages developed by researchers at the U.S. Environmental Protection Agency. The package `spmodel`, in particular, will form the basis of this workshop.
 
-`spmodel` - The [spmodel](https://github.com/USEPA/spmodel) package is the basis of this workshop. Although this package is available on the CRAN, we will use the version from GitHub with the latest updates.  
+`spmodel` - The [spmodel](https://github.com/USEPA/spmodel) package is the basis of this workshop.
 
 ![](figures/spmodel_hex_rancho_300dpi_cropped_2in.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
@@ -129,14 +126,13 @@ To install these packages:
 install.packages('spmodel')
 
 # Install remotes package to allow GitHub installation of finsyncR and StreamCatTools
-install.packages('remotes')
-remotes::install_github('USEPA/finsyncR', build_vignettes = FALSE)
-remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
+remotes::install_github('USEPA/finsyncR')
+remotes::install_github('USEPA/StreamCatTools')
 ```
 
 ## How to follow along with materials
 
-This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  To follow along, you can also copy code snippets from the rendered book site and paste into your code files in RStudio. We will provide a link to the workshop book before the meeting.
+To follow along, you can copy code snippets from the rendered book site and paste into your code files in RStudio. We will provide a link to the workshop book before the meeting.
 
 ## R projects
 

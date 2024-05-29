@@ -118,9 +118,8 @@ To install these packages:
 install.packages('spmodel')
 
 # Install remotes package to allow GitHub installation of finsyncR and StreamCatTools
-install.packages('remotes')
-remotes::install_github('USEPA/finsyncR', build_vignettes = TRUE)
-remotes::install_github('USEPA/StreamCatTools', build_vignettes = FALSE)
+remotes::install_github('USEPA/finsyncR')
+remotes::install_github('USEPA/StreamCatTools')
 ```
 
 ## How to follow along with material

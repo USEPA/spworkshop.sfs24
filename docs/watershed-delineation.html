@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-
-<head>
-
-<meta charset="utf-8" />
-<meta name="generator" content="quarto-1.2.269" />
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-
-
-<title>Spatial Analysis and Statistical Modeling with R and spmodel – 5  Watershed Delineation in R</title>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Spatial Analysis and Statistical Modeling with R and spmodel - 5&nbsp; Watershed Delineation in R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -87,8 +82,24 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<!-- htmldependencies:E3FAD763 -->
-<script id="quarto-search-options" type="application/json">{
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./streamcattools.html" rel="next">
+<link href="./gis-in-r.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -106,56 +117,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit"
   }
-}</script>
-<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
-<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
-<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
-<script src="site_libs/proj4-2.6.2/proj4.min.js"></script>
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
-<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-binding-2.2.2/leaflet.js"></script>
-<script src="site_libs/leaflet-providers-2.0.0/leaflet-providers_2.0.0.js"></script>
-<script src="site_libs/leaflet-providers-plugin-2.2.2/leaflet-providers-plugin.js"></script>
-<link href="site_libs/HomeButton-0.0.1/home-button.css" rel="stylesheet" />
-<script src="site_libs/HomeButton-0.0.1/home-button.js"></script>
-<script src="site_libs/HomeButton-0.0.1/easy-button-src.min.js"></script>
-<script src="site_libs/clipboard-0.0.1/setClipboardText.js"></script>
-<link href="site_libs/mapviewCSS-0.0.1/mapview-popup.css" rel="stylesheet" />
-<link href="site_libs/mapviewCSS-0.0.1/mapview.css" rel="stylesheet" />
-
-
+}</script><link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="site_libs/leaflet-1.3.1/leaflet.js"></script><link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="site_libs/proj4-2.6.2/proj4.min.js"></script><script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="site_libs/leaflet-binding-2.2.2/leaflet.js"></script><script src="site_libs/leaflet-providers-2.0.0/leaflet-providers_2.0.0.js"></script><script src="site_libs/leaflet-providers-plugin-2.2.2/leaflet-providers-plugin.js"></script><link href="site_libs/HomeButton-0.0.1/home-button.css" rel="stylesheet">
+<script src="site_libs/HomeButton-0.0.1/home-button.js"></script><script src="site_libs/HomeButton-0.0.1/easy-button-src.min.js"></script><script src="site_libs/clipboard-0.0.1/setClipboardText.js"></script><link href="site_libs/mapviewCSS-0.0.1/mapview-popup.css" rel="stylesheet">
+<link href="site_libs/mapviewCSS-0.0.1/mapview.css" rel="stylesheet">
 </head>
-
-<body>
+<body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" 
-        data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" 
-        aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation"
-        onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"
-  >
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"></h1>
-      <button type="button" 
-        class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Watershed Delineation in <code>R</code></span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
     </div>
-  </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="/">
-      Spatial Analysis and Statistical Modeling with R and spmodel
-      </a> 
+      <a href="./">Spatial Analysis and Statistical Modeling with R and spmodel</a> 
     </div>
       </div>
       <div class="mt-2 flex-shrink-0 align-items-center">
@@ -165,59 +148,65 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
+<li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/index.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/splm.html" class="sidebar-item-text sidebar-link"><span class='chapter-number'>1</span>  <span class='chapter-title'>Spatial Linear Models in `spmodel`</span></a>
+  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/splm-additional.html" class="sidebar-item-text sidebar-link"><span class='chapter-number'>2</span>  <span class='chapter-title'>Additional `spmodel` Features</span></a>
+  <a href="./splm-additional.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Additional <code>spmodel</code> Features</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/spglm.html" class="sidebar-item-text sidebar-link"><span class='chapter-number'>3</span>  <span class='chapter-title'>Generalized Linear Models</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/gis-in-r.html" class="sidebar-item-text sidebar-link"><span class='chapter-number'>4</span>  <span class='chapter-title'>GIS in R</span></a>
+  <a href="./gis-in-r.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/watershed-delineation.html" class="sidebar-item-text sidebar-link active"><span class='chapter-number'>5</span>  <span class='chapter-title'>Watershed Delineation in `R`</span></a>
+  <a href="./watershed-delineation.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Watershed Delineation in <code>R</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/streamcattools.html" class="sidebar-item-text sidebar-link"><span class='chapter-number'>6</span>  <span class='chapter-title'>StreamCat & LakeCat</span></a>
+  <a href="./streamcattools.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="/spatial-glm.html" class="sidebar-item-text sidebar-link"><span class='chapter-number'>7</span>  <span class='chapter-title'>Spatial GLM of "Dancer" damselfly (_Argia_)</span></a>
+  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
   </div>
 </li>
     </ul>
-    </div>
-</nav>
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <div id="quarto-toc-target"></div>
+</div>
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#usgs-streamstats" id="toc-usgs-streamstats" class="nav-link active" data-scroll-target="#usgs-streamstats"><span class="toc-section-number">5.1</span>  USGS StreamStats</a></li>
+  <li><a href="#nhdplustools" id="toc-nhdplustools" class="nav-link" data-scroll-target="#nhdplustools"><span class="toc-section-number">5.2</span>  nhdplusTools</a></li>
+  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">5.3</span>  R Code Appendix</a></li>
+  </ul></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title"><span id="watershed-delineation" class="quarto-section-identifier"><span class="chapter-number">5</span>  <span class="chapter-title">Watershed Delineation in <code>R</code></span></span></h1>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title"><span id="watershed-delineation" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Watershed Delineation in <code>R</code></span></span></h1>
 </div>
 
 
@@ -230,17 +219,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </div>
   
 
-</header>
-<nav id="TOC" role="doc-toc">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#usgs-streamstats" id="toc-usgs-streamstats"><span class="toc-section-number">5.1</span> <span class="header-section-number">5.1</span> USGS StreamStats</a></li>
-  <li><a href="#nhdplustools" id="toc-nhdplustools"><span class="toc-section-number">5.2</span> <span class="header-section-number">5.2</span> nhdplusTools</a></li>
-  <li><a href="#r-code-appendix" id="toc-r-code-appendix"><span class="toc-section-number">5.3</span> <span class="header-section-number">5.3</span> R Code Appendix</a></li>
-  </ul>
-</nav>
-<div class="cell">
+</header><div class="cell">
 
 </div>
 <p>We will cover accessing geospatial metrics from StreamCat and LakeCat to use as covariates in analyses. However, these data sources may not have all of the metrics you might wish to use.</p>
@@ -248,8 +227,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>A first step to generating custom watershed metrics is watershed delineation. The watershed boundary can then be used as a “cookie cutter” to extract statistics from other geospatial layers within the watershed’s borders.</p>
 <p>In the past, watershed delineation in a GIS with digital elevation models (DEM) involved multiple steps, such as DEM reconditioning to remove pits and the calculation of a flow direction raster from this conditioned DEM.</p>
 <p>Today, there are at least two online services which can be used to generate watersheds in the conterminous U.S. In this excercise, we’ll also show an example of how to extract data from a raster dataset by using the watershed as a “cookie cutter.”</p>
-<section id="usgs-streamstats" class="level2" data-number="5.1">
-<h2 data-number="5.1"><span class="header-section-number">5.1</span> USGS StreamStats</h2>
+<section id="usgs-streamstats" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="usgs-streamstats">
+<span class="header-section-number">5.1</span> USGS StreamStats</h2>
 <p>The USGS’s StreamStats is an online service and map interface that allows users to navigate to a desired location and delineate a watershed boundary with the click of a mouse:</p>
 <p><a href="https://streamstats.usgs.gov/ss/">https://streamstats.usgs.gov/ss/</a></p>
 <p>In addition to the map interface, the data are also accessible via an API:</p>
@@ -269,95 +248,95 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Massages the data returned by the API to create a <code>sf</code> object</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb1"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create custom function to delineate watershed from StreamStats service</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>streamstats_ws <span class="ot">=</span> <span class="cf">function</span>(state, longitude, latitude){</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  p1 <span class="ot">=</span> <span class="st">&#39;https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode=&#39;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  p2 <span class="ot">=</span> <span class="st">&#39;&amp;xlocation=&#39;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  p3 <span class="ot">=</span> <span class="st">&#39;&amp;ylocation=&#39;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  p4 <span class="ot">=</span> <span class="st">&#39;&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true&#39;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  query <span class="ot">&lt;-</span>  <span class="fu">paste0</span>(p1, state, p2, <span class="fu">toString</span>(longitude), p3, <span class="fu">toString</span>(latitude), p4)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  mydata <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(query, <span class="at">simplifyVector =</span> <span class="cn">FALSE</span>, <span class="at">simplifyDataFrame =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  poly_geojsonsting <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">toJSON</span>(mydata<span class="sc">$</span>featurecollection[[<span class="dv">2</span>]]<span class="sc">$</span>feature, <span class="at">auto_unbox =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  poly <span class="ot">&lt;-</span> geojsonio<span class="sc">::</span><span class="fu">geojson_sf</span>(poly_geojsonsting) </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  poly</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Define location for delineation (Calapooia Watershed)</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>state <span class="ot">&lt;-</span> <span class="st">&#39;OR&#39;</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.62892</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13113</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Delineate watershed</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>cal_ws <span class="ot">&lt;-</span> <span class="fu">streamstats_ws</span>(<span class="st">&#39;OR&#39;</span>, longitude, latitude) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate point for plotting</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>cal_pt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ptid =</span> <span class="st">&#39;Calapooia River&#39;</span>, <span class="at">lon =</span> longitude, <span class="at">lat =</span> latitude)  <span class="sc">%&gt;%</span> </span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&#39;lon&#39;</span>, <span class="st">&#39;lat&#39;</span>), <span class="at">crs =</span> <span class="dv">4269</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>cal_map <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_ws, <span class="at">fill=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_pt, <span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>cal_map</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create custom function to delineate watershed from StreamStats service</span></span>
+<span><span class="va">streamstats_ws</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">p1</span> <span class="op">=</span> <span class="st">'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='</span></span>
+<span>  <span class="va">p2</span> <span class="op">=</span> <span class="st">'&amp;xlocation='</span></span>
+<span>  <span class="va">p3</span> <span class="op">=</span> <span class="st">'&amp;ylocation='</span></span>
+<span>  <span class="va">p4</span> <span class="op">=</span> <span class="st">'&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true'</span></span>
+<span>  <span class="va">query</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">state</span>, <span class="va">p2</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">longitude</span><span class="op">)</span>, <span class="va">p3</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">latitude</span><span class="op">)</span>, <span class="va">p4</span><span class="op">)</span></span>
+<span>  <span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span><span class="va">query</span>, simplifyVector <span class="op">=</span> <span class="cn">FALSE</span>, simplifyDataFrame <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">poly_geojsonsting</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">toJSON</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">featurecollection</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">feature</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">poly</span> <span class="op">&lt;-</span> <span class="fu">geojsonio</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/geojsonio/reference/geojson_sf.html">geojson_sf</a></span><span class="op">(</span><span class="va">poly_geojsonsting</span><span class="op">)</span> </span>
+<span>  <span class="va">poly</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Define location for delineation (Calapooia Watershed)</span></span>
+<span><span class="va">state</span> <span class="op">&lt;-</span> <span class="st">'OR'</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.62892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13113</span></span>
+<span></span>
+<span><span class="co"># Delineate watershed</span></span>
+<span><span class="va">cal_ws</span> <span class="op">&lt;-</span> <span class="fu">streamstats_ws</span><span class="op">(</span><span class="st">'OR'</span>, <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate point for plotting</span></span>
+<span><span class="va">cal_pt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>ptid <span class="op">=</span> <span class="st">'Calapooia River'</span>, lon <span class="op">=</span> <span class="va">longitude</span>, lat <span class="op">=</span> <span class="va">latitude</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'lon'</span>, <span class="st">'lat'</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_ws</span>, fill<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_pt</span>, size<span class="op">=</span><span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672" /></p>
+<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>As noted above, we can replicate the call to the API by pasting the p1 to p4 + state and lat/lon:</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>state <span class="ot">&lt;-</span> <span class="st">&#39;OR&#39;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.62892</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13113</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> <span class="st">&#39;https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode=&#39;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">=</span> <span class="st">&#39;&amp;xlocation=&#39;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">=</span> <span class="st">&#39;&amp;ylocation=&#39;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">=</span> <span class="st">&#39;&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true&#39;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span>  <span class="fu">paste0</span>(p1, state, p2, <span class="fu">toString</span>(longitude), p3, <span class="fu">toString</span>(latitude), p4)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(query)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode=OR&amp;xlocation=-123.13113&amp;ylocation=44.62892&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">state</span> <span class="op">&lt;-</span> <span class="st">'OR'</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.62892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13113</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op">=</span> <span class="st">'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='</span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="st">'&amp;xlocation='</span></span>
+<span><span class="va">p3</span> <span class="op">=</span> <span class="st">'&amp;ylocation='</span></span>
+<span><span class="va">p4</span> <span class="op">=</span> <span class="st">'&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true'</span></span>
+<span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">state</span>, <span class="va">p2</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">longitude</span><span class="op">)</span>, <span class="va">p3</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">latitude</span><span class="op">)</span>, <span class="va">p4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode=OR&amp;xlocation=-123.13113&amp;ylocation=44.62892&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>However, when the query is provided to the browser, it does not look like a watershed. The additional lines of code in the function we defined above used the <code>jsonlite</code> and <code>geojsonio</code> packages to massage the output and produce the <code>sf</code> spatial object <code>cal_ws</code>.</p>
 <p>This code produces a watershed boundary (<code>cal_ws</code>) for the Calapooia watershed in Oregon. But what if the latitude/longitude are slightly off of the stream network?</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A close, but different watershed</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.61892</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13731</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>trib_ws <span class="ot">&lt;-</span> <span class="fu">streamstats_ws</span>(<span class="st">&#39;OR&#39;</span>, longitude, latitude) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>trib_pt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ptid =</span> <span class="st">&#39;Calapooia Trib&#39;</span>, <span class="at">lon =</span> longitude, <span class="at">lat =</span> latitude)  <span class="sc">%&gt;%</span> </span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&#39;lon&#39;</span>, <span class="st">&#39;lat&#39;</span>), <span class="at">crs =</span> <span class="dv">4269</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>cal_map <span class="ot">&lt;-</span> cal_map <span class="sc">+</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> trib_ws, <span class="at">fill=</span><span class="cn">NA</span>, <span class="at">color=</span><span class="st">&#39;red&#39;</span>) <span class="sc">+</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> trib_pt, <span class="at">size=</span><span class="dv">3</span>, <span class="at">color =</span> <span class="st">&#39;pink&#39;</span>) </span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>cal_map</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># A close, but different watershed</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.61892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13731</span></span>
+<span></span>
+<span><span class="va">trib_ws</span> <span class="op">&lt;-</span> <span class="fu">streamstats_ws</span><span class="op">(</span><span class="st">'OR'</span>, <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">trib_pt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>ptid <span class="op">=</span> <span class="st">'Calapooia Trib'</span>, lon <span class="op">=</span> <span class="va">longitude</span>, lat <span class="op">=</span> <span class="va">latitude</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'lon'</span>, <span class="st">'lat'</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span> <span class="op">&lt;-</span> <span class="va">cal_map</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">trib_ws</span>, fill<span class="op">=</span><span class="cn">NA</span>, color<span class="op">=</span><span class="st">'red'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">trib_pt</span>, size<span class="op">=</span><span class="fl">3</span>, color <span class="op">=</span> <span class="st">'pink'</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">cal_map</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672" /></p>
+<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Let’s zoom into the problem. To do this we’ll use the <code>mapview</code> package. Here, we use <code>mapview::mapview()</code> to create an interactive map of the Calapooia watersheds.</p>
+<p>Let’s zoom into the problem. To do this we’ll use the <code>mapview</code> package. Here, we use <code><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview::mapview()</a></code> to create an interactive map of the Calapooia watersheds.</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>mapview<span class="sc">::</span><span class="fu">mapviewOptions</span>(<span class="at">fgb=</span><span class="cn">FALSE</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mapview</span>(cal_ws, <span class="at">alpha.regions=</span>.<span class="dv">08</span>) <span class="sc">+</span> </span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_pt, <span class="at">col.regions =</span> <span class="st">&#39;black&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(trib_ws, <span class="at">alpha.regions=</span>.<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(trib_pt, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>)  </span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/mapview">mapview</a></span><span class="op">)</span></span>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapviewOptions.html">mapviewOptions</a></span><span class="op">(</span>fgb<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_pt</span>, col.regions <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">trib_ws</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">trib_pt</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span>  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <div class="leaflet html-widget html-fill-item" id="htmlwidget-bdf35cae674dce611728" style="width:100%;height:371px;"></div>
@@ -366,50 +345,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>We can see that the second lat/lon delineated a very small watershed that appears to be a tributary to the mainstem of the Calapooia. This highlights one of the challenges of watershed delineation - small discrepancies in lat/lon can produce a vastely different boundary.</p>
 <p>In the next section, we’ll explore another method for watershed delineation.</p>
-</section>
-<section id="nhdplustools" class="level2" data-number="5.2">
-<h2 data-number="5.2"><span class="header-section-number">5.2</span> nhdplusTools</h2>
+</section><section id="nhdplustools" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="nhdplustools">
+<span class="header-section-number">5.2</span> nhdplusTools</h2>
 <p><code>nhdplusTools</code> is an <code>R</code> package that can access the Network Linked Data Index (NLDI) service, which provides navigation and extraction of NHDPlus data:</p>
 <p><a href="https://doi-usgs.github.io/nhdplusTools/">https://doi-usgs.github.io/nhdplusTools/</a></p>
 <p><code>nhdplusTools</code> includes network navigation options as well as watershed delineation. The delineation method differs from StreamStats in that the sub-catchments are pre-staged and based on the local catchments of the NHDPlus.To delineate a basin, we must identify the starting point and the NLDI service walks the network for us to generate the watershed.</p>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nhdplusTools)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calapooia Watershed</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.62892</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13113</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Simple feature option to generate point without any other attributes</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>cal_pt2 <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">st_point</span>(<span class="fu">c</span>(longitude, latitude)), <span class="at">crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the network location (NHDPlus common ID or COMID)</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>start_comid <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">discover_nhdplus_id</span>(cal_pt2)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine info into list (required by NLDI basin function)</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>ws_source <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">featureSource =</span> <span class="st">&quot;comid&quot;</span>, <span class="at">featureID =</span> start_comid)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>cal_ws2 <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nldi_basin</span>(<span class="at">nldi_feature =</span> ws_source)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>cal_map <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_ws2, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_pt2) <span class="sc">+</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>cal_map</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calapooia Watershed</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.62892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13113</span></span>
+<span></span>
+<span><span class="co"># Simple feature option to generate point without any other attributes</span></span>
+<span><span class="va">cal_pt2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Identify the network location (NHDPlus common ID or COMID)</span></span>
+<span><span class="va">start_comid</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/discover_nhdplus_id.html">discover_nhdplus_id</a></span><span class="op">(</span><span class="va">cal_pt2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine info into list (required by NLDI basin function)</span></span>
+<span><span class="va">ws_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>featureSource <span class="op">=</span> <span class="st">"comid"</span>, featureID <span class="op">=</span> <span class="va">start_comid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_ws2</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nldi_basin.html">get_nldi_basin</a></span><span class="op">(</span>nldi_feature <span class="op">=</span> <span class="va">ws_source</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_ws2</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_pt2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672" /></p>
+<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>The delineated watershed should look familiar since it is the Calapooia River watershed.</p>
 <p>However, you may notice the slight difference in the placement of the point and the outlet of the watershed relative to the StreamStats watershed.</p>
 <p>Let’s have a closer look at the two watersheds together:</p>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mapview<span class="sc">::</span><span class="fu">mapviewOptions</span>(<span class="at">fgb=</span><span class="cn">FALSE</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mapview</span>(cal_pt, <span class="at">col.regions =</span> <span class="st">&#39;black&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_ws, <span class="at">alpha.regions =</span> .<span class="dv">08</span>) <span class="sc">+</span> </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_ws2, <span class="at">alpha.regions =</span> .<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/mapview">mapview</a></span><span class="op">)</span></span>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapviewOptions.html">mapviewOptions</a></span><span class="op">(</span>fgb<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_pt</span>, col.regions <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws</span>, alpha.regions <span class="op">=</span> <span class="fl">.08</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws2</span>, alpha.regions <span class="op">=</span> <span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <div class="leaflet html-widget html-fill-item" id="htmlwidget-95465a905a02b679fc98" style="width:100%;height:371px;"></div>
@@ -419,29 +397,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>But, what about the small tributary?</p>
 <p>Although the points are separated by a distance, they produce the same watershed. This is because the watersheds are based the aggregation of pre-defined sub-catchments of the medium-resolution NHDPlus. Since the points fall within the same local sub-catchment, they have the same outlet and basin area.</p>
 <div class="cell">
-<div class="sourceCode" id="cb7"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Trib coordinates</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.61892</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13731</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>trib_pt2 <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">st_point</span>(<span class="fu">c</span>(longitude, latitude)), <span class="at">crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>start_comid <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">discover_nhdplus_id</span>(trib_pt2)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>ws_source <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">featureSource =</span> <span class="st">&quot;comid&quot;</span>, <span class="at">featureID =</span> start_comid)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>trib_ws2 <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nldi_basin</span>(<span class="at">nldi_feature =</span> ws_source)</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>streams <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">navigate_nldi</span>(ws_source, <span class="at">mode =</span> <span class="st">&quot;UT&quot;</span>, </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">distance_km =</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="st">&#39;UT_flowlines&#39;</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Use get_nhdplus to access the individual stream sub-catchments</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>cats <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nhdplus</span>(<span class="at">comid =</span> streams<span class="sc">$</span>nhdplus_comid,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">realization =</span> <span class="st">&#39;catchment&#39;</span>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="fu">mapview</span>(streams, <span class="at">legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_pt2, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(trib_pt2, <span class="at">col.regions =</span> <span class="st">&#39;blue&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_ws2, <span class="at">alpha.regions=</span>.<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cats, <span class="at">alpha.regions=</span>.<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;blue&#39;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Trib coordinates</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.61892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13731</span></span>
+<span></span>
+<span><span class="va">trib_pt2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span></span>
+<span><span class="va">start_comid</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/discover_nhdplus_id.html">discover_nhdplus_id</a></span><span class="op">(</span><span class="va">trib_pt2</span><span class="op">)</span></span>
+<span><span class="va">ws_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>featureSource <span class="op">=</span> <span class="st">"comid"</span>, featureID <span class="op">=</span> <span class="va">start_comid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">trib_ws2</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nldi_basin.html">get_nldi_basin</a></span><span class="op">(</span>nldi_feature <span class="op">=</span> <span class="va">ws_source</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">streams</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/navigate_nldi.html">navigate_nldi</a></span><span class="op">(</span><span class="va">ws_source</span>, mode <span class="op">=</span> <span class="st">"UT"</span>, </span>
+<span>                                       distance_km <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'UT_flowlines'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use get_nhdplus to access the individual stream sub-catchments</span></span>
+<span><span class="va">cats</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nhdplus.html">get_nhdplus</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">streams</span><span class="op">$</span><span class="va">nhdplus_comid</span>,</span>
+<span>                                  realization <span class="op">=</span> <span class="st">'catchment'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">streams</span>, legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_pt2</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">trib_pt2</span>, col.regions <span class="op">=</span> <span class="st">'blue'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws2</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cats</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'blue'</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <div class="leaflet html-widget html-fill-item" id="htmlwidget-b1826c606b99d3fa4e44" style="width:100%;height:371px;"></div>
@@ -458,7 +436,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class='callout-icon no-icon'></i>
+<i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
 Exercise
@@ -476,312 +454,304 @@ Exercise
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
-<i class='callout-icon no-icon'></i>
+<i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
 Exercise Solution
 </div>
-<div class='callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end'><i class='callout-toggle'></i></div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FedData)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tictoc)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nhdplusTools)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tic</span>()</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Logan River Watershed</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">41.707</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">111.855</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the lat/lon</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>start_point <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">st_point</span>(<span class="fu">c</span>(longitude, latitude)), <span class="at">crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Find COMID of this point</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>start_comid <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">discover_nhdplus_id</span>(start_point)</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a list object that defines the feature source and starting COMID</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>ws_source <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">featureSource =</span> <span class="st">&quot;comid&quot;</span>, <span class="at">featureID =</span> start_comid)</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Delineate basin</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>logan_ws <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nldi_basin</span>(<span class="at">nldi_feature =</span> ws_source) <span class="sc">%&gt;%</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Transform to EPSG 5070</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternate method</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># logan_ws &lt;- streamstats_ws(&#39;UT&#39;, longitude, latitude) %&gt;% </span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#   st_transform(crs = 5070)</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>nlcd <span class="ot">&lt;-</span> <span class="fu">get_nlcd</span>(</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">template =</span> logan_ws,</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2021</span>,</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="st">&#39;Logan&#39;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Project raster to EPSG 5070</span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">project</span>(<span class="st">&#39;epsg:5070&#39;</span>, <span class="at">method =</span> <span class="st">&#39;near&#39;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Mask the raster</span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">mask</span>(logan_ws) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clip the raster</span></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">crop</span>(logan_ws)</span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> nlcd) <span class="sc">+</span></span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> logan_ws,</span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="cn">NA</span>,</span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>          <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&#39;white&#39;</span>) <span class="sc">+</span></span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/FedData/">FedData</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dieghernan.github.io/tidyterra/">tidyterra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc">tictoc</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Logan River Watershed</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">41.707</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">111.855</span></span>
+<span></span>
+<span><span class="co"># Define the lat/lon</span></span>
+<span><span class="va">start_point</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Find COMID of this point</span></span>
+<span><span class="va">start_comid</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/discover_nhdplus_id.html">discover_nhdplus_id</a></span><span class="op">(</span><span class="va">start_point</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create a list object that defines the feature source and starting COMID</span></span>
+<span><span class="va">ws_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>featureSource <span class="op">=</span> <span class="st">"comid"</span>, featureID <span class="op">=</span> <span class="va">start_comid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Delineate basin</span></span>
+<span><span class="va">logan_ws</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nldi_basin.html">get_nldi_basin</a></span><span class="op">(</span>nldi_feature <span class="op">=</span> <span class="va">ws_source</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span></span>
+<span>  <span class="co"># Transform to EPSG 5070</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Alternate method</span></span>
+<span><span class="co"># logan_ws &lt;- streamstats_ws('UT', longitude, latitude) %&gt;% </span></span>
+<span><span class="co">#   st_transform(crs = 5070)</span></span>
+<span></span>
+<span><span class="va">nlcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nlcd.html">get_nlcd</a></span><span class="op">(</span></span>
+<span>  template <span class="op">=</span> <span class="va">logan_ws</span>,</span>
+<span>  year <span class="op">=</span> <span class="fl">2021</span>,</span>
+<span>  label <span class="op">=</span> <span class="st">'Logan'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  </span>
+<span>  <span class="co"># Project raster to EPSG 5070</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html">project</a></span><span class="op">(</span><span class="st">'epsg:5070'</span>, method <span class="op">=</span> <span class="st">'near'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Mask the raster</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html">mask</a></span><span class="op">(</span><span class="va">logan_ws</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Clip the raster</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crop.html">crop</a></span><span class="op">(</span><span class="va">logan_ws</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://dieghernan.github.io/tidyterra/reference/geom_spatraster.html">geom_spatraster</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">nlcd</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">logan_ws</span>,</span>
+<span>          fill <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>          lwd <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>          color <span class="op">=</span> <span class="st">'white'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672" /></p>
+<p><img src="watershed-delineation_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>logan_nlcd <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">extract</span>(nlcd, </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                             terra<span class="sc">::</span><span class="fu">vect</span>(logan_ws))</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>logan_nlcd <span class="sc">%&gt;%</span> </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Class) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> (count <span class="sc">/</span> <span class="fu">sum</span>(count)) <span class="sc">*</span> <span class="dv">100</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 15 × 3</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    Class                         count  percent</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;fct&gt;                         &lt;int&gt;    &lt;dbl&gt;</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 Open Water                      240  0.0151 </span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 Developed, Open Space         24184  1.52   </span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 Developed, Low Intensity      12049  0.756  </span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 Developed, Medium Intensity    7961  0.500  </span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 Developed High Intensity       1872  0.118  </span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 Barren Land (Rock/Sand/Clay)     86  0.00540</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 Deciduous Forest             441144 27.7    </span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 Evergreen Forest             451517 28.3    </span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 Mixed Forest                  47735  3.00   </span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 Shrub/Scrub                  568734 35.7    </span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 Grassland/Herbaceous           9819  0.616  </span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12 Pasture/Hay                    8310  0.522  </span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13 Cultivated Crops              13686  0.859  </span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14 Woody Wetlands                 5218  0.328  </span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15 Emergent Herbaceous Wetlands    605  0.0380</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13.33 sec elapsed</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="va">logan_nlcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">nlcd</span>, </span>
+<span>                             <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">logan_ws</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">logan_nlcd</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">Class</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>percent <span class="op">=</span> <span class="op">(</span><span class="va">count</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 15 × 3</span></span>
+<span><span class="co">#&gt;    Class                         count  percent</span></span>
+<span><span class="co">#&gt;    &lt;fct&gt;                         &lt;int&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 Open Water                      240  0.0151 </span></span>
+<span><span class="co">#&gt;  2 Developed, Open Space         24184  1.52   </span></span>
+<span><span class="co">#&gt;  3 Developed, Low Intensity      12049  0.756  </span></span>
+<span><span class="co">#&gt;  4 Developed, Medium Intensity    7961  0.500  </span></span>
+<span><span class="co">#&gt;  5 Developed High Intensity       1872  0.118  </span></span>
+<span><span class="co">#&gt;  6 Barren Land (Rock/Sand/Clay)     86  0.00540</span></span>
+<span><span class="co">#&gt;  7 Deciduous Forest             441144 27.7    </span></span>
+<span><span class="co">#&gt;  8 Evergreen Forest             451517 28.3    </span></span>
+<span><span class="co">#&gt;  9 Mixed Forest                  47735  3.00   </span></span>
+<span><span class="co">#&gt; 10 Shrub/Scrub                  568734 35.7    </span></span>
+<span><span class="co">#&gt; 11 Grassland/Herbaceous           9819  0.616  </span></span>
+<span><span class="co">#&gt; 12 Pasture/Hay                    8310  0.522  </span></span>
+<span><span class="co">#&gt; 13 Cultivated Crops              13686  0.859  </span></span>
+<span><span class="co">#&gt; 14 Woody Wetlands                 5218  0.328  </span></span>
+<span><span class="co">#&gt; 15 Emergent Herbaceous Wetlands    605  0.0380</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 13.33 sec elapsed</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 </div>
 <p>In the exercise above, we delineated a watershed from a latitude/longitude, transformed its projection, downloaded land cover raster data for the watershed, transformed its projection, masked and clipped the raster for mapping, and calculated the percent of each land cover type within the watershed boundary – all under 30 seconds.</p>
-</section>
-<section id="r-code-appendix" class="level2" data-number="5.3">
-<h2 data-number="5.3"><span class="header-section-number">5.3</span> R Code Appendix</h2>
+</section><section id="r-code-appendix" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="r-code-appendix">
+<span class="header-section-number">5.3</span> R Code Appendix</h2>
 <div class="cell">
 
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="sourceCode r cell-code"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create custom function to delineate watershed from StreamStats service</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>streamstats_ws <span class="ot">=</span> <span class="cf">function</span>(state, longitude, latitude){</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  p1 <span class="ot">=</span> <span class="st">&#39;https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode=&#39;</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  p2 <span class="ot">=</span> <span class="st">&#39;&amp;xlocation=&#39;</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  p3 <span class="ot">=</span> <span class="st">&#39;&amp;ylocation=&#39;</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  p4 <span class="ot">=</span> <span class="st">&#39;&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true&#39;</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  query <span class="ot">&lt;-</span>  <span class="fu">paste0</span>(p1, state, p2, <span class="fu">toString</span>(longitude), p3, <span class="fu">toString</span>(latitude), p4)</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  mydata <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(query, <span class="at">simplifyVector =</span> <span class="cn">FALSE</span>, <span class="at">simplifyDataFrame =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  poly_geojsonsting <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">toJSON</span>(mydata<span class="sc">$</span>featurecollection[[<span class="dv">2</span>]]<span class="sc">$</span>feature, <span class="at">auto_unbox =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  poly <span class="ot">&lt;-</span> geojsonio<span class="sc">::</span><span class="fu">geojson_sf</span>(poly_geojsonsting) </span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  poly</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Define location for delineation (Calapooia Watershed)</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>state <span class="ot">&lt;-</span> <span class="st">&#39;OR&#39;</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.62892</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13113</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Delineate watershed</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>cal_ws <span class="ot">&lt;-</span> <span class="fu">streamstats_ws</span>(<span class="st">&#39;OR&#39;</span>, longitude, latitude) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate point for plotting</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>cal_pt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ptid =</span> <span class="st">&#39;Calapooia River&#39;</span>, <span class="at">lon =</span> longitude, <span class="at">lat =</span> latitude)  <span class="sc">%&gt;%</span> </span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&#39;lon&#39;</span>, <span class="st">&#39;lat&#39;</span>), <span class="at">crs =</span> <span class="dv">4269</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>cal_map <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_ws, <span class="at">fill=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_pt, <span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>cal_map</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>state <span class="ot">&lt;-</span> <span class="st">&#39;OR&#39;</span></span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.62892</span></span>
-<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13113</span></span>
-<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> <span class="st">&#39;https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode=&#39;</span></span>
-<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">=</span> <span class="st">&#39;&amp;xlocation=&#39;</span></span>
-<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">=</span> <span class="st">&#39;&amp;ylocation=&#39;</span></span>
-<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>p4 <span class="ot">=</span> <span class="st">&#39;&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true&#39;</span></span>
-<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span>  <span class="fu">paste0</span>(p1, state, p2, <span class="fu">toString</span>(longitude), p3, <span class="fu">toString</span>(latitude), p4)</span>
-<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(query)</span>
-<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="co"># A close, but different watershed</span></span>
-<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.61892</span></span>
-<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13731</span></span>
-<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>trib_ws <span class="ot">&lt;-</span> <span class="fu">streamstats_ws</span>(<span class="st">&#39;OR&#39;</span>, longitude, latitude) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>trib_pt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ptid =</span> <span class="st">&#39;Calapooia Trib&#39;</span>, <span class="at">lon =</span> longitude, <span class="at">lat =</span> latitude)  <span class="sc">%&gt;%</span> </span>
-<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&#39;lon&#39;</span>, <span class="st">&#39;lat&#39;</span>), <span class="at">crs =</span> <span class="dv">4269</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>cal_map <span class="ot">&lt;-</span> cal_map <span class="sc">+</span></span>
-<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> trib_ws, <span class="at">fill=</span><span class="cn">NA</span>, <span class="at">color=</span><span class="st">&#39;red&#39;</span>) <span class="sc">+</span></span>
-<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> trib_pt, <span class="at">size=</span><span class="dv">3</span>, <span class="at">color =</span> <span class="st">&#39;pink&#39;</span>) </span>
-<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>cal_map</span>
-<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
-<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>mapview<span class="sc">::</span><span class="fu">mapviewOptions</span>(<span class="at">fgb=</span><span class="cn">FALSE</span>)</span>
-<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a><span class="fu">mapview</span>(cal_ws, <span class="at">alpha.regions=</span>.<span class="dv">08</span>) <span class="sc">+</span> </span>
-<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_pt, <span class="at">col.regions =</span> <span class="st">&#39;black&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(trib_ws, <span class="at">alpha.regions=</span>.<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span></span>
-<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(trib_pt, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>)  </span>
-<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nhdplusTools)</span>
-<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a><span class="co"># Calapooia Watershed</span></span>
-<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.62892</span></span>
-<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13113</span></span>
-<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a><span class="co"># Simple feature option to generate point without any other attributes</span></span>
-<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a>cal_pt2 <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">st_point</span>(<span class="fu">c</span>(longitude, latitude)), <span class="at">crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the network location (NHDPlus common ID or COMID)</span></span>
-<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a>start_comid <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">discover_nhdplus_id</span>(cal_pt2)</span>
-<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine info into list (required by NLDI basin function)</span></span>
-<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a>ws_source <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">featureSource =</span> <span class="st">&quot;comid&quot;</span>, <span class="at">featureID =</span> start_comid)</span>
-<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a>cal_ws2 <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nldi_basin</span>(<span class="at">nldi_feature =</span> ws_source)</span>
-<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a>cal_map <span class="ot">&lt;-</span> <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_ws2, <span class="at">fill =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> cal_pt2) <span class="sc">+</span></span>
-<span id="cb10-93"><a href="#cb10-93" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb10-94"><a href="#cb10-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-95"><a href="#cb10-95" aria-hidden="true" tabindex="-1"></a>cal_map</span>
-<span id="cb10-96"><a href="#cb10-96" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mapview)</span>
-<span id="cb10-97"><a href="#cb10-97" aria-hidden="true" tabindex="-1"></a>mapview<span class="sc">::</span><span class="fu">mapviewOptions</span>(<span class="at">fgb=</span><span class="cn">FALSE</span>)</span>
-<span id="cb10-98"><a href="#cb10-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-99"><a href="#cb10-99" aria-hidden="true" tabindex="-1"></a><span class="fu">mapview</span>(cal_pt, <span class="at">col.regions =</span> <span class="st">&#39;black&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb10-100"><a href="#cb10-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_ws, <span class="at">alpha.regions =</span> .<span class="dv">08</span>) <span class="sc">+</span> </span>
-<span id="cb10-101"><a href="#cb10-101" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_ws2, <span class="at">alpha.regions =</span> .<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) </span>
-<span id="cb10-102"><a href="#cb10-102" aria-hidden="true" tabindex="-1"></a><span class="co"># Trib coordinates</span></span>
-<span id="cb10-103"><a href="#cb10-103" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">44.61892</span></span>
-<span id="cb10-104"><a href="#cb10-104" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">123.13731</span></span>
-<span id="cb10-105"><a href="#cb10-105" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-106"><a href="#cb10-106" aria-hidden="true" tabindex="-1"></a>trib_pt2 <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">st_point</span>(<span class="fu">c</span>(longitude, latitude)), <span class="at">crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb10-107"><a href="#cb10-107" aria-hidden="true" tabindex="-1"></a>start_comid <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">discover_nhdplus_id</span>(trib_pt2)</span>
-<span id="cb10-108"><a href="#cb10-108" aria-hidden="true" tabindex="-1"></a>ws_source <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">featureSource =</span> <span class="st">&quot;comid&quot;</span>, <span class="at">featureID =</span> start_comid)</span>
-<span id="cb10-109"><a href="#cb10-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-110"><a href="#cb10-110" aria-hidden="true" tabindex="-1"></a>trib_ws2 <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nldi_basin</span>(<span class="at">nldi_feature =</span> ws_source)</span>
-<span id="cb10-111"><a href="#cb10-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-112"><a href="#cb10-112" aria-hidden="true" tabindex="-1"></a>streams <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">navigate_nldi</span>(ws_source, <span class="at">mode =</span> <span class="st">&quot;UT&quot;</span>, </span>
-<span id="cb10-113"><a href="#cb10-113" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">distance_km =</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-114"><a href="#cb10-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pluck</span>(<span class="st">&#39;UT_flowlines&#39;</span>)</span>
-<span id="cb10-115"><a href="#cb10-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-116"><a href="#cb10-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Use get_nhdplus to access the individual stream sub-catchments</span></span>
-<span id="cb10-117"><a href="#cb10-117" aria-hidden="true" tabindex="-1"></a>cats <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nhdplus</span>(<span class="at">comid =</span> streams<span class="sc">$</span>nhdplus_comid,</span>
-<span id="cb10-118"><a href="#cb10-118" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">realization =</span> <span class="st">&#39;catchment&#39;</span>)</span>
-<span id="cb10-119"><a href="#cb10-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-120"><a href="#cb10-120" aria-hidden="true" tabindex="-1"></a><span class="fu">mapview</span>(streams, <span class="at">legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
-<span id="cb10-121"><a href="#cb10-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_pt2, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb10-122"><a href="#cb10-122" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(trib_pt2, <span class="at">col.regions =</span> <span class="st">&#39;blue&#39;</span>) <span class="sc">+</span> </span>
-<span id="cb10-123"><a href="#cb10-123" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cal_ws2, <span class="at">alpha.regions=</span>.<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;red&#39;</span>) <span class="sc">+</span></span>
-<span id="cb10-124"><a href="#cb10-124" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mapview</span>(cats, <span class="at">alpha.regions=</span>.<span class="dv">08</span>, <span class="at">col.regions =</span> <span class="st">&#39;blue&#39;</span>) </span>
-<span id="cb10-125"><a href="#cb10-125" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-126"><a href="#cb10-126" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FedData)</span>
-<span id="cb10-127"><a href="#cb10-127" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span>
-<span id="cb10-128"><a href="#cb10-128" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyterra)</span>
-<span id="cb10-129"><a href="#cb10-129" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tictoc)</span>
-<span id="cb10-130"><a href="#cb10-130" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nhdplusTools)</span>
-<span id="cb10-131"><a href="#cb10-131" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb10-132"><a href="#cb10-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-133"><a href="#cb10-133" aria-hidden="true" tabindex="-1"></a><span class="fu">tic</span>()</span>
-<span id="cb10-134"><a href="#cb10-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-135"><a href="#cb10-135" aria-hidden="true" tabindex="-1"></a><span class="co"># Logan River Watershed</span></span>
-<span id="cb10-136"><a href="#cb10-136" aria-hidden="true" tabindex="-1"></a>latitude <span class="ot">&lt;-</span> <span class="fl">41.707</span></span>
-<span id="cb10-137"><a href="#cb10-137" aria-hidden="true" tabindex="-1"></a>longitude <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">111.855</span></span>
-<span id="cb10-138"><a href="#cb10-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-139"><a href="#cb10-139" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the lat/lon</span></span>
-<span id="cb10-140"><a href="#cb10-140" aria-hidden="true" tabindex="-1"></a>start_point <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(<span class="fu">st_point</span>(<span class="fu">c</span>(longitude, latitude)), <span class="at">crs =</span> <span class="dv">4269</span>)</span>
-<span id="cb10-141"><a href="#cb10-141" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-142"><a href="#cb10-142" aria-hidden="true" tabindex="-1"></a><span class="co"># Find COMID of this point</span></span>
-<span id="cb10-143"><a href="#cb10-143" aria-hidden="true" tabindex="-1"></a>start_comid <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">discover_nhdplus_id</span>(start_point)</span>
-<span id="cb10-144"><a href="#cb10-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-145"><a href="#cb10-145" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a list object that defines the feature source and starting COMID</span></span>
-<span id="cb10-146"><a href="#cb10-146" aria-hidden="true" tabindex="-1"></a>ws_source <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">featureSource =</span> <span class="st">&quot;comid&quot;</span>, <span class="at">featureID =</span> start_comid)</span>
-<span id="cb10-147"><a href="#cb10-147" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-148"><a href="#cb10-148" aria-hidden="true" tabindex="-1"></a><span class="co"># Delineate basin</span></span>
-<span id="cb10-149"><a href="#cb10-149" aria-hidden="true" tabindex="-1"></a>logan_ws <span class="ot">&lt;-</span> nhdplusTools<span class="sc">::</span><span class="fu">get_nldi_basin</span>(<span class="at">nldi_feature =</span> ws_source) <span class="sc">%&gt;%</span></span>
-<span id="cb10-150"><a href="#cb10-150" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-151"><a href="#cb10-151" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Transform to EPSG 5070</span></span>
-<span id="cb10-152"><a href="#cb10-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">5070</span>)</span>
-<span id="cb10-153"><a href="#cb10-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-154"><a href="#cb10-154" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternate method</span></span>
-<span id="cb10-155"><a href="#cb10-155" aria-hidden="true" tabindex="-1"></a><span class="co"># logan_ws &lt;- streamstats_ws(&#39;UT&#39;, longitude, latitude) %&gt;% </span></span>
-<span id="cb10-156"><a href="#cb10-156" aria-hidden="true" tabindex="-1"></a><span class="co">#   st_transform(crs = 5070)</span></span>
-<span id="cb10-157"><a href="#cb10-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-158"><a href="#cb10-158" aria-hidden="true" tabindex="-1"></a>nlcd <span class="ot">&lt;-</span> <span class="fu">get_nlcd</span>(</span>
-<span id="cb10-159"><a href="#cb10-159" aria-hidden="true" tabindex="-1"></a>  <span class="at">template =</span> logan_ws,</span>
-<span id="cb10-160"><a href="#cb10-160" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2021</span>,</span>
-<span id="cb10-161"><a href="#cb10-161" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="st">&#39;Logan&#39;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-162"><a href="#cb10-162" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-163"><a href="#cb10-163" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Project raster to EPSG 5070</span></span>
-<span id="cb10-164"><a href="#cb10-164" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">project</span>(<span class="st">&#39;epsg:5070&#39;</span>, <span class="at">method =</span> <span class="st">&#39;near&#39;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-165"><a href="#cb10-165" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-166"><a href="#cb10-166" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Mask the raster</span></span>
-<span id="cb10-167"><a href="#cb10-167" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">mask</span>(logan_ws) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-168"><a href="#cb10-168" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-169"><a href="#cb10-169" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clip the raster</span></span>
-<span id="cb10-170"><a href="#cb10-170" aria-hidden="true" tabindex="-1"></a>  terra<span class="sc">::</span><span class="fu">crop</span>(logan_ws)</span>
-<span id="cb10-171"><a href="#cb10-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-172"><a href="#cb10-172" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb10-173"><a href="#cb10-173" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_spatraster</span>(<span class="at">data =</span> nlcd) <span class="sc">+</span></span>
-<span id="cb10-174"><a href="#cb10-174" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> logan_ws,</span>
-<span id="cb10-175"><a href="#cb10-175" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="cn">NA</span>,</span>
-<span id="cb10-176"><a href="#cb10-176" aria-hidden="true" tabindex="-1"></a>          <span class="at">lwd =</span> <span class="fl">1.5</span>,</span>
-<span id="cb10-177"><a href="#cb10-177" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&#39;white&#39;</span>) <span class="sc">+</span></span>
-<span id="cb10-178"><a href="#cb10-178" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
-<span id="cb10-179"><a href="#cb10-179" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-180"><a href="#cb10-180" aria-hidden="true" tabindex="-1"></a>logan_nlcd <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">extract</span>(nlcd, </span>
-<span id="cb10-181"><a href="#cb10-181" aria-hidden="true" tabindex="-1"></a>                             terra<span class="sc">::</span><span class="fu">vect</span>(logan_ws))</span>
-<span id="cb10-182"><a href="#cb10-182" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-183"><a href="#cb10-183" aria-hidden="true" tabindex="-1"></a>logan_nlcd <span class="sc">%&gt;%</span> </span>
-<span id="cb10-184"><a href="#cb10-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Class) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-185"><a href="#cb10-185" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>()) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-186"><a href="#cb10-186" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> (count <span class="sc">/</span> <span class="fu">sum</span>(count)) <span class="sc">*</span> <span class="dv">100</span>)</span>
-<span id="cb10-187"><a href="#cb10-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-188"><a href="#cb10-188" aria-hidden="true" tabindex="-1"></a><span class="fu">toc</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create custom function to delineate watershed from StreamStats service</span></span>
+<span><span class="va">streamstats_ws</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">p1</span> <span class="op">=</span> <span class="st">'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='</span></span>
+<span>  <span class="va">p2</span> <span class="op">=</span> <span class="st">'&amp;xlocation='</span></span>
+<span>  <span class="va">p3</span> <span class="op">=</span> <span class="st">'&amp;ylocation='</span></span>
+<span>  <span class="va">p4</span> <span class="op">=</span> <span class="st">'&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true'</span></span>
+<span>  <span class="va">query</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">state</span>, <span class="va">p2</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">longitude</span><span class="op">)</span>, <span class="va">p3</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">latitude</span><span class="op">)</span>, <span class="va">p4</span><span class="op">)</span></span>
+<span>  <span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">fromJSON</a></span><span class="op">(</span><span class="va">query</span>, simplifyVector <span class="op">=</span> <span class="cn">FALSE</span>, simplifyDataFrame <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">poly_geojsonsting</span> <span class="op">&lt;-</span> <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html">toJSON</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">featurecollection</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">feature</span>, auto_unbox <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="va">poly</span> <span class="op">&lt;-</span> <span class="fu">geojsonio</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/geojsonio/reference/geojson_sf.html">geojson_sf</a></span><span class="op">(</span><span class="va">poly_geojsonsting</span><span class="op">)</span> </span>
+<span>  <span class="va">poly</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Define location for delineation (Calapooia Watershed)</span></span>
+<span><span class="va">state</span> <span class="op">&lt;-</span> <span class="st">'OR'</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.62892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13113</span></span>
+<span></span>
+<span><span class="co"># Delineate watershed</span></span>
+<span><span class="va">cal_ws</span> <span class="op">&lt;-</span> <span class="fu">streamstats_ws</span><span class="op">(</span><span class="st">'OR'</span>, <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate point for plotting</span></span>
+<span><span class="va">cal_pt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>ptid <span class="op">=</span> <span class="st">'Calapooia River'</span>, lon <span class="op">=</span> <span class="va">longitude</span>, lat <span class="op">=</span> <span class="va">latitude</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'lon'</span>, <span class="st">'lat'</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_ws</span>, fill<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_pt</span>, size<span class="op">=</span><span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span></span>
+<span><span class="va">state</span> <span class="op">&lt;-</span> <span class="st">'OR'</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.62892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13113</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op">=</span> <span class="st">'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='</span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="st">'&amp;xlocation='</span></span>
+<span><span class="va">p3</span> <span class="op">=</span> <span class="st">'&amp;ylocation='</span></span>
+<span><span class="va">p4</span> <span class="op">=</span> <span class="st">'&amp;crs=4269&amp;includeparameters=false&amp;includeflowtypes=false&amp;includefeatures=true&amp;simplify=true'</span></span>
+<span></span>
+<span><span class="va">query</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">state</span>, <span class="va">p2</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">longitude</span><span class="op">)</span>, <span class="va">p3</span>, <span class="fu"><a href="https://rdrr.io/r/base/toString.html">toString</a></span><span class="op">(</span><span class="va">latitude</span><span class="op">)</span>, <span class="va">p4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">query</span><span class="op">)</span></span>
+<span><span class="co"># A close, but different watershed</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.61892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13731</span></span>
+<span></span>
+<span><span class="va">trib_ws</span> <span class="op">&lt;-</span> <span class="fu">streamstats_ws</span><span class="op">(</span><span class="st">'OR'</span>, <span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">trib_pt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>ptid <span class="op">=</span> <span class="st">'Calapooia Trib'</span>, lon <span class="op">=</span> <span class="va">longitude</span>, lat <span class="op">=</span> <span class="va">latitude</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'lon'</span>, <span class="st">'lat'</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span> <span class="op">&lt;-</span> <span class="va">cal_map</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">trib_ws</span>, fill<span class="op">=</span><span class="cn">NA</span>, color<span class="op">=</span><span class="st">'red'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">trib_pt</span>, size<span class="op">=</span><span class="fl">3</span>, color <span class="op">=</span> <span class="st">'pink'</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="va">cal_map</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/mapview">mapview</a></span><span class="op">)</span></span>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapviewOptions.html">mapviewOptions</a></span><span class="op">(</span>fgb<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_pt</span>, col.regions <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">trib_ws</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">trib_pt</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span>  </span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calapooia Watershed</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.62892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13113</span></span>
+<span></span>
+<span><span class="co"># Simple feature option to generate point without any other attributes</span></span>
+<span><span class="va">cal_pt2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Identify the network location (NHDPlus common ID or COMID)</span></span>
+<span><span class="va">start_comid</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/discover_nhdplus_id.html">discover_nhdplus_id</a></span><span class="op">(</span><span class="va">cal_pt2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine info into list (required by NLDI basin function)</span></span>
+<span><span class="va">ws_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>featureSource <span class="op">=</span> <span class="st">"comid"</span>, featureID <span class="op">=</span> <span class="va">start_comid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_ws2</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nldi_basin.html">get_nldi_basin</a></span><span class="op">(</span>nldi_feature <span class="op">=</span> <span class="va">ws_source</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_ws2</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cal_pt2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cal_map</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/mapview">mapview</a></span><span class="op">)</span></span>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapviewOptions.html">mapviewOptions</a></span><span class="op">(</span>fgb<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_pt</span>, col.regions <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws</span>, alpha.regions <span class="op">=</span> <span class="fl">.08</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws2</span>, alpha.regions <span class="op">=</span> <span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> </span>
+<span><span class="co"># Trib coordinates</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">44.61892</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">123.13731</span></span>
+<span></span>
+<span><span class="va">trib_pt2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span></span>
+<span><span class="va">start_comid</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/discover_nhdplus_id.html">discover_nhdplus_id</a></span><span class="op">(</span><span class="va">trib_pt2</span><span class="op">)</span></span>
+<span><span class="va">ws_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>featureSource <span class="op">=</span> <span class="st">"comid"</span>, featureID <span class="op">=</span> <span class="va">start_comid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">trib_ws2</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nldi_basin.html">get_nldi_basin</a></span><span class="op">(</span>nldi_feature <span class="op">=</span> <span class="va">ws_source</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">streams</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/navigate_nldi.html">navigate_nldi</a></span><span class="op">(</span><span class="va">ws_source</span>, mode <span class="op">=</span> <span class="st">"UT"</span>, </span>
+<span>                                       distance_km <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'UT_flowlines'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use get_nhdplus to access the individual stream sub-catchments</span></span>
+<span><span class="va">cats</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nhdplus.html">get_nhdplus</a></span><span class="op">(</span>comid <span class="op">=</span> <span class="va">streams</span><span class="op">$</span><span class="va">nhdplus_comid</span>,</span>
+<span>                                  realization <span class="op">=</span> <span class="st">'catchment'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">streams</span>, legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_pt2</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">trib_pt2</span>, col.regions <span class="op">=</span> <span class="st">'blue'</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cal_ws2</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">cats</span>, alpha.regions<span class="op">=</span><span class="fl">.08</span>, col.regions <span class="op">=</span> <span class="st">'blue'</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/FedData/">FedData</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dieghernan.github.io/tidyterra/">tidyterra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc">tictoc</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Logan River Watershed</span></span>
+<span><span class="va">latitude</span> <span class="op">&lt;-</span> <span class="fl">41.707</span></span>
+<span><span class="va">longitude</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">111.855</span></span>
+<span></span>
+<span><span class="co"># Define the lat/lon</span></span>
+<span><span class="va">start_point</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">longitude</span>, <span class="va">latitude</span><span class="op">)</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4269</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Find COMID of this point</span></span>
+<span><span class="va">start_comid</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/discover_nhdplus_id.html">discover_nhdplus_id</a></span><span class="op">(</span><span class="va">start_point</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create a list object that defines the feature source and starting COMID</span></span>
+<span><span class="va">ws_source</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>featureSource <span class="op">=</span> <span class="st">"comid"</span>, featureID <span class="op">=</span> <span class="va">start_comid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Delineate basin</span></span>
+<span><span class="va">logan_ws</span> <span class="op">&lt;-</span> <span class="fu">nhdplusTools</span><span class="fu">::</span><span class="fu"><a href="https://doi-usgs.github.io/nhdplusTools/reference/get_nldi_basin.html">get_nldi_basin</a></span><span class="op">(</span>nldi_feature <span class="op">=</span> <span class="va">ws_source</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span></span>
+<span>  <span class="co"># Transform to EPSG 5070</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Alternate method</span></span>
+<span><span class="co"># logan_ws &lt;- streamstats_ws('UT', longitude, latitude) %&gt;% </span></span>
+<span><span class="co">#   st_transform(crs = 5070)</span></span>
+<span></span>
+<span><span class="va">nlcd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://docs.ropensci.org/FedData/reference/get_nlcd.html">get_nlcd</a></span><span class="op">(</span></span>
+<span>  template <span class="op">=</span> <span class="va">logan_ws</span>,</span>
+<span>  year <span class="op">=</span> <span class="fl">2021</span>,</span>
+<span>  label <span class="op">=</span> <span class="st">'Logan'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  </span>
+<span>  <span class="co"># Project raster to EPSG 5070</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html">project</a></span><span class="op">(</span><span class="st">'epsg:5070'</span>, method <span class="op">=</span> <span class="st">'near'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Mask the raster</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html">mask</a></span><span class="op">(</span><span class="va">logan_ws</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  </span>
+<span>  <span class="co"># Clip the raster</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crop.html">crop</a></span><span class="op">(</span><span class="va">logan_ws</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://dieghernan.github.io/tidyterra/reference/geom_spatraster.html">geom_spatraster</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">nlcd</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">logan_ws</span>,</span>
+<span>          fill <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>          lwd <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>          color <span class="op">=</span> <span class="st">'white'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">logan_nlcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">nlcd</span>, </span>
+<span>                             <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">logan_ws</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">logan_nlcd</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">Class</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>count <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>percent <span class="op">=</span> <span class="op">(</span><span class="va">count</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="quarto-navigation-envelope" class="hidden">
-<p><span class="hidden" data-render-id="quarto-int-sidebar-title">Spatial Analysis and Statistical Modeling with R and spmodel</span> <span class="hidden" data-render-id="quarto-int-navbar-title">Spatial Analysis and Statistical Modeling with R and spmodel</span> <span class="hidden" data-render-id="quarto-int-next"><span class="chapter-number">6</span>  <span class="chapter-title">StreamCat &amp; LakeCat</span></span> <span class="hidden" data-render-id="quarto-int-prev"><span class="chapter-number">4</span>  <span class="chapter-title">GIS in R</span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/index.html">Introduction</span> <span class="hidden" data-render-id="quarto-int-sidebar:/splm.html"><span class="chapter-number">1</span>  <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/splm-additional.html"><span class="chapter-number">2</span>  <span class="chapter-title">Additional <code>spmodel</code> Features</span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/spglm.html"><span class="chapter-number">3</span>  <span class="chapter-title">Generalized Linear Models</span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/gis-in-r.html"><span class="chapter-number">4</span>  <span class="chapter-title">GIS in R</span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/watershed-delineation.html"><span class="chapter-number">5</span>  <span class="chapter-title">Watershed Delineation in <code>R</code></span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/streamcattools.html"><span class="chapter-number">6</span>  <span class="chapter-title">StreamCat &amp; LakeCat</span></span> <span class="hidden" data-render-id="quarto-int-sidebar:/spatial-glm.html"><span class="chapter-number">7</span>  <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></span> <span class="hidden" data-render-id="footer-left">Workshop materials created by Michael Dumelle and Ryan Hill</span> <span class="hidden" data-render-id="footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</span></p>
-</div>
-<div id="quarto-meta-markdown" class="hidden">
-<p><span class="hidden" data-render-id="quarto-metatitle">Spatial Analysis and Statistical Modeling with R and spmodel - <span id="watershed-delineation" class="quarto-section-identifier"><span class="chapter-number">5</span>  <span class="chapter-title">Watershed Delineation in <code>R</code></span></span></span> <span class="hidden" data-render-id="quarto-twittercardtitle">Spatial Analysis and Statistical Modeling with R and spmodel - <span id="watershed-delineation" class="quarto-section-identifier"><span class="chapter-number">5</span>  <span class="chapter-title">Watershed Delineation in <code>R</code></span></span></span> <span class="hidden" data-render-id="quarto-ogcardtitle">Spatial Analysis and Statistical Modeling with R and spmodel - <span id="watershed-delineation" class="quarto-section-identifier"><span class="chapter-number">5</span>  <span class="chapter-title">Watershed Delineation in <code>R</code></span></span></span> <span class="hidden" data-render-id="quarto-metasitename">Spatial Analysis and Statistical Modeling with R and spmodel</span></p>
-</div>
-</section>
 
-</main> <!-- /main -->
-<script id = "quarto-html-after-body" type="application/javascript">
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -913,33 +883,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a  href="/gis-in-r.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class='chapter-number'>4</span>  <span class='chapter-title'>GIS in R</span></span>
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./gis-in-r.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a  href="/streamcattools.html" class="pagination-link">
-        <span class="nav-page-text"><span class='chapter-number'>6</span>  <span class='chapter-title'>StreamCat & LakeCat</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./streamcattools.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
-<footer class="footer">
-  <div class="nav-footer">
-    <div class="nav-footer-left">
-      <div class='footer-contents'>Workshop materials created by Michael Dumelle and Ryan Hill
-</div>  
-    </div>   
-    <div class="nav-footer-right">
-      <div class='footer-contents'>This book was built with <a href="https://quarto.org/">Quarto</a>.
-</div>  
-    </div>
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">Workshop materials created by Michael Dumelle and Ryan Hill</div>   
+    <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
   </div>
 </footer>
 
-</body>
 
-</html>
+</body></html>

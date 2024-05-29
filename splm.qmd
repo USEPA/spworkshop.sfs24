@@ -397,11 +397,19 @@ We do not recommend using pseudo R-squared as a criteria by which to compare mod
 
 :::
 
-#### Some Model Selection Strategies
+#### Model Selection Strategies
 
-TEXT TEXT TEXT TEXT
+We use models to simplify and explain incredibly complex systems. As George Box noted, all models are wrong but some are useful. In short, model selection is a challenging problem, and people approach it with varying perspectives. Some prefer a single model be hypothesized and fit based on first principles, some prefer using algorithmic approaches like stepwise regression to find the most appropriate model, and some people are in between. We think it is reasonable to use your expert knowledge of the system being studied to determine a set of candidate models. Then, you can combine this expert knowledge with empirical tools like AIC, AICc, likelihood ratio tests, and cross validation to distinguish among these candidate models and determine the most appropriate model. We note that even if model selection is performed on fixed effects and covariance structures simultaneously using maximum likelihood (`estmethod = "ml"`) and AIC, AICc, and/or likelihood ratio tests, that the most appropriate model should then be refit using restricted maximum likelihood (`estmethod = "reml"`) before proceeding with model interpretation and, eventually, spatial prediction at unobserved locations. @zuur2009mixed, @johnson2004model, and @zimmerman2024spatial provide further insights.
 
-## Spatial Prediction
+::: {.callout-tip}
+
+If you don't know which spatial covariance types to start with, try `spcov_type = "exponential"` and `spcov_type = "gaussian"`. These two are well-understood and have notably different covariance behavior for observations that are close to one another. It is not uncommon to see little difference in model fit between spatial models while still seeing a dramatic difference in model fit between spatial models and nonspatial models. To see a list of all spatial covariance types, run `help("splm", "spmodel")` or visit [this link](https://usepa.github.io/spmodel/reference/splm.html).
+
+:::
+
+## Spatial Prediction {#sec-sp-pred}
+
+We could use `spmod` from the `moss` data to make spatial predictions of log Zinc at different locations of interest near the haul road. However, to familiarize ourselves with more of the example data sets in `spmodel`, we will switch gears and use the `moose` data to build a model and make spatial predictions at the locations in `moose_preds`.
 
 ### Data Introduction
 
@@ -425,7 +433,7 @@ From our plot, we see that there are a large number of observed moose counts at 
 ::: {.callout-note}
 ### Note
 
-We also see in the plot that the spatial locations in the survey were clearly not randomly selected. Random selection of spatial locations is only required for inference in design-based analyses. For model-based analyses, random selection of spatial locations is not necessarily an assumption (@brus2021statistical; @dumelle2022comparison).
+We also see in the plot that the spatial locations in the survey were clearly not randomly selected. Random selection of spatial locations is only required for inference in design-based analyses. For model-based analyses, random selection of spatial locations is not necessarily an assumption. See @brus2021statistical and @dumelle2022comparison for more.
 :::
 
 ### Moose Count Predictions
