@@ -229,7 +229,7 @@ div.csl-indent {
   <li>
 <a href="#model-comparison" id="toc-model-comparison" class="nav-link" data-scroll-target="#model-comparison"><span class="toc-section-number">1.2.4</span>  Model Comparison</a>
   <ul class="collapse">
-<li><a href="#some-model-selection-strategies" id="toc-some-model-selection-strategies" class="nav-link" data-scroll-target="#some-model-selection-strategies"><span class="toc-section-number">1.2.4.1</span>  Some Model Selection Strategies</a></li>
+<li><a href="#model-selection-strategies" id="toc-model-selection-strategies" class="nav-link" data-scroll-target="#model-selection-strategies"><span class="toc-section-number">1.2.4.1</span>  Model Selection Strategies</a></li>
   </ul>
 </li>
   </ul>
@@ -945,11 +945,12 @@ Caution
 <p>We do not recommend using pseudo R-squared as a criteria by which to compare models, as it is simply a descriptive statistic that provides insight model fit. The “predictive” R-squared statistic (<code>cor2</code> in <code><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv()</a></code>) is a type of R-squared statistic that can be compared across models.Instead, consider the <code>cor2</code> statistic, which is a type of R-squared statistic that is generally comparable across models.</p>
 </div>
 </div>
-<section id="some-model-selection-strategies" class="level4" data-number="1.2.4.1"><h4 data-number="1.2.4.1" class="anchored" data-anchor-id="some-model-selection-strategies">
-<span class="header-section-number">1.2.4.1</span> Some Model Selection Strategies</h4>
-<p>TEXT TEXT TEXT TEXT</p>
+<section id="model-selection-strategies" class="level4" data-number="1.2.4.1"><h4 data-number="1.2.4.1" class="anchored" data-anchor-id="model-selection-strategies">
+<span class="header-section-number">1.2.4.1</span> Model Selection Strategies</h4>
+<p>We use models to simplify and explain incredibly complex systems. As George Box noted, all models are wrong but some are useful. In short, model selection is a challenging problem, and people approach it with varying perspectives. Some prefer a single model be hypothesized and fit based on first principles, some prefer using algorithmic approaches like stepwise regression to find the most appropriate model, and some people are in between. We think it is reasonable to use your expert knowledge of the system being studied to determine a set of candidate models. Then, you can combine this expert knowledge with empirical tools like AIC, AICc, likelihood ratio tests, and cross validation to distinguish among these candidate models and determine the most appropriate model. We note that even if model selection is performed on fixed effects and covariance structures simultaneously using maximum likelihood (<code>estmethod = "ml"</code>) and AIC, AICc, and/or likelihood ratio tests, that the most appropriate model should then be refit using restricted maximum likelihood (<code>estmethod = "reml"</code>) before proceeding with model interpretation and, eventually, spatial prediction at unobserved locations. <span class="citation" data-cites="zuur2009mixed">Zuur et al. (<a href="references.html#ref-zuur2009mixed" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="johnson2004model">Johnson and Omland (<a href="references.html#ref-johnson2004model" role="doc-biblioref">2004</a>)</span>, and <span class="citation" data-cites="zimmerman2024spatial">Zimmerman and Ver Hoef (<a href="references.html#ref-zimmerman2024spatial" role="doc-biblioref">2024</a>)</span> provide further insights.</p>
 </section></section></section><section id="spatial-prediction" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="spatial-prediction">
 <span class="header-section-number">1.3</span> Spatial Prediction</h2>
+<p>We could use <code>spmod</code> from the <code>moss</code> data to make spatial predictions of log Zinc at different locations of interest near the haul road. However, to familiarize ourselves with more of the example data sets in <code>spmodel</code>, we will switch gears and use the <code>moose</code> data to build a model and make spatial predictions at the locations in <code>moose_preds</code>.</p>
 <section id="data-introduction-1" class="level3" data-number="1.3.1"><h3 data-number="1.3.1" class="anchored" data-anchor-id="data-introduction-1">
 <span class="header-section-number">1.3.1</span> Data Introduction</h3>
 <p>The <code>moose</code> data in the <code>spmodel</code> package contains observations from a moose survey in Alaska. The Alaska Department of Fish and Game performed the survey on 218 spatial locations throughout the region of interest. Our goal is to predict the moose count in 100 spatial locations in the <code>moose_pred</code> data frame that were not surveyed. Both <code>elev</code>, the elevation of the spatial location, and <code>strat</code>, a stratification variable based on landscape metrics that is either <code>"L"</code> for Low or <code>"M"</code> for medium, are possible predictors for moose <code>count</code>.</p>
@@ -1295,8 +1296,17 @@ Dumelle, Michael, Matt Higham, Jay M Ver Hoef, Anthony R Olsen, and Lisa Madsen.
 <div id="ref-hastie2009elements" class="csl-entry" role="doc-biblioentry">
 Hastie, Trevor, Robert Tibshirani, Jerome H Friedman, and Jerome H Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>. Vol. 2. Springer.
 </div>
+<div id="ref-johnson2004model" class="csl-entry" role="doc-biblioentry">
+Johnson, Jerald B, and Kristian S Omland. 2004. <span>“Model Selection in Ecology and Evolution.”</span> <em>Trends in Ecology &amp; Evolution</em> 19 (2): 101–8.
+</div>
 <div id="ref-pebesma2018sf" class="csl-entry" role="doc-biblioentry">
 Pebesma, Edzer. 2018. <span>“<span class="nocase">Simple Features for R: Standardized Support for Spatial Vector Data</span>.”</span> <em><span>The R Journal</span></em> 10 (1): 439–46. <a href="https://doi.org/10.32614/RJ-2018-009">https://doi.org/10.32614/RJ-2018-009</a>.
+</div>
+<div id="ref-zimmerman2024spatial" class="csl-entry" role="doc-biblioentry">
+Zimmerman, Dale L, and Jay M Ver Hoef. 2024. <em>Spatial Linear Models for Environmental Data</em>. CRC Press.
+</div>
+<div id="ref-zuur2009mixed" class="csl-entry" role="doc-biblioentry">
+Zuur, Alain F, Elena N Ieno, Neil J Walker, Anatoly A Saveliev, Graham M Smith, et al. 2009. <em>Mixed Effects Models and Extensions in Ecology with r</em>. Vol. 574. Springer.
 </div>
 </div>
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">

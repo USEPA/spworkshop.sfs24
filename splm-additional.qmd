@@ -25,18 +25,18 @@ __Goals__:
     * Fit a spatial linear model with a partition factor.
     * Fix certain spatial covariance parameters at known values.
     * Fit a random forest spatial residual linear model and make predictions.
-* Use the `spautor()` function in `spmodel` to fit a spatial linear model to areal data.
+* Use the `spautor()` function in `spmodel` to fit a spatial linear model to areal data:
     * Connect parameter estimates in the summary output of `spautor()` to the spatial linear model introduced in @eq-splm in @sec-splm.
-    * Apply some of the other functions introduced in @sec-model-fitting to a model object fit with `spautor()`.
-* Simulate spatial Gaussian data using `sprnorm()`
+    * Apply some of the other functions introduced in @sec-splm to a model object fit with `spautor()`.
+* Simulate spatial Gaussian data using `sprnorm()`.
 
 ## Big Spatial Data
 
-For large observed data sets, fitting spatial linear models or making predictions is challenging because these operations require products that involve $\boldsymbol{\Sigma}^{-1}$, which are computationally challenging to obtain. Typically, samples sizes approaching around 10,000 make model fitting or prediction infeasible on a standard computer in a reasonable amount of time (your definition of this may vary). This necessitates the use of model fitting and prediction tools that work for large data sets. `spmodel` offers big data methods for model fitting and prediction for point-referenced data via the `local` argument to `splm()` and `predict()`.
+For large observed data sets, fitting spatial linear models or making predictions is challenging because these operations require a covariance matrix inverse, which are computationally challenging to obtain. Typically, observed data samples sizes approaching around 10,000 make model fitting or prediction infeasible on a standard computer in a reasonable amount of time (your definition of this may vary). This necessitates the use of model fitting and prediction tools that work for large data sets. `spmodel` offers big data methods for model fitting and prediction for point-referenced data via the `local` argument to `splm()` and `predict()`.
 
 ### Model Fitting
 
-`spmodel` implements "local" spatial indexing as described by @hoef2023indexing. Observations are first assigned an index. Then for the purposes of model fitting, observations with different indexes are assumed uncorrelated. Assuming observations with different indexes are uncorrelated induces sparsity in the covariance matrix, which greatly reduces the computational time required for operations that involve $\mathbf{\Sigma}^{-1}$. Models fit using spatial indexing are capable of fitting models with hundreds of thousands of observations relatively quickly. @hoef2023indexing showed that in a variety of scenarios, spatial indexing yielded fixed effect confidence intervals with proper coverage.
+`spmodel` implements "local" spatial indexing as described by @hoef2023indexing. Observations are first assigned an index. Then for the purposes of model fitting, observations with different indexes are assumed uncorrelated. Assuming observations with different indexes are uncorrelated induces sparsity in the covariance matrix, which greatly reduces the computational time required for operations that involve its inverse. Models fit using spatial indexing are capable of fitting models with hundreds of thousands of observations relatively quickly. @hoef2023indexing showed that in a variety of scenarios, spatial indexing yielded fixed effect confidence intervals with proper coverage.
 
 To illustrate spatial indexing in `spmodel`, we first simulate a response variable `sim_response` with `5000` observations at random spatial locations in the unit square (`sim_coords`). Then we place the response and coordinates in a `data.frame`:
 
@@ -49,8 +49,7 @@ x <- runif(n)
 y <- runif(n)
 sim_coords <- data.frame(x, y)
 
-sim_response <- sprnorm(sim_params, data = sim_coords,
-                        xcoord = x, ycoord = y)
+sim_response <- sprnorm(sim_params, data = sim_coords, xcoord = x, ycoord = y)
 sim_data <- data.frame(sim_coords, sim_response)
 ```
 
@@ -134,6 +133,10 @@ ggplot(sim_preds, aes(x = x, y = y, color = preds)) +
 These predictions at the unobserved locations closely match the pattern of the observed data.
 
 The other way to specify `local` in `predict()` (or `augment()`) is via a list object, which offers much more control and customization over the local neighborhood prediction. To learn more, read about `local` in `predict()`'s (or `augment()`'s) help page by running `?predict.spmodel` (or `?augment.spmodel`).
+
+::: {.callout-note}
+Most of the computational burden associated with prediction is actually from the observed data sample size used to fit the model (because an inverse is needed). As long as the observed data sample sizes are a few thousand or fewer, local prediction is not imperative, no matter the size of the prediction data. Note that parallel process can be used whether or not local prediction is implemented.
+:::
 
 ::: {.callout-tip}
 `loocv()` also has a `local` argument for large data sets that is structured the same as `local` for `predict()` (and `augment()`).
