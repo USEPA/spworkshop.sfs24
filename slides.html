@@ -1826,7 +1826,7 @@ j &amp; = 1, 2, \dots, n
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_7cea49c5" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_ee71a939" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls">
 <button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
 </div>
@@ -2059,7 +2059,7 @@ Projected CRS: NAD83 / Alaska Albers
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_02992878" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_a55eda89" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls">
 <button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
 </div>
@@ -2082,10 +2082,12 @@ Projected CRS: NAD83 / Alaska Albers
 </div>
 </div>
 </div></section><section id="your-turn-2" class="slide level2"><h2>Your Turn</h2>
+<div class="task">
 <p>Use <code>spmodel</code>’s plot function on the <code>spmod</code> object to construct a plot of the fitted spatial covariance vs spatial distance. To learn more about the options for <code>spmodel</code>’s plot function, run <code>?plot.spmodel</code>.</p>
+</div>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_6530c033" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_4ce2f820" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls">
 <button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
 </div>
@@ -2103,10 +2105,12 @@ Projected CRS: NAD83 / Alaska Albers
 <span id="cb15-2"><a href="#cb15-2"></a>              <span class="at">spcov_type =</span> <span class="st">&quot;none&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section><section id="your-turn-3" class="slide level2"><h2>Your Turn</h2>
+<div class="task">
 <p>Using <code>sumamry()</code>, compare the output of the <code>none</code> model fit via <code>splm()</code> to a model fit via <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>. Do you get the same estimates and standard errors?</p>
+</div>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_a8931dba" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_e6f0ea96" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls">
 <button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
 </div>
@@ -2328,7 +2332,8 @@ Projected CRS: NAD83 / Alaska Albers
 </h2>
 <p>Using <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">predict</span>(moosemod, <span class="at">newdata =</span> moose_preds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co"># results omitted</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="fu">predict</span>(moosemod, <span class="at">newdata =</span> moose_preds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Using <code>augment()</code></p>
 <div class="cell">
@@ -2385,7 +2390,221 @@ Projected CRS: NAD83 / Alaska Albers
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<div class="countdown" id="timer_a90bc26d" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown" id="timer_cf746d84" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls">
+<button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
+</div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+</div>
+</div>
+</section><section id="additional-features" class="slide level2"><h2>Additional Features</h2>
+<p>Applications to:</p>
+<ul>
+<li>Big spatial data</li>
+<li>Nonspatial random effects</li>
+<li>Simulating spatial data</li>
+<li>And much more!</li>
+<li>See Chapter 2 of the workbook</li>
+</ul></section></section><section><section id="spatial-generalized-linear-models-in-spmodel" class="title-slide slide level1 center"><h1>Spatial Generalized Linear Models in <code>spmodel</code>
+</h1>
+
+</section><section id="goals-1" class="slide level2"><h2>Goals</h2>
+<div class="goals">
+<ol type="1">
+<li>Explain how modeling spatial covariance fits within the structure of a generalized linear model.</li>
+<li>Use the <code>spglm()</code> function in <code>spmodel</code> to fit generalized linear models for various model families (i.e., response distributions).</li>
+</ol>
+</div>
+</section><section id="the-spatial-generalized-linear-model" class="slide level2"><h2>The Spatial Generalized Linear Model</h2>
+<p>The spatial generalized linear model can be written as</p>
+<p><span class="math display">\[
+g(\boldsymbol{\mu}) = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
+\]</span></p>
+<ul>
+<li>
+<span class="math inline">\(g(\boldsymbol{\mu})\)</span> is the link function that “links” a function of the mean of <span class="math inline">\(\mathbf{y}\)</span> to <span class="math inline">\(\mathbf{X} \boldsymbol{\beta}\)</span>, <span class="math inline">\(\boldsymbol{\tau}\)</span>, and <span class="math inline">\(\boldsymbol{\epsilon}\)</span>
+</li>
+</ul></section><section id="response-distributions" class="slide level2"><h2>Response Distributions</h2>
+<table>
+<caption>Response distributions and link functions available in <code>spmodel</code>
+</caption>
+<thead><tr class="header">
+<th>Distribution</th>
+<th>Data Type</th>
+<th>Link Function</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Poisson</td>
+<td>Count</td>
+<td>Log</td>
+</tr>
+<tr class="even">
+<td>Negative Binomial</td>
+<td>Count</td>
+<td>Log</td>
+</tr>
+<tr class="odd">
+<td>Binomial</td>
+<td>Binary</td>
+<td>Logit</td>
+</tr>
+<tr class="even">
+<td>Beta</td>
+<td>Proportion</td>
+<td>Logit</td>
+</tr>
+<tr class="odd">
+<td>Gamma</td>
+<td>Skewed</td>
+<td>Log</td>
+</tr>
+<tr class="even">
+<td>Inverse Gaussian</td>
+<td>Skewed</td>
+<td>Log</td>
+</tr>
+</tbody>
+</table></section><section id="the-moose-data-2" class="slide level2"><h2>The <code>moose</code> Data</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table>
+<thead><tr class="header">
+<th style="text-align: right;">elev</th>
+<th style="text-align: left;">strat</th>
+<th style="text-align: right;">count</th>
+<th style="text-align: left;">presence</th>
+<th style="text-align: left;">geometry</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">468.9</td>
+<td style="text-align: left;">L</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">POINT (293542.6 1541016)</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">362.3</td>
+<td style="text-align: left;">L</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">POINT (298313.1 1533972)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">172.8</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">POINT (281896.4 1532516)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section><section id="fit-a-spatial-generalized-model" class="slide level2"><h2>Fit a Spatial Generalized Model</h2>
+<ul>
+<li>What about a count model for moose?</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>poismod <span class="ot">&lt;-</span> <span class="fu">spglm</span>(count <span class="sc">~</span> elev <span class="sc">*</span> strat, <span class="at">data =</span> moose,</span>
+<span id="cb30-2"><a href="#cb30-2"></a>                 <span class="at">family =</span> poisson, <span class="at">spcov_type =</span> <span class="st">&quot;spherical&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>The <code>family</code> argument can be <code>binomial</code>, <code>beta</code>, <code>poisson</code>, <code>nbinomial</code>, <code>Gamma</code>, or <code>inverse.gaussian</code>
+</li>
+<li>Similarities between <code>spglm()</code> and <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code>
+</li>
+</ul></section><section id="fit-a-spatial-generalized-model-1" class="slide level2"><h2>Fit a Spatial Generalized Model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">summary</span>(poismod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+spglm(formula = count ~ elev * strat, family = poisson, data = moose, 
+    spcov_type = &quot;spherical&quot;)
+
+Deviance Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.4245 -0.7783 -0.3653  0.1531  0.5900 
+
+Coefficients (fixed):
+             Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) -2.230575   0.958201  -2.328 0.019919 *  
+elev         0.007623   0.003129   2.437 0.014820 *  
+stratM       2.752234   0.782853   3.516 0.000439 ***
+elev:stratM -0.010248   0.004472  -2.292 0.021928 *  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Pseudo R-squared: 0.09573
+
+Coefficients (spherical spatial covariance):
+       de        ie     range 
+    3.892     1.163 51204.657 
+
+Coefficients (Dispersion for poisson family):
+dispersion 
+         1 </code></pre>
+</div>
+</div>
+</section><section id="your-turn-5" class="slide level2"><h2>Your Turn</h2>
+<div class="task">
+<p>Fit a spatial negative binomial model to the <code>moose</code> data with <code>count</code> as the response, <code>elev</code>, <code>strat</code>, and their interaction as predictors, and the <code>&quot;gaussian&quot;</code> spatial covariance function. Compare their fits using <code>glances()</code> and <code>loocv()</code>. Which model is preferable based on AIC/AICc? What about leave-one-out MSPE?</p>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="countdown" id="timer_5eb6991f" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
+<div class="countdown-controls">
+<button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
+</div>
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
+</div>
+</div>
+</section><section id="spatial-predictions-for-moose_preds-2" class="slide level2"><h2>Spatial Predictions for <code>moose_preds</code>
+</h2>
+<p>Using <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="co"># results omitted</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="fu">predict</span>(poismod, <span class="at">newdata =</span> moose_preds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using <code>augment()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="fu">augment</span>(poismod, <span class="at">newdata =</span> moose_preds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+</section><section id="spatial-predictions-for-moose_preds-2-output" class="slide level2 output-location-slide"><h2>Spatial Predictions for <code>moose_preds</code>
+</h2><div class="cell output-location-slide">
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 100 features and 3 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 269386.2 ymin: 1418453 xmax: 419976.2 ymax: 1541763
+Projected CRS: NAD83 / Alaska Albers
+# A tibble: 100 × 4
+    elev strat .fitted           geometry
+ * &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt;        &lt;POINT [m]&gt;
+ 1  143. L      0.207  (401239.6 1436192)
+ 2  324. L     -0.0563 (352640.6 1490695)
+ 3  158. L     -1.24   (360954.9 1491590)
+ 4  221. M     -1.16   (291839.8 1466091)
+ 5  209. M      1.78   (310991.9 1441630)
+ 6  218. L     -1.84   (304473.8 1512103)
+ 7  127. L     -2.80   (339011.1 1459318)
+ 8  122. L     -2.45   (342827.3 1463452)
+ 9  191  L     -0.409  (284453.8 1502837)
+10  105. L     -1.10   (391343.9 1483791)
+# ℹ 90 more rows</code></pre>
+</div>
+</div></section><section id="your-turn-6" class="slide level2"><h2>Your Turn</h2>
+<div class="task">
+<p>Use <code>spglm()</code> to fit a spatial logistic regression model to the <code>moose</code> data using <code>presence</code> as the response variable and a Cauchy covariance function. Then, find the predicted probabilities that moose are present at the spatial locations in <code>moose_preds</code> (Hint: Use the <code>type</code> argument in <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> or <code>augment()</code>).</p>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="countdown" id="timer_3beeec89" data-update-every="1" tabindex="0" style="right:0;bottom:0;">
 <div class="countdown-controls">
 <button class="countdown-bump-down">−</button><button class="countdown-bump-up">&amp;plus;</button>
 </div>
