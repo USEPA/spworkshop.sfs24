@@ -102,6 +102,8 @@ To write an `sf` object out as an ESRI shapefile:
 To read an ESRI shapefile:
 
 `oregon_cities <- st_read('oregon_cities.shp')`
+
+These operations can also be done with `write_sf` and `read_sf` but with slightly different options.
 :::
 
 
@@ -111,7 +113,7 @@ When we print the `oregon_cities` object, we can see it has changed from being a
 - Bounding box
 - Coordinate reference system
 
-In addition, we see that the latitude and longitude columns have been moved to a new column called `"geometry"` that appears in parentheses. Unlike shapefiles or older vector data types, simple features contain the geometric information in a single column. An important note about the geometry column is that it is "sticky", meaning that we can manipulate the sf object, such as with select in `tidyverse` (e.g., with `dplyr`) without explicitly referencing the geometry column without losing it:
+In addition, we see that the latitude and longitude columns have been moved to a new column called `"geometry"` that appears in parentheses. Unlike sp, simple features contain the geometric information in a single column. An important note about the geometry column is that it is "sticky", meaning that we can manipulate the sf object, such as with select in `tidyverse` (e.g., with `dplyr`) without explicitly referencing the geometry column without losing it:
 
 ```{r, warning=F, message=F}
 library(tidyverse)
@@ -128,7 +130,7 @@ In the above example, we selected the cities column and the returned feature sti
 
 Although a full discussion of geographic projections is beyond the scope of this workshop, it's worth understanding how they affect geographic data.
 
-![Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html](C:/Users/RHill04/WorkFolder/Lixo/sfs2024workshop/figures/crs-comparisons.jpg)
+![Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html](figures/crs-comparisons.jpg)
 
 When we created the `oregon_cities` object, we defined the coordinate reference system with `crs = 4269`. Likewise, we can use the EPSG reference number of the Albers Equal-Area Conic Projection to transform the spatial object. At [epsg.org](epsg.org), we can see that this code is 5070.
 
