@@ -349,6 +349,81 @@ Use `spmodel`'s plot function on the `spmod` object to construct a plot of the f
 countdown(minutes = 3)
 ```
 
+## Model Comparison
+
+* Fit a nonspatial linear model using `splm()` and `spcov_type = "none"`
+
+```{r}
+none <- splm(formula = log_Zn ~ log_dist2road, data = moss,
+              spcov_type = "none")
+```
+
+## Your Turn
+
+Using `sumamry()`, compare the output of the `none` model fit via `splm()` to a model fit via `lm()`. Do you get the same estimates and standard errors?
+
+```{r}
+#| echo: false
+
+countdown(minutes = 3)
+```
+
+## AIC and AICc
+
+* `glances()` lets us compare the fit of several models simultaneously
+* The lower the AIC/AICc, the better the fit
+```{r}
+glances(spmod, none)
+```
+
+* The spatial model has a much lower AIC/AICc
+* We do not recommend comparing pseudo R-squared across models
+
+## REML vs ML
+
+* The default estimation method is restricted maximum likelihood (REML, `estmethod = "reml"`)
+* To compare models having different fixed effect structures with AIC/AICc, the models must be fit using maximum likelihood (ML, `estmethod = "ml"`) 
+* Generally few differences between REML and ML unless sample sizes are small
+    * When sample sizes are small, REML can notably outperform ML
+* Refit a "final" model using REML (more on this)
+
+## Leave-One-Out Cross Validation
+
+Leave-one-out cross validation (loocv):
+
+-   Hold-out observation one, fit model to rest of data and predict observation one
+-   Hold-out observation two, fit model to rest of data and predict observation two
+-   ...
+-   Hold-out observation $n$, fit model to rest of data and predict observation $n$
+-   Compare observed data to loocv predictions
+
+## Leave-One-Out Cross Validation
+
+`loocv()` returns several useful fit statistics:
+
+* `bias`: The average difference between the observed value and its leave-one-out prediction. This should be close to zero for well-fitting models.
+* `MSPE`: The mean squared prediction error between the observed value and its leave-one-out prediction.
+* `RMSPE`: The square root of `MSPE`.
+* `cor2`: The squared correlation between the observed value and its leave-one-out prediction. Can be viewed as a "predictive" R-squared (can be compared across models).
+
+## Leave-One-Out Cross Validation
+
+```{r}
+loocv(spmod)
+loocv(none)
+```
+
+* The spatial model has a much lower (better) `MSPE`/`RMSPE` and higher (better) `cor2`.
+* Unlike AIC/AICc, `loocv()` can be used to compare two models fit using REML that have different fixed effect structures 
+
+## Model Comparison Strategies
+
+* All models are wrong, but some are useful
+* Model selection is quite a challenging problem
+* Fit a single hypothesized model? Use an algorithm to find a model? Somewhere in between?
+* Combine expert knowledge of the system with empirical tools to aid decision making
+* Generally, fit the "final" model using REML
+
 ## Spatial Prediction (i.e., Kriging)
 
 ::: goals
@@ -356,6 +431,111 @@ countdown(minutes = 3)
 2. Quantify prediction uncertainty.
 3. Perform leave-one-out cross-validation
 :::
+
+## The `moose` Data
+
+* We will practice with some new data in `spmodel` called `moose` (and `moose_preds`)
+* The `moose` data contains moose counts and moose presence for 218 spatial locations in Alaska.
+
+```{r}
+#| label: fig-moose
+#| fig-cap: "Distribution of moose data."
+#| output-location: slide
+
+ggplot(data = moose, aes(colour = count)) +
+  geom_sf(size = 2) +
+  scale_colour_viridis_c(limits = c(0, 40)) +
+  theme_minimal(base_size = 18)
+```
+
+## The `moose` Data
+
+```{r}
+#| echo: false
+moose |> 
+  dplyr::slice(1:3) |>
+  knitr::kable(digits = 0)
+```
+
+## The `moose_preds` Data
+
+* The `moose_preds` data contains spatial locations that were not surveyed for which predictions are desired
+
+```{r}
+#| label: fig-moose-preds-locs
+#| fig-cap: "Locations in moose prediction data."
+#| output-location: slide
+
+ggplot(data = moose_preds) +
+  geom_sf(size = 2) +
+  theme_minimal(base_size = 18)
+```
+
+## The `moose_preds` Data
+
+```{r}
+#| echo: false
+moose_preds |> 
+  dplyr::slice(1:3) |>
+  knitr::kable()
+```
+
+## Fit a Spatial Linear Model
+
+* `elev * strat` is shorthand for `elev + strat + elev:strat`
+
+```{r}
+moosemod <- splm(count ~ elev * strat, data = moose,
+                  spcov_type = "spherical")
+tidy(moosemod)
+```
+
+* A linear model for count data? (more on this later)
+
+## Spatial Predictions For `moose_preds`
+
+Using `predict()`
+
+```{r}
+#| results: false
+predict(moosemod, newdata = moose_preds)
+```
+
+Using `augment()`
+
+```{r}
+#| output-location: slide
+moose_aug <- augment(moosemod, newdata = moose_preds)
+moose_aug
+```
+
+## Spatial Predictions For `moose_preds`
+
+We can construct a plot of the predictions with
+
+```{r}
+#| label: fig-moose-preds
+#| fig-cap: "Distribution of moose predictions."
+#| output-location: slide
+
+ggplot(data = moose, aes(colour = count)) +
+  geom_sf(alpha = 0.4) +
+  geom_sf(data = moose_aug, aes(colour = .fitted)) +
+  scale_colour_viridis_c(limits = c(0, 40)) +
+  theme_minimal()
+```
+
+## Your Turn
+
+::: task
+Examine the help file `?augment.spmodel` or by visiting [this link](https://usepa.github.io/spmodel/reference/augment.spmodel.html) and create site-wise 99% prediction intervals for the unsampled locations found in `moose_preds`.
+:::
+
+```{r}
+#| echo: false
+
+countdown(minutes = 5)
+```
 
 ## Acknowledgements
 

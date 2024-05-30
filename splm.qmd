@@ -352,7 +352,7 @@ none <- splm(formula = log_Zn ~ log_dist2road, data = moss,
 ::: {.callout-important icon="false"}
 ### Exercise
 
-Compare the output of the `none` model fit using `splm()` to a model via using `lm()`. Do you get the same estimates and standard errors?
+Using `sumamry()`, compare the output of the `none` model fit via `splm()` to a model fit via `lm()`. Do you get the same estimates and standard errors?
 :::
 
 ::: {.callout-important icon="false" collapse="true"}
@@ -412,6 +412,8 @@ loocv(none)
 * `MSPE`: The mean squared prediction error between the observed value and its leave-one-out prediction.
 * `RMSPE`: The square root of `MSPE`.
 * `cor2`: The squared correlation between the observed value and its leave-one-out prediction. This can be viewed as a "predictive" R-squared, emulating the "squared correlation" interpretation of R-squared in nonspatial linear models. 
+
+
 
 ::: {.callout-caution}
 ### Caution
@@ -478,6 +480,13 @@ We then use `predict()` to predict the moose `count` at the spatial locations in
 moose_preds
 ```
 
+We visualize these locations by running
+
+```{r}
+ggplot(data = moose_preds) +
+  geom_sf() +
+  theme_minimal()
+```
 
 ```{r}
 #| results: false
