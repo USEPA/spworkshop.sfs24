@@ -359,25 +359,25 @@ summary(bin_spmod)
 to_prob <- function(x) exp(x)/(1+exp(x))
 
 
-prd_mod <- loocv(bin_mod, cv_predict = TRUE) %>% 
-  pluck('cv_predict') %>% 
-  to_prob()
+loocv_mod <- loocv(bin_mod, cv_predict = TRUE, se.fit = TRUE) 
+prob_mod <- to_prob(loocv_mod$cv_predict)
+sefit_mod <- loocv_mod$se.fit
 
-prd_spmod <- loocv(bin_spmod, cv_predict = TRUE)%>% 
-  pluck('cv_predict') %>% 
-  to_prob()
+loocv_spmod <- loocv(bin_spmod, cv_predict = TRUE, se.fit = TRUE)
+prob_spmod <- to_prob(loocv_spmod$cv_predict)
+sefit_spmod <- loocv_spmod$se.fit
 
-pROC::auc(model_data$presence, prd_mod)
-pROC::auc(model_data$presence, prd_spmod)
+pROC::auc(model_data$presence, prob_mod)
+pROC::auc(model_data$presence, prob_spmod)
 
 model_data <- model_data %>%
-  mutate(prd_mod = prd_mod,
-         prd_spmod = prd_spmod)
+  mutate(prob_spmod = prob_spmod,
+         sefit_spmod = sefit_spmod)
 
 ggplot() +
   geom_sf(data = region, fill = NA) +
   geom_sf(data = model_data,
-          aes(color = prd_mod)) +
+          aes(color = prob_spmod)) +
   scale_color_viridis_b() +
   theme_bw() +
   theme(legend.position="bottom")
@@ -385,20 +385,13 @@ ggplot() +
 ggplot() +
   geom_sf(data = region, fill = NA) +
   geom_sf(data = model_data,
-          aes(color = prd_spmod)) +
-  scale_color_viridis_b() +
+          aes(color = sefit_spmod)) +
+  scale_color_distiller(palette = 'Reds', direction = 1) +
   theme_bw() +
   theme(legend.position="bottom")
 ```
 
 ### EXTRA: Mapping predictions
-
-This section provides an example of mapping predicted probabilities _Argia_ across New Jersey at unsampled locations. To do this we must...
-
-- Select New Jersey from the states layer.
-- Grab stream segment outlets (points) from the NHDplus with the NLDI service.
-- Ingest the same StreamCat and PRISM variables to R that were  used in the model for all streams in New Jersey. (We'll make predictions for 2019).
-- Predict and plot predicted values across the state.
 
 ```{r, warning=F, message=F, eval=TRUE}
 state <- region %>% 
@@ -410,10 +403,6 @@ pourpoints <-
   nhdplusTools::get_nhdplus(AOI = state,
                             realization = 'outlet') |> 
   filter(flowdir == "With Digitized")
-
-#plot(pourpoints$geometry, pch = 19)
-
-#prd_comids <- paste(pourpoints$comid, collapse = ',')
 
 sc_prd <- sc_get_data(state = 'NJ',
                       aoi = 'watershed,riparian_watershed',
@@ -436,7 +425,7 @@ tmn_prd <-
          TMEANPRISMXXXXPT = (PRISM_tmean_stable_4kmM3_201907_bil + PRISM_tmean_stable_4kmM3_201908_bil)/2) |> 
   select(COMID, TMEANPRISMXXXXPT)
 
-new_jersey <- sc_prd |> 
+prediction <- sc_prd |> 
   left_join(tmn_prd, join_by(COMID)) |>
   left_join(pourpoints, join_by(COMID == comid)) |> 
   st_as_sf() |> 
@@ -447,16 +436,18 @@ new_jersey <- sc_prd |>
 
 argia_predict <- 
   predict(bin_spmod, 
-          newdata = new_jersey,
+          newdata = prediction,
+          type = 'response',
+          se.fit = TRUE,
           local = TRUE) |> 
   to_prob()
 
-new_jersey <-
-  new_jersey |> 
+prediction <-
+  prediction |> 
   mutate(argia_predict = argia_predict)
 
 ggplot() +
-  geom_sf(data = new_jersey,
+  geom_sf(data = prediction,
           aes(color = argia_predict),
           size = 0.9) +
   scale_color_distiller(palette = 'YlOrRd', direction = 2) +

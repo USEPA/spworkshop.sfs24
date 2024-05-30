@@ -655,6 +655,17 @@ Use `spglm()` to fit a spatial logistic regression model to the `moose` data usi
 countdown(minutes = 5)
 ```
 
+## GIS in R
+
+Maintaining all analyses within a single software (`R`) can greatly simplify your research workflow. In this section, we'll cover the basics of doing GIS in `R`.
+
+## Goals and Motivation
+
+- Understand the main features and types of vector data.
+- Generate point data from a set of latitudes and longitudes, such as from fields sites.
+- Read, write, query, and manipulate vector data using the `sf` package.
+
+
 ## Acknowledgements
 
 * Thank you so much for attending!

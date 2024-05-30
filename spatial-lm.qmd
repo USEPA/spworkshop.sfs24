@@ -1,0 +1,276 @@
+# Spatial LM of lake conductivity {#spatial-lm}
+
+```{r source_r, echo = FALSE}
+source("_common.R")
+```
+
+Conductivity is an important water quality measure and one of growing concern due to  salinization of freshwater ([Cañedo-Argüelles et al. 2016](https://www.science.org/doi/full/10.1126/science.aad3488), [Kaushal et al. 2021](https://link.springer.com/article/10.1007/s10533-021-00784-w)).
+
+In this exercise we will model the conductivity of lakes across Minnesota. To do so, we will read in a data set of lake conductivity measurements collected as part of EPA's National Lakes Assessment.
+
+This analysis is based on a recent [paper](https://www.sciencedirect.com/science/article/pii/S2211675323000830) by Michael Dumelle and others published in the journal _Spatial Statistics_. The GitHub repository for this paper is also [available](https://github.com/USEPA/lake-conductivity-spin.manuscript).  
+
+## Data Prep 
+
+### Conductivity (Dependent) Data
+
+Load required packages...
+
+```{r, warning=F, message=F, eval=TRUE}
+library(tidyverse)
+library(sf)
+library(tigris)
+library(StreamCatTools)
+library(spmodel)
+library(data.table)
+```
+
+Read and prep table of lake conductivity values...
+
+```{r, warning=F, message=F, eval=TRUE}
+# Read in states to give some context
+states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>% 
+  filter(!STUSPS %in% c('HI', 'PR', 'AK', 'MP', 'GU', 'AS', 'VI'))  %>% 
+  st_transform(crs = 5070)
+
+# Read in lakes, select/massage columns, convert to spatial object
+lake_cond <- fread('../nla_obs.csv') %>% 
+  select(UNIQUE_ID, COMID, COND_RESULT,
+         AREA_HA, DSGN_CYCLE,
+         XCOORD, YCOORD) %>% 
+  mutate(DSGN_CYCLE = factor(DSGN_CYCLE)) %>% 
+  st_as_sf(coords = c('XCOORD', 'YCOORD'), 
+           crs = "+proj=aea +lat_0=37.5 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +type=crs") %>% 
+  st_transform(crs = 5070)
+
+# Plot sample locations
+ggplot() +
+  geom_sf(data = states,
+          fill = NA) +
+  geom_sf(data = lake_cond,
+          aes(color = DSGN_CYCLE)) +
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+
+```
+
+Select sample sites within Minnesota and plot:
+
+- Locations colored by sample year.
+
+- Locations colored by conductivity
+
+```{r, warning=F, message=F, eval=TRUE}
+MN <- states %>% 
+  filter(STUSPS == 'MN')
+
+cond_mn <- lake_cond %>% 
+  st_filter(MN) %>% 
+  rename(year = DSGN_CYCLE)
+
+# Plot sample locations
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = cond_mn,
+          aes(color = year)) +
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+
+# Plot sample locations
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = cond_mn,
+          aes(color = COND_RESULT)) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+### LakeCat (Independent) Data
+
+We will use the similar watershed predictors as [Dumelle et al. (2023)](https://www.sciencedirect.com/science/article/pii/S2211675323000830). 
+
+Already included with data table with the response variable are:
+
+- Lake Area (AREA_HA)
+- Sample year (DSGN_CYCLE)
+
+From LakeCat, we also will get the followign predictor variables:
+
+- Local long-term air temperature 
+- Long-term watershed precipitation 
+- Calcium Oxide content of underlying lithology
+- Sulfur content of underlying lithology
+
+```{r, warning=F, message=F, eval=TRUE}
+
+comids <- cond_mn$COMID
+
+mn_lakecat <- lc_get_data(comid = comids,
+                          metric = 'Tmean8110, Precip8110,
+                          CaO, S') %>% 
+  select(COMID, TMEAN8110CAT, PRECIP8110WS, CAOWS, SWS)
+```
+
+In addition to these static LakeCat data, we would also like to pull in data from specific years of NLCD to match sample years for:
+
+- % of watershed composed of crop area (year specific)
+- % of watershed composed of urban area (year specific)
+
+Since we have multiple years of conductivity data, we'd like to match specific years of NLCD land cover data. The years of available NLCD metrics happen to be 1 year before each NLA sample year. We'll need to trick the tables to allow them to match and join. 
+
+This code will:
+
+- Grab LakeCat NLCD % crop data for years 2006, 2011, 2016
+- Clean and pivot columns
+- Add 1 to each year since available NLCD are 1 year behind field samples
+
+```{r, warning=F, message=F, eval=TRUE}
+crop <- 
+  
+  # Grab LakeCat crop data
+  lc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'pctcrop2006, pctcrop2011, pctcrop2016') %>% 
+  
+  # Remove watershed area from data
+  select(-WSAREASQKM) %>% 
+  
+  # Pivot table to long to create "year" column
+  pivot_longer(!COMID, names_to = 'tmpcol', values_to = 'PCTCROPWS') %>% 
+  
+  # Remove PCTCROP and WS to make "year" column
+  mutate(year = as.integer(
+    str_replace_all(tmpcol, 'PCTCROP|WS', ''))) %>% 
+  
+  # Add 1 to each year to match NLA years
+  mutate(year = factor(year + 1)) %>% 
+  
+  # Remove the tmp column
+  select(-tmpcol)
+```
+
+Do the same for urban areas, but first add medium and high urban areas:
+
+```{r, warning=F, message=F, eval=TRUE}
+urb <- 
+  lc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'pcturbmd2006, pcturbmd2011, pcturbmd2016,
+              pcturbhi2006, pcturbhi2011, pcturbhi2016',
+              showAreaSqKm = FALSE) %>% 
+  
+  # Add up medium and high urban areas
+  mutate(PCTURB2006WS = PCTURBMD2006WS + PCTURBHI2006WS,
+         PCTURB2011WS = PCTURBMD2011WS + PCTURBHI2011WS,
+         PCTURB2016WS = PCTURBMD2016WS + PCTURBHI2016WS) %>% 
+  select(COMID, PCTURB2006WS, PCTURB2011WS, PCTURB2016WS) %>% 
+  pivot_longer(!COMID, names_to = 'tmpcol', values_to = 'PCTURBWS') %>% 
+  mutate(year = as.integer(
+    str_replace_all(tmpcol, 'PCTURB|WS', ''))) %>% 
+  mutate(year = factor(year + 1)) %>% 
+  select(-tmpcol)
+```
+
+Now, join the various tables to make our model data:
+
+```{r, warning=F, message=F, eval=TRUE}
+model_data <- cond_mn %>% 
+  left_join(mn_lakecat, join_by(COMID)) %>% 
+  left_join(crop, join_by(COMID, year)) %>% 
+  left_join(urb, join_by(COMID, year))
+```
+
+## Modeling lake conductivity
+
+### Model formulation
+
+```{r, warning=F, message=F, eval=TRUE}
+formula <- 
+  log(COND_RESULT) ~ 
+  AREA_HA + 
+  year + 
+  TMEAN8110CAT +
+  PRECIP8110WS + 
+  PCTCROPWS + 
+  PCTURBWS +
+  CAOWS + 
+  SWS
+
+cond_mod <- splm(formula = formula,
+                 data = model_data,
+                 spcov_type = 'none')
+
+cond_spmod <- splm(formula = formula,
+                   data = model_data,
+                   spcov_type = 'exponential')
+
+glances(cond_mod, cond_spmod)
+
+summary(cond_spmod)
+
+```
+
+### Model performance
+
+Now, let's the leave-one-out procedure to estimate model performance and produce predicted values and standard errors.
+
+```{r, warning=F, message=F, eval=TRUE}
+prd_mod <- spmodel::loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE) 
+
+prd_spmod <- spmodel::loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
+
+rbind(prd_mod %>% pluck('stats'),
+      prd_spmod %>% pluck('stats'))
+
+```
+
+### Map predicted values and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+
+# Combine predictions with model data (spatial points)
+model_data <-
+  model_data %>% 
+  mutate(prd_cond = prd_spmod %>% 
+           pluck('cv_predict') %>%
+           exp(), 
+         se_fit = prd_spmod %>% 
+           pluck('se.fit'))
+
+# Map predicted values
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prd_cond)) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+
+# Map standard errors
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = se_fit)) +
+  scale_color_distiller(palette = 'Reds', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+
+```
+
+## R Code Appendix
+
+```{r get-labels, echo = FALSE}
+labs = knitr::all_labels()
+labs = setdiff(labs, c("source_r", "get-labels"))
+```
+
+```{r all-code, ref.label=labs, eval = FALSE}
+```
+

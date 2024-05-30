@@ -20,6 +20,7 @@ book:
     - watershed-delineation.qmd
     - streamcattools.qmd
     - spatial-glm.qmd
+    - spatial-lm.qmd
     - references.qmd
 
 bibliography: references.bib
