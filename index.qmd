@@ -1,4 +1,4 @@
-# Introduction {#sec-intro .unnumbered}
+# Welcome {#sec-intro .unnumbered}
 
 ```{r}
 #| echo: false
@@ -36,8 +36,14 @@ __Workshop Summary.__ The `spmodel` `R` package can be used to fit, summarize, a
 
 ## Workshop Agenda
  
-- 9:00am - 10:00am EDT: XYZ
-- 10:00am - 11:00am EDT: XYZ
+- 9:00am - 9:30am ET: Introductions and Motivating Examples
+- 9:30am - 11:30am ET: Spatial Modeling in `R`
+- 11:30am - 12:30pm ET: Geospatial Analysis in `R`
+- 12:30pm - 1:30pm ET: Lunch
+- 1:30pm - 2:30pm ET: Geospatial Analysis in `R`
+- 2:30pm - 3:30pm ET: Applications to Real Aquatic Data
+- 3:30pm - 4:00pm ET: Questions and Wrap Up
+
 
 ## Author Introduction
 
@@ -49,7 +55,7 @@ __Ryan Hill__ (he/him/his) is an aquatic ecologist with the U.S. EPA Office of R
 
 __Lara Jansen__ (she/her/hers) is an aquatic community ecologist and an ORISE postdoctoral fellow working on predictive models of benthic macroinvertebrate communities across the conterminous US in relation to watershed factors. Lara completed her PhD in Environmental Science at Portland State University in 2023, studying the drivers and dynamics of harmful algal blooms in mountain lakes with Dr. Angela Strecker.She obtained a MS in Natural Resource Sciences at Cal Poly Humboldt University with a thesis focused on the downstream impacts of dam flow regulation on benthic macroinvertebrate and algal communities. 
 
-__Wade Boys__ (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.
+__Wade Boys__ (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade is a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.
 
 ## Setup
 

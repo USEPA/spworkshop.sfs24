@@ -163,7 +163,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Welcome</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -325,7 +325,7 @@ Note
 </div>
 </div>
 <p>While spatial generalized linear models can be fit to both point-referenced and areal data, we focus only on fitting spatial generalized linear models to point-referenced data with <code><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm()</a></code> for the remainder of this section. Models are fit using a novel application of the Laplace approximation – <span class="citation" data-cites="hoef2023marginal">Ver Hoef et al. (<a href="references.html#ref-hoef2023marginal" role="doc-biblioref">2023</a>)</span> provide further details.</p>
-<p>We observed in <span class="quarto-unresolved-ref">?sec-sp-pred</span> that a generalized linear model may be a better choice for the <code>count</code> data in the Alaska <code>moose</code>. We specify a Poisson spatial generalized linear model with the following:</p>
+<p>We observed in <a href="splm.html#sec-sp-pred"><span>Section&nbsp;1.3</span></a> that a generalized linear model may be a better choice for the <code>count</code> data in the Alaska <code>moose</code>. We specify a Poisson spatial generalized linear model with the following:</p>
 <div class="cell">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">poismod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span><span class="va">count</span> <span class="op">~</span> <span class="va">elev</span> <span class="op">*</span> <span class="va">strat</span>, data <span class="op">=</span> <span class="va">moose</span>,</span>
 <span>               family <span class="op">=</span> <span class="va">poisson</span>, spcov_type <span class="op">=</span> <span class="st">"spherical"</span><span class="op">)</span></span>

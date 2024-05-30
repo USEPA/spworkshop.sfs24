@@ -14,16 +14,16 @@ library(ggplot2)
 __Goals__:
 
 * Construct and describe the spatial linear model
-    * Review the linear model with independent random errors
+    * Review the nonspatial linear model with independent random errors.
     * Explain how the spatial linear model differs from the linear model with independent random errors.
     * Explain how modeling for point-referenced data with distance-based model covariances differs from modeling for areal data with neighborhood-based model covariances.
 * Fit a spatial linear model using `spmodel`
     * Explore the `splm()` function using the `moss` data.
     * Connect parameter estimates in the summary output of `splm()` to the spatial linear model.
-* Make spatial predictions
+* Make spatial predictions at unobserved locations (i.e., Kriging)
     * Predict the response value at an unobserved location for point-referenced data.
     * Quantify prediction uncertainty.
-    * Calculate leave-one-out cross-validation residuals.
+    * Perform leave-one-out cross-validation.
     
 :::{.callout-note}
 You may click on any of the functions in this book to be directed to their respective documentation. For example, clicking on `splm()` takes you to the documentation page for the `splm()` function on our website.
@@ -99,7 +99,7 @@ Misconception two: That linear models can only be used if the response variable 
 
 ### Introducing the Spatial Linear Model
 
-As mentioned previously, nonspatial linear models are very flexible tools that can capture all sorts of interesting processes. Unfortunately, they do assume that random errors are independent of one another, often unreasonable for spatial data as observations tend to be correlated in space. Ignoring this spatial dependence and fitting nonspatial linear models generally leads to invalid fixed effect inference and poor predictions. Spatial linear models leverage spatial dependence in the random error structure of a linear model, creating models that more accurately reflect the spatial process in study and perform substantially better than nonspatial linear models. Fortunately, incorporating spatial dependence is straightforward using `spmodel`, which we discuss shortly.
+As mentioned previously, nonspatial linear models are very flexible tools that can capture all sorts of interesting processes. Unfortunately, they do assume that random errors are independent of one another, often unreasonable for spatial data which tend to be correlated in space. Ignoring this spatial dependence and fitting nonspatial linear models generally leads to invalid fixed effect inference and poor predictions. Spatial linear models leverage spatial dependence in the random error structure of a linear model, creating models that more accurately reflect the spatial process in study and perform substantially better than nonspatial linear models. So why have they not been more commonly used in ecological settings? These models are challenging to implement, both theoretically and computationally, and software has not always been available that uses standard **R** linear modeling conventions. Fortunately, incorporating spatial dependence is now straightforward using `spmodel`, which we discuss shortly.
 
 More formally, we accommodate spatial dependence in linear models by adding an $n \times 1$ spatial random effect, $\boldsymbol{\tau}$, to @eq-lm, yielding the model
 
@@ -253,7 +253,7 @@ After fitting the model, perform an analysis of variance using `anova()` to asse
 
 ```{r}
 caribou_mod <- splm(z ~ tarp + water + tarp:water,
-                    data = caribou, spcov_type = "pexponential",
+                    data = caribou, spcov_type = "spherical",
                     xcoord = x, ycoord = y)
 summary(caribou_mod)
 anova(caribou_mod)
@@ -280,11 +280,34 @@ augment(spmod)
 `augment()` returns a tibble with many model diagnostics statistics, including 
 
 * `.fitted`, the fitted value, calculated from the estimated fixed effects in the model
+* `.resid`, the raw residual (observed minus fitted)
 * `.hat`, the Mahalanobis distance, a metric of leverage
 * `.cooksd`, the Cook's distance, a metric of influence
 * `.std.resid`, the standardized residual
 
 If the model is correct, then the standardized residuals have mean 0, standard deviation 1, and are uncorrelated.
+
+::: {.callout-important icon="false"}
+### Exercise
+
+Many helper functions in `spmodel` exist that operate on `splm()` objects (to see a list, visit [this link](https://usepa.github.io/spmodel/reference/index.html)). Run the `fitted()`, `residuals()`, `hatvalues()`, `cooks.distance()`, and `rstandard()` functions and verify they return the same values as `augment()`.
+:::
+
+::: {.callout-important icon="false" collapse="true"}
+### Solution
+
+```{r}
+fits <- tibble::tibble(
+  .fitted = fitted(spmod),
+  .resid = residuals(spmod),
+  .hat = hatvalues(spmod),
+  .cooksd = cooks.distance(spmod),
+  .std.resid = rstandard(spmod)
+)
+fits
+augment(spmod)
+```
+:::
 
 The `plot()` function can be used on a fitted model object to construct a few pre-specified plots of these model diagnostics. For example, the following code plots the Cook's distance, a measure of influence, which quantifies each observation's impact on model fit:
 
@@ -329,7 +352,7 @@ none <- splm(formula = log_Zn ~ log_dist2road, data = moss,
 ::: {.callout-important icon="false"}
 ### Exercise
 
-Compare the output of the `none` model fit using `splm()` to a model via using `lm()`. Do you get the same estimates and standard errors?
+Using `sumamry()`, compare the output of the `none` model fit via `splm()` to a model fit via `lm()`. Do you get the same estimates and standard errors?
 :::
 
 ::: {.callout-important icon="false" collapse="true"}
@@ -389,6 +412,8 @@ loocv(none)
 * `MSPE`: The mean squared prediction error between the observed value and its leave-one-out prediction.
 * `RMSPE`: The square root of `MSPE`.
 * `cor2`: The squared correlation between the observed value and its leave-one-out prediction. This can be viewed as a "predictive" R-squared, emulating the "squared correlation" interpretation of R-squared in nonspatial linear models. 
+
+
 
 ::: {.callout-caution}
 ### Caution
@@ -455,6 +480,13 @@ We then use `predict()` to predict the moose `count` at the spatial locations in
 moose_preds
 ```
 
+We visualize these locations by running
+
+```{r}
+ggplot(data = moose_preds) +
+  geom_sf() +
+  theme_minimal()
+```
 
 ```{r}
 #| results: false

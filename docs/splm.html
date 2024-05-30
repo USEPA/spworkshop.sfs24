@@ -163,7 +163,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Welcome</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -178,7 +178,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -235,7 +235,7 @@ div.csl-indent {
   </ul>
 </li>
   <li>
-<a href="#spatial-prediction" id="toc-spatial-prediction" class="nav-link" data-scroll-target="#spatial-prediction"><span class="toc-section-number">1.3</span>  Spatial Prediction</a>
+<a href="#sec-sp-pred" id="toc-sec-sp-pred" class="nav-link" data-scroll-target="#sec-sp-pred"><span class="toc-section-number">1.3</span>  Spatial Prediction</a>
   <ul>
 <li><a href="#data-introduction-1" id="toc-data-introduction-1" class="nav-link" data-scroll-target="#data-introduction-1"><span class="toc-section-number">1.3.1</span>  Data Introduction</a></li>
   <li><a href="#moose-count-predictions" id="toc-moose-count-predictions" class="nav-link" data-scroll-target="#moose-count-predictions"><span class="toc-section-number">1.3.2</span>  Moose Count Predictions</a></li>
@@ -272,7 +272,7 @@ div.csl-indent {
 <ul>
 <li>Construct and describe the spatial linear model
 <ul>
-<li>Review the linear model with independent random errors</li>
+<li>Review the nonspatial linear model with independent random errors.</li>
 <li>Explain how the spatial linear model differs from the linear model with independent random errors.</li>
 <li>Explain how modeling for point-referenced data with distance-based model covariances differs from modeling for areal data with neighborhood-based model covariances.</li>
 </ul>
@@ -283,7 +283,7 @@ div.csl-indent {
 <li>Connect parameter estimates in the summary output of <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> to the spatial linear model.</li>
 </ul>
 </li>
-<li>Make spatial predictions
+<li>Make spatial predictions at unobserved locations (i.e., Kriging)
 <ul>
 <li>Predict the response value at an unobserved location for point-referenced data.</li>
 <li>Quantify prediction uncertainty.</li>
@@ -369,7 +369,7 @@ Linear Modeling Misconceptions
 </div>
 </section><section id="introducing-the-spatial-linear-model" class="level3" data-number="1.1.2"><h3 data-number="1.1.2" class="anchored" data-anchor-id="introducing-the-spatial-linear-model">
 <span class="header-section-number">1.1.2</span> Introducing the Spatial Linear Model</h3>
-<p>As mentioned previously, nonspatial linear models are very flexible tools that can capture all sorts of interesting processes. Unfortunately, they do assume that random errors are independent of one another, often unreasonable for spatial data as observations tend to be correlated in space. Ignoring this spatial dependence and fitting nonspatial linear models generally leads to invalid fixed effect inference and poor predictions. Spatial linear models leverage spatial dependence in the random error structure of a linear model, creating models that more accurately reflect the spatial process in study and perform substantially better than nonspatial linear models. Fortunately, incorporating spatial dependence is straightforward using <code>spmodel</code>, which we discuss shortly.</p>
+<p>As mentioned previously, nonspatial linear models are very flexible tools that can capture all sorts of interesting processes. Unfortunately, they do assume that random errors are independent of one another, often unreasonable for spatial data which tend to be correlated in space. Ignoring this spatial dependence and fitting nonspatial linear models generally leads to invalid fixed effect inference and poor predictions. Spatial linear models leverage spatial dependence in the random error structure of a linear model, creating models that more accurately reflect the spatial process in study and perform substantially better than nonspatial linear models. So why have they not been more commonly used in ecological settings? These models are challenging to implement, both theoretically and computationally, and software has not always been available that uses standard <strong>R</strong> linear modeling conventions. Fortunately, incorporating spatial dependence is now straightforward using <code>spmodel</code>, which we discuss shortly.</p>
 <p>More formally, we accommodate spatial dependence in linear models by adding an <span class="math inline">\(n \times 1\)</span> spatial random effect, <span class="math inline">\(\boldsymbol{\tau}\)</span>, to <a href="#eq-lm">Equation&nbsp;<span>1.3</span></a>, yielding the model</p>
 <p><span id="eq-splm"><span class="math display">\[
 \mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
@@ -615,53 +615,53 @@ Solution
 <div class="callout-body-container callout-body">
 <div class="cell">
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">caribou_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">z</span> <span class="op">~</span> <span class="va">tarp</span> <span class="op">+</span> <span class="va">water</span> <span class="op">+</span> <span class="va">tarp</span><span class="op">:</span><span class="va">water</span>,</span>
-<span>                    data <span class="op">=</span> <span class="va">caribou</span>, spcov_type <span class="op">=</span> <span class="st">"pexponential"</span>,</span>
+<span>                    data <span class="op">=</span> <span class="va">caribou</span>, spcov_type <span class="op">=</span> <span class="st">"spherical"</span>,</span>
 <span>                    xcoord <span class="op">=</span> <span class="va">x</span>, ycoord <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">caribou_mod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
 <span><span class="co">#&gt; splm(formula = z ~ tarp + water + tarp:water, data = caribou, </span></span>
-<span><span class="co">#&gt;     spcov_type = "pexponential", xcoord = x, ycoord = y)</span></span>
+<span><span class="co">#&gt;     spcov_type = "spherical", xcoord = x, ycoord = y)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Residuals:</span></span>
 <span><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
-<span><span class="co">#&gt; -0.35291 -0.20863 -0.14249 -0.01117  0.38358 </span></span>
+<span><span class="co">#&gt; -0.35216 -0.20785 -0.14179 -0.01131  0.38485 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Coefficients (fixed):</span></span>
 <span><span class="co">#&gt;                  Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
-<span><span class="co">#&gt; (Intercept)       1.98991    3.69849   0.538 0.590555    </span></span>
-<span><span class="co">#&gt; tarpnone          0.17267    0.10645   1.622 0.104790    </span></span>
-<span><span class="co">#&gt; tarpshade         0.39551    0.10471   3.777 0.000159 ***</span></span>
-<span><span class="co">#&gt; waterY            0.04751    0.10394   0.457 0.647570    </span></span>
-<span><span class="co">#&gt; tarpnone:waterY  -0.18487    0.14778  -1.251 0.210919    </span></span>
-<span><span class="co">#&gt; tarpshade:waterY -0.21760    0.14463  -1.505 0.132437    </span></span>
+<span><span class="co">#&gt; (Intercept)       1.98916    0.18716  10.628  &lt; 2e-16 ***</span></span>
+<span><span class="co">#&gt; tarpnone          0.17326    0.10644   1.628 0.103555    </span></span>
+<span><span class="co">#&gt; tarpshade         0.39640    0.10463   3.788 0.000152 ***</span></span>
+<span><span class="co">#&gt; waterY            0.04699    0.10396   0.452 0.651269    </span></span>
+<span><span class="co">#&gt; tarpnone:waterY  -0.18499    0.14781  -1.252 0.210724    </span></span>
+<span><span class="co">#&gt; tarpshade:waterY -0.21835    0.14451  -1.511 0.130812    </span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Pseudo R-squared: 0.4559</span></span>
+<span><span class="co">#&gt; Pseudo R-squared: 0.4573</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Coefficients (pexponential spatial covariance):</span></span>
-<span><span class="co">#&gt;        de        ie     range     extra </span></span>
-<span><span class="co">#&gt;   13.6922    0.0215 2257.4371    0.9125</span></span>
+<span><span class="co">#&gt; Coefficients (spherical spatial covariance):</span></span>
+<span><span class="co">#&gt;       de       ie    range </span></span>
+<span><span class="co">#&gt;  0.04794  0.02209 13.15323</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">caribou_mod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Analysis of Variance Table</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Response: z</span></span>
-<span><span class="co">#&gt;             Df    Chi2 Pr(&gt;Chi2)    </span></span>
-<span><span class="co">#&gt; (Intercept)  1  0.2895 0.5905550    </span></span>
-<span><span class="co">#&gt; tarp         2 14.4455 0.0007298 ***</span></span>
-<span><span class="co">#&gt; water        1  0.2090 0.6475699    </span></span>
-<span><span class="co">#&gt; tarp:water   2  2.5913 0.2737193    </span></span>
+<span><span class="co">#&gt;             Df     Chi2 Pr(&gt;Chi2)    </span></span>
+<span><span class="co">#&gt; (Intercept)  1 112.9630 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">#&gt; tarp         2  14.5326 0.0006987 ***</span></span>
+<span><span class="co">#&gt; water        1   0.2043 0.6512687    </span></span>
+<span><span class="co">#&gt; tarp:water   2   2.6071 0.2715643    </span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">caribou_mod</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 4</span></span>
 <span><span class="co">#&gt;   effects        df statistic  p.value</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt;     &lt;dbl&gt;    &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 (Intercept)     1     0.289 0.591   </span></span>
-<span><span class="co">#&gt; 2 tarp            2    14.4   0.000730</span></span>
-<span><span class="co">#&gt; 3 water           1     0.209 0.648   </span></span>
-<span><span class="co">#&gt; 4 tarp:water      2     2.59  0.274</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#&gt; 1 (Intercept)     1   113.    2.20e-26</span></span>
+<span><span class="co">#&gt; 2 tarp            2    14.5   6.99e- 4</span></span>
+<span><span class="co">#&gt; 3 water           1     0.204 6.51e- 1</span></span>
+<span><span class="co">#&gt; 4 tarp:water      2     2.61  2.72e- 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -961,7 +961,7 @@ Tip
 <p>If you don’t know which spatial covariance types to start with, try <code>spcov_type = "exponential"</code> and <code>spcov_type = "gaussian"</code>. These two are well-understood and have notably different covariance behavior for observations that are close to one another. It is not uncommon to see little difference in model fit between spatial models while still seeing a dramatic difference in model fit between spatial models and nonspatial models. To see a list of all spatial covariance types, run <code><a href="https://usepa.github.io/spmodel/reference/splm.html">help("splm", "spmodel")</a></code> or visit <a href="https://usepa.github.io/spmodel/reference/splm.html">this link</a>.</p>
 </div>
 </div>
-</section></section></section><section id="spatial-prediction" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="spatial-prediction">
+</section></section></section><section id="sec-sp-pred" class="level2" data-number="1.3"><h2 data-number="1.3" class="anchored" data-anchor-id="sec-sp-pred">
 <span class="header-section-number">1.3</span> Spatial Prediction</h2>
 <p>We could use <code>spmod</code> from the <code>moss</code> data to make spatial predictions of log Zinc at different locations of interest near the haul road. However, to familiarize ourselves with more of the example data sets in <code>spmodel</code>, we will switch gears and use the <code>moose</code> data to build a model and make spatial predictions at the locations in <code>moose_preds</code>.</p>
 <section id="data-introduction-1" class="level3" data-number="1.3.1"><h3 data-number="1.3.1" class="anchored" data-anchor-id="data-introduction-1">
@@ -1238,7 +1238,7 @@ Solution
 <span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">spmod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">spmod</span>, effects <span class="op">=</span> <span class="st">"spcov"</span><span class="op">)</span></span>
 <span><span class="va">caribou_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span><span class="va">z</span> <span class="op">~</span> <span class="va">tarp</span> <span class="op">+</span> <span class="va">water</span> <span class="op">+</span> <span class="va">tarp</span><span class="op">:</span><span class="va">water</span>,</span>
-<span>                    data <span class="op">=</span> <span class="va">caribou</span>, spcov_type <span class="op">=</span> <span class="st">"pexponential"</span>,</span>
+<span>                    data <span class="op">=</span> <span class="va">caribou</span>, spcov_type <span class="op">=</span> <span class="st">"spherical"</span>,</span>
 <span>                    xcoord <span class="op">=</span> <span class="va">x</span>, ycoord <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">caribou_mod</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">caribou_mod</span><span class="op">)</span></span>
@@ -1456,7 +1456,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
       <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Introduction</span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Welcome</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

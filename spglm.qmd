@@ -59,7 +59,7 @@ The `spglm()` function is used to fit spatial generalized linear models for poin
 The `family` argument in `spglm()` and `spgautor()` uses similar syntax as the `family` argument in `glm()`. One difference, however, is that the link function for the `spmodel` functions is fixed. For binomial and beta responses, that link is the logit link function, while for Poisson, negative binomial, gamma, and inverse gaussian responses, that link is the log link function.
 :::
 
-While spatial generalized linear models can be fit to both point-referenced and areal data, we focus only on fitting spatial generalized linear models to point-referenced data with `spglm()` for the remainder of this section. Models are fit using a novel application of the Laplace approximation -- @hoef2023marginal provide further details.
+While spatial generalized linear models can be fit to both point-referenced and areal data, we focus more on fitting spatial generalized linear models to point-referenced data with `spglm()` for the remainder of this section. Models are fit using a novel application of the Laplace approximation -- @hoef2023marginal provide further details.
 
 We observed in @sec-sp-pred that a generalized linear model may be a better choice for the `count` data in the Alaska `moose`. We specify a Poisson spatial generalized linear model with the following:
 
@@ -74,10 +74,16 @@ As with spatial linear models, the broom functions `tidy()`, `glance()` and `aug
 glance(poismod)
 ```
 
+::: {.callout-caution}
+
+AIC/AICc can only be used to compare models with different response distributions when the support (i.e., possible range of response values) is the same for both response distributions. That means AIC/AICc can be used to compare Poisson and negative binomial model fits (both distributions are for count data) but cannot be used to compare Poisson (count) and Gamma (positive continuous) model fits.
+
+:::
+
 ::: {.callout-important icon="false"}
 ## Exercise
 
-Fit a spatial negative binomial model to the `moose` data with `count` as the response and `elev`, `strat`, and their interaction as predictors. The negative binomial model relaxes the assumption in the spatial Poisson generalized linear model that the mean of a response variable $\text{y}_i$ and the variance of a response variable $text{y}_i$ must be equal. Obtain a summary of the fitted model. Then compare their fits using `loocv()`. Which model is preferable based on the leave-one-out MSPE?
+Fit a spatial negative binomial model to the `moose` data with `count` as the response, `elev`, `strat`, and their interaction as predictors, and the `"gaussian"` spatial covariance function. The negative binomial model relaxes the assumption in the spatial Poisson generalized linear model that the mean of a response variable $\text{y}_i$ and the variance of a response variable $text{y}_i$ must be equal. Compare their fits using `glances()` and `loocv()`. Which model is preferable based on AIC/AICc? What about leave-one-out MSPE?
 
 :::
 
@@ -86,12 +92,13 @@ Fit a spatial negative binomial model to the `moose` data with `count` as the re
 
 ```{r}
 nbmod <- spglm(count ~ elev * strat, data = moose,
-               family = nbinomial, spcov_type = "spherical")
+               family = nbinomial, spcov_type = "gaussian")
+glances(poismod, nbmod)
 loocv(poismod)
 loocv(nbmod)
 ```
 
-`nbmod` has the lower `loocv()` error, suggesting it is a better fit to the data.
+`nbmod` has the lower AIC/AICc and lower leave-one-out MSPE/RMSPE, suggesting it is a better fit to the data.
 
 :::
 
