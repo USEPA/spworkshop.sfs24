@@ -25,23 +25,23 @@ __Goals__:
     * Fit a spatial linear model with a partition factor.
     * Fix certain spatial covariance parameters at known values.
     * Fit a random forest spatial residual linear model and make predictions.
-* Use the `spautor()` function in `spmodel` to fit a spatial linear model to areal data.
+* Use the `spautor()` function in `spmodel` to fit a spatial linear model to areal data:
     * Connect parameter estimates in the summary output of `spautor()` to the spatial linear model introduced in @eq-splm in @sec-splm.
-    * Apply some of the other functions introduced in @sec-model-fitting to a model object fit with `spautor()`.
-* Simulate spatial Gaussian data using `sprnorm()`
+    * Apply some of the other functions introduced in @sec-splm to a model object fit with `spautor()`.
+* Simulate spatial Gaussian data using `sprnorm()`.
 
 ## Big Spatial Data
 
-For large observed data sets, fitting spatial linear models or making predictions is challenging because these operations require products that involve $\boldsymbol{\Sigma}^{-1}$, which are computationally challenging to obtain. Typically, samples sizes approaching around 10,000 make model fitting or prediction infeasible on a standard computer in a reasonable amount of time (your definition of this may vary). This necessitates the use of model fitting and prediction tools that work for large data sets. `spmodel` offers big data methods for model fitting and prediction for point-referenced data via the `local` argument to `splm()` and `predict()`.
+For large observed data sets, fitting spatial linear models or making predictions is challenging because these operations require a covariance matrix inverse, which are computationally challenging to obtain. Typically, observed data samples sizes approaching around 10,000 make model fitting or prediction infeasible on a standard computer in a reasonable amount of time (your definition of this may vary). This necessitates the use of model fitting and prediction tools that work for large data sets. `spmodel` offers big data methods for model fitting and prediction for point-referenced data via the `local` argument to `splm()` and `predict()`.
 
 ### Model Fitting
 
-`spmodel` implements "local" spatial indexing as described by @hoef2023indexing. Observations are first assigned an index. Then for the purposes of model fitting, observations with different indexes are assumed uncorrelated. Assuming observations with different indexes are uncorrelated induces sparsity in the covariance matrix, which greatly reduces the computational time required for operations that involve $\mathbf{\Sigma}^{-1}$. Models fit using spatial indexing are capable of fitting models with hundreds of thousands of observations relatively quickly. @hoef2023indexing showed that in a variety of scenarios, spatial indexing yielded fixed effect confidence intervals with proper coverage.
+`spmodel` implements "local" spatial indexing as described by @hoef2023indexing. Observations are first assigned an index. Then for the purposes of model fitting, observations with different indexes are assumed uncorrelated. Assuming observations with different indexes are uncorrelated induces sparsity in the covariance matrix, which greatly reduces the computational time required for operations that involve its inverse. Models fit using spatial indexing are capable of fitting models with hundreds of thousands of observations relatively quickly. @hoef2023indexing showed that in a variety of scenarios, spatial indexing yielded fixed effect confidence intervals with proper coverage.
 
 To illustrate spatial indexing in `spmodel`, we first simulate a response variable `sim_response` with `5000` observations at random spatial locations in the unit square (`sim_coords`). Then we place the response and coordinates in a `data.frame`:
 
 ```{r}
-set.seed(18072023)
+set.seed(06022024)
 sim_params <- spcov_params("exponential", de = 7, ie = 2, range = 0.7)
 
 n <- 5000
@@ -49,8 +49,7 @@ x <- runif(n)
 y <- runif(n)
 sim_coords <- data.frame(x, y)
 
-sim_response <- sprnorm(sim_params, data = sim_coords,
-                        xcoord = x, ycoord = y)
+sim_response <- sprnorm(sim_params, data = sim_coords, xcoord = x, ycoord = y)
 sim_data <- data.frame(sim_coords, sim_response)
 ```
 
@@ -61,7 +60,7 @@ We visualize the data by running
 
 ggplot(sim_data, aes(x = x, y = y, color = sim_response)) +
   geom_point() +
-  scale_color_viridis_c(limits = c(-12, 6)) +
+  scale_color_viridis_c(limits = c(-8, 9)) +
   theme_gray(base_size = 14)
 ```
 
@@ -127,13 +126,17 @@ The `3000` predictions are computed in just `r pred_end_time["elapsed"] - pred_s
 
 ggplot(sim_preds, aes(x = x, y = y, color = preds)) +
   geom_point() +
-  scale_color_viridis_c(limits = c(-12, 6)) +
+  scale_color_viridis_c(limits = c(-8, 9)) +
   theme_gray(base_size = 14)
 ```
 
 These predictions at the unobserved locations closely match the pattern of the observed data.
 
 The other way to specify `local` in `predict()` (or `augment()`) is via a list object, which offers much more control and customization over the local neighborhood prediction. To learn more, read about `local` in `predict()`'s (or `augment()`'s) help page by running `?predict.spmodel` (or `?augment.spmodel`).
+
+::: {.callout-note}
+Most of the computational burden associated with prediction is actually from the observed data sample size used to fit the model (because an inverse is needed). As long as the observed data sample sizes are a few thousand or fewer, local prediction is not imperative, no matter the size of the prediction data. Note that parallel process can be used whether or not local prediction is implemented.
+:::
 
 ::: {.callout-tip}
 `loocv()` also has a `local` argument for large data sets that is structured the same as `local` for `predict()` (and `augment()`).
@@ -384,7 +387,7 @@ predict(rfsrmod, moss_test)
 ::: {.callout-important icon="false"}
 ### Exercise
 
-Use `predict()` to store the random forest spatial residual predictions of `log_Zn` at locations in the test data and then compute the mean-squared prediction error.
+Use `predict()` to store the random forest spatial residual predictions of `log_Zn` at locations in the test data and then compute the mean-squared prediction error (MSPE). Compare this MSPE to the MSPE from fitting a spatial linear model with an exponential covariance function.
 
 :::
 
@@ -392,10 +395,18 @@ Use `predict()` to store the random forest spatial residual predictions of `log_
 ### Exercise Solution
 
 ```{r}
-preds <- predict(rfsrmod, newdata = moss_test)
-errors <- moss_test$log_Zn - preds
-mean(errors^2)
+rf_preds <- predict(rfsrmod, newdata = moss_test)
+rf_errors <- moss_test$log_Zn - rf_preds
+mean(rf_errors^2)
+
+splmmod <- splm(log_Zn ~ log_dist2road, moss_train,
+                  spcov_type = "exponential")
+splm_preds <- predict(splmmod, newdata = moss_test)
+splm_errors <- moss_test$log_Zn - splm_preds
+mean(splm_errors^2)
 ```
+
+For these data, the spatial linear model yielded more accurate predictions (lower MSPE).
 
 :::
 
@@ -465,6 +476,10 @@ sealmod$W[1, ]
 ```
 
 The output indicates that the first observation is neighbors with the second observation, the sixteenth observation, and the twenty-eighth observation. 
+```{r}
+which(sealmod$W[1, ] > 0)
+```
+
 
 Finally, if we re-examine $\mathbf{W}$, we can note that some rows of $\mathbf{W}$ do not have any positive values, indicating that some observations in the data have no neighbors. Looking back on the plot of the data, we see that there are indeed a few "island" sites that do not share a boundary with any other polygons. The errors for these spatial locations are assumed to be uncorrelated with all other random errors, and, they are given a unique variance parameter that is the `extra` spatial covariance estimate in the summary output of the model.
 
@@ -472,18 +487,18 @@ Finally, if we re-examine $\mathbf{W}$, we can note that some rows of $\mathbf{W
 
 Most of the helper functions for models fit with `splm()` are also useful for models fit with `spautor()`. Additionally, most of the additional arguments for `splm()` are also additional arguments for `spautor()`. 
 
-Of the functions mentioned in @sec-model-fitting, the following are also available to use on a model fit with `spautor()`:
+All helper functions available for `splm()` model objects are also available for `spautor()` model objects:
 
 * `augment()`, `glance()`, and `glances()`
 * model fit statistics with `AIC()`, `AICc()` and `GR2()`
 * model diagnostics statistics with `cooks.distance()`, `residuals()`, `fitted()`, etc.
 
-Of the arguments mentioned in @sec-model-fitting, `spcov_initial` and `random` are available for `spautor()`.
+`spautor()` model objects accommodate all additional arguments previously mentioned except big data sets and anisotropy.
 
 ::: {.callout-note}
 ### Note
 
-The `anisotropy` argument is not available for `spautor()` because the covariance for an autoregressive model is based on the neighborhood structure of the spatial locations, not on distance.
+Big data applications are not available because the models are parameterized in terms of their inverse covariance matrix, not the covariance matrix, which makes the "local" approach infeasible. The `anisotropy` argument is not available for `spautor()` because the covariance for an autoregressive model is based on the neighborhood structure of the spatial locations, not on distance.
 :::
 
 
@@ -553,21 +568,7 @@ print(sealmod_nomiss)
 
 :::
 
-### Spatial Generalized Autoregressive Mdoels
-
-In @sec-spglm we discussed how to formulate spatial generalized linear models using `spglm()`, building off the construction of spatial linear models fit using `splm()`. Similarly, we can formulate spatial generalized autoregressive models using `spgautor()`, building off the construction of spatial autoregressive models fit using `spautor()`. Spatial generalized autoregressive models can be fit to binomial, proportion, count, and skewed data by providing the `family` argument, as with the models fit using `spglm()` in @sec-spglm. For example, we model `exp(log_trend)` (which is strictly positive) as a gamma random variable with the simultaneous autoregressive spatial covariance by running
-```{r}
-sealgmod <- spgautor(exp(log_trend) ~ 1, family = Gamma,
-                  data = seal, spcov_type = "sar")
-summary(sealgmod)
-```
-
-
-## Simulating Spatial Data
-
-Throughout this section, we will simulate spatially-correlated data using a variety of `spmodel` functions. It is often useful to simulate spatial data with "known" spatial covariance parameters and study the suitability of models fit to these data. 
-
-### Simulating Spatial Gaussian Data {#sec-simulate-gauss}
+## Simulating Spatial Gaussian Data {#sec-simulate-gauss}
 
 We simulate Gaussian spatial data using `sprnorm()`. `sprnorm()` is similar in structure to `rnorm()` for simulating non-spatial Gaussian data. The first argument to `sprnorm()` is `spcov_params`, which is a spatial covariance parameter object created with `spcov_params()`:
 ```{r}
@@ -583,6 +584,13 @@ params <- spcov_params("exponential", de = 1, ie = 0.5, range = 5e5)
 set.seed(1)
 sulfate$z <- sprnorm(params, data = sulfate)
 ```
+
+::: {.callout-caution}
+### Caution
+
+Simulating spatial data in `spmodel` requires the inverse (more rigorously, the Cholesky decomposition) of the covariance matrix, which can take awhile for sample sizes exceeding 10,000. Regardless of the number of realizations simulated, this inverse is only needed once, which means that simulating many realizations (via `samples`) takes nearly the same time as simulating just one.
+
+:::
 
 We visualize this realization by running
 ```{r}
@@ -601,10 +609,9 @@ ggplot(esv_out, aes(x = dist, y = gamma, size = np)) +
   theme_gray(base_size = 14)
 ```
 
-::: {.callout-caution}
-### Caution
+::: {.callout-note}
 
-Simulating spatial data in `spmodel` requires the Cholesky decomposition of the covariance matrix, which can take awhile for sample sizes exceeding 10,000. Regardless of the number of realizations simulated, this Cholesky decompsition is only needed once, which means that simulating many realizations (via `samples`) takes nearly the same time as simulating just one.
+The empirical semivariogram is a diagnostic tool that can be used to characterize spatial dependence. On the x-axis is distance between observations. On the y-axis is the average squared difference between response variables (semivariance) in different distance "bins". Typically when spatial dependence exists, the semivariance is smaller at short distances and larger at far distances. In the figure above, the size of the circle is proportional to the number of unique response variable pairs used in the distance bin. To assess leftover spatial dependence in a model, typically semivariograms are constructed on residuals from the nonspatial fitted model. The empirical semivariogram is intimately connected to empirical correlations/correllograms.
 
 :::
 

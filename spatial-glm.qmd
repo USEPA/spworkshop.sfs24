@@ -393,9 +393,16 @@ ggplot() +
 
 ### EXTRA: Mapping predictions
 
+This section provides an example of mapping predicted probabilities _Argia_ across New Jersey at unsampled locations. To do this we must...
+
+- Select New Jersey from the states layer.
+- Grab stream segment outlets (points) from the NHDplus with the NLDI service.
+- Ingest the same StreamCat and PRISM variables to R that were  used in the model for all streams in New Jersey. (We'll make predictions for 2019).
+- Predict and plot predicted values across the state.
+
 ```{r, warning=F, message=F, eval=TRUE}
 state <- region %>% 
-  filter(STUSPS == "ME") %>% 
+  filter(STUSPS == "NJ") %>% 
   st_transform(crs = 4326)
 
 # Use get_nhdplus to access the individual stream sub-catchments
@@ -404,11 +411,11 @@ pourpoints <-
                             realization = 'outlet') |> 
   filter(flowdir == "With Digitized")
 
-plot(pourpoints$geometry, pch = 19)
+#plot(pourpoints$geometry, pch = 19)
 
-prd_comids <- paste(pourpoints$comid, collapse = ',')
+#prd_comids <- paste(pourpoints$comid, collapse = ',')
 
-sc_prd <- sc_get_data(state = 'ME',
+sc_prd <- sc_get_data(state = 'NJ',
                       aoi = 'watershed,riparian_watershed',
                       metric = 'bfi,precip8110,wetindex,elev,pctwdwet2019,pcthbwet2019,pctimp2019') |> 
   mutate(PCTWETLANDXXXXWS = PCTWDWET2019WS + PCTHBWET2019WS) |> 
@@ -426,28 +433,34 @@ tmn_prd <-
                    st_transform(crs = st_crs(tmn_prd))) |> 
   as.tibble() |> 
   mutate(COMID = pourpoints$comid,
-         TMEANPRISMXXXXPT = PRISM_tmean_stable_4kmM3_201907_bil + PRISM_tmean_stable_4kmM3_201908_bil) |> 
+         TMEANPRISMXXXXPT = (PRISM_tmean_stable_4kmM3_201907_bil + PRISM_tmean_stable_4kmM3_201908_bil)/2) |> 
   select(COMID, TMEANPRISMXXXXPT)
 
-prediction <- sc_prd |> 
+new_jersey <- sc_prd |> 
   left_join(tmn_prd, join_by(COMID)) |>
   left_join(pourpoints, join_by(COMID == comid)) |> 
   st_as_sf() |> 
+  select(COMID, WSAREASQKM, ELEVWS, WETINDEXWS,
+         BFIWS, PRECIP8110WS, PCTWETLANDXXXXWS,
+         PCTIMPXXXXWSRP100, TMEANPRISMXXXXPT) |> 
   na.omit() 
 
 argia_predict <- 
   predict(bin_spmod, 
-          newdata = prediction,
+          newdata = new_jersey,
           local = TRUE) |> 
   to_prob()
 
-prediction <-
-  prediction |> 
+new_jersey <-
+  new_jersey |> 
   mutate(argia_predict = argia_predict)
 
 ggplot() +
-  geom_sf(data = prediction,
-          aes(color = argia_predict))
+  geom_sf(data = new_jersey,
+          aes(color = argia_predict),
+          size = 0.9) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 2) +
+  theme_bw()
 ```
 
 ## R Code Appendix

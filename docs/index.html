@@ -163,7 +163,7 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">Introduction</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">Welcome</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -178,7 +178,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Generalized Linear Models</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -213,7 +213,7 @@ div.csl-indent {
    
   <ul>
 <li>
-<a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Introduction</a>
+<a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro">Welcome</a>
   <ul>
 <li><a href="#workshop-agenda" id="toc-workshop-agenda" class="nav-link" data-scroll-target="#workshop-agenda">Workshop Agenda</a></li>
   <li><a href="#author-introduction" id="toc-author-introduction" class="nav-link" data-scroll-target="#author-introduction">Author Introduction</a></li>
@@ -255,7 +255,7 @@ div.csl-indent {
   </div>
   
 
-</header><section id="sec-intro" class="level1 unnumbered"><h1 class="unnumbered">Introduction</h1>
+</header><section id="sec-intro" class="level1 unnumbered"><h1 class="unnumbered">Welcome</h1>
 <div class="cell">
 
 </div>
@@ -300,7 +300,7 @@ div.csl-indent {
 <p><strong>Ryan Hill</strong> (he/him/his) is an aquatic ecologist with the U.S. EPA Office of Research and Development. He is interested in how watershed conditions drive differences in freshwater diversity and water quality across the United States. He has worked extensively with federal physical, chemical, and biological datasets to gain insights into the factors affecting water quality and biotic condition of freshwaters across the conterminous US. He has also worked to develop and distribute large datasets of geospatial watershed metrics of streams and lakes for the Agency (EPA’s StreamCat and LakeCat datasets).</p>
 </section><section id="support-introduction" class="level2"><h2 class="anchored" data-anchor-id="support-introduction">Support Introduction</h2>
 <p><strong>Lara Jansen</strong> (she/her/hers) is an aquatic community ecologist and an ORISE postdoctoral fellow working on predictive models of benthic macroinvertebrate communities across the conterminous US in relation to watershed factors. Lara completed her PhD in Environmental Science at Portland State University in 2023, studying the drivers and dynamics of harmful algal blooms in mountain lakes with Dr.&nbsp;Angela Strecker.She obtained a MS in Natural Resource Sciences at Cal Poly Humboldt University with a thesis focused on the downstream impacts of dam flow regulation on benthic macroinvertebrate and algal communities.</p>
-<p><strong>Wade Boys</strong> (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.</p>
+<p><strong>Wade Boys</strong> (he/him/his) is a graduate student at the University of Arkansas broadly interested in understanding how aquatic ectotherms will respond to climate change, especially the role of phenotypic plasticity in adapting to a warming world. Wade is a firm believer that science is not finished until it is communicated. In addition to research, he finds great purpose in cultivating community and connecting science to our everyday experiences as humans.</p>
 </section><section id="setup" class="level2"><h2 class="anchored" data-anchor-id="setup">Setup</h2>
 <section id="install-r-and-rtools" class="level3"><h3 class="anchored" data-anchor-id="install-r-and-rtools">Install R and RTools</h3>
 <p>Prior to the start of the workshop everyone will need to have the software installed and tested. You will need to have <code>R</code>, <code>Rtools</code>, and <code>RStudio</code>. Please install at least <a href="https://cran.r-project.org/">R version &gt;= 4.0</a> and the compatible version of <a href="https://cran.r-project.org/bin/windows/Rtools/">RTools</a>.<code>RTools</code> will be necessary to install non-CRAN repositories from GitHub (see below).</p>
@@ -356,9 +356,8 @@ div.csl-indent {
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'spmodel'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install remotes package to allow GitHub installation of finsyncR and StreamCatTools</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'remotes'</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'USEPA/finsyncR'</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'USEPA/StreamCatTools'</span>, build_vignettes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'USEPA/finsyncR'</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'USEPA/StreamCatTools'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section><section id="how-to-follow-along-with-material" class="level2"><h2 class="anchored" data-anchor-id="how-to-follow-along-with-material">How to follow along with material</h2>
 <p>This workshop was built using <a href="https://quarto.org/">Quarto</a> and <em>rendered</em> to html. If you are familiar with using git and GitHub, you can fork and clone <a href="https://github.com/USEPA/spatial.sfs2024">this repository</a>, or simply clone directly and open the corresponding <code>.qmd</code> files to follow along with material in RStudio. You can also copy code snippets from the rendered book site and paste into your code files in RStudio.</p>
