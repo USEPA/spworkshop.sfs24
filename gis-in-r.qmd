@@ -42,6 +42,7 @@ oregon_cities <- data.frame(id, cities, longitude, latitude, population)
 ```{r}
 #| label: fig-oregon-cities1
 #| fig-cap: "Oregon cities plotted from data frame."
+
 ggplot(
   data = oregon_cities, 
   aes(x = longitude, y = latitude, size = population, label = cities)
