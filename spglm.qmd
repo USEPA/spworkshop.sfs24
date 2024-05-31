@@ -1,10 +1,10 @@
-# Spatial Generalized Linear Models in `spmodel` {#sec-spglm}
+# Spatial Generalized Linear Models (SPGLMs) in `spmodel` {#sec-spglm}
 
 ```{r source_r, echo = FALSE}
 source("_common.R")
 ```
 
-Throughout this section, we will use the `spmodel` package and the `ggplot2` package:
+Throughout this section, we will use the following packages:
 
 ```{r}
 library(spmodel)

@@ -168,7 +168,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></a>
+  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models (SPLMs) in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -178,7 +178,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models (SPGLMs) in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -198,12 +198,12 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
+  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></a>
+  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">A SPGLM Application to the “Dancer” Damselfly (<em>Argia</em>)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -264,9 +264,9 @@ div.csl-indent {
 <div class="cell">
 
 </div>
-<p>Hello 👋 and welcome! The purpose of this website is to provide workshop materials for the “Spatial Analysis and Statistical Modeling with R and <code>spmodel</code>” workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop’s accompanying workbook, <a href="https://usepa.github.io/spatial.sfs2024/">visit here</a>. To download the workshop’s slides, <a href="https://github.com/USEPA/spatial.sfs2024/blob/main/slides.html">visit here</a>. Slides are downloaded by clicking the “Download raw file” button via the ellipsis or downward arrow symbol on the right side of the screen.</p>
+<p>Hello 👋 and welcome! The purpose of this website is to provide workshop materials for the “Spatial Analysis and Statistical Modeling with R and <code>spmodel</code>” workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop’s accompanying workbook, <a href="https://usepa.github.io/spworkshop.sfs24/">visit here</a>. To download the workshop’s slides, <a href="https://github.com/USEPA/spworkshop.sfs24/blob/main/slides.html">visit here</a>. Slides are downloaded by clicking the “Download raw file” button via the ellipsis or downward arrow symbol on the right side of the screen.</p>
 <p>It is our hope that this workshop will provide attendees with the conceptual and practical knowledge to incorporate geospatial analyses into their <code>R</code> workflow to improve the interpretation of spatial data. In particular, this workshop will focus on the R package <code>spmodel</code>.</p>
-<p><strong>What is <code>spmodel</code>?</strong> The <code>spmodel</code> <code>R</code> package <span class="citation" data-cites="dumelle2023spmodel">(<a href="#ref-dumelle2023spmodel" role="doc-biblioref">Dumelle, Higham, and Ver Hoef 2023</a>)</span> can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that <code>spmodel</code> can do include:</p>
+<p><strong>What is <code>spmodel</code>?</strong> The <code>spmodel</code> <code>R</code> package <span class="citation" data-cites="dumelle2023spmodel">(<a href="references.html#ref-dumelle2023spmodel" role="doc-biblioref">Dumelle, Higham, and Ver Hoef 2023</a>)</span> can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that <code>spmodel</code> can do include:</p>
 <ul>
 <li>Fit spatial linear and generalized linear models for point-referenced and areal (lattice) data</li>
 <li>Compare model fits and inspect model diagnostics</li>
@@ -373,7 +373,7 @@ div.csl-indent {
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'USEPA/StreamCatTools'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section><section id="how-to-follow-along-with-material" class="level2"><h2 class="anchored" data-anchor-id="how-to-follow-along-with-material">How to follow along with material</h2>
-<p>This workshop was built using <a href="https://quarto.org/">Quarto</a> and <em>rendered</em> to html. If you are familiar with using git and GitHub, you can fork and clone <a href="https://github.com/USEPA/spatial.sfs2024">this repository</a>, or simply clone directly and open the corresponding <code>.qmd</code> files to follow along with material in RStudio. You can also copy code snippets from the rendered book site and paste into your code files in RStudio.</p>
+<p>This workshop was built using <a href="https://quarto.org/">Quarto</a> and <em>rendered</em> to html. If you are familiar with using git and GitHub, you can fork and clone <a href="https://github.com/USEPA/spworkshop.sfs24">this repository</a>, or simply clone directly and open the corresponding <code>.qmd</code> files to follow along with material in RStudio. You can also copy code snippets from the rendered book site and paste into your code files in RStudio.</p>
 </section><section id="citation-information" class="level2"><h2 class="anchored" data-anchor-id="citation-information">Citation Information</h2>
 <p>If you use these software packages in a formal report or publication, please cite them. For example, the <code>spmodel</code> citation is available by running:</p>
 <div class="cell">
@@ -405,7 +405,7 @@ A BibTeX entry for LaTeX users is
 <p>The views expressed in this manuscript are those of the authors and do not necessarily represent the views or policies of the U.S. Environmental Protection Agency or the U.S. National Oceanic and Atmospheric Administration. Any mention of trade names, products, or services does not imply an endorsement by the U.S. government, the U.S. Environmental Protection Agency, or the U.S. National Oceanic and Atmospheric Administration. The U.S. Environmental Protection Agency and the U.S. National Oceanic and Atmospheric Administration do not endorse any commercial products, services, or enterprises.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
 <div id="ref-dumelle2023spmodel" class="csl-entry" role="doc-biblioentry">
 Dumelle, Michael, Matt Higham, and Jay M. Ver Hoef. 2023. <span>“<span class="nocase">spmodel</span>: Spatial Statistical Modeling and Prediction in <span>R</span>.”</span> <em>PLOS ONE</em> 18 (3): 1–32. <a href="https://doi.org/10.1371/journal.pone.0282524">https://doi.org/10.1371/journal.pone.0282524</a>.
 </div>
@@ -546,7 +546,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
   <div class="nav-page nav-page-next">
       <a href="./splm.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models (SPLMs) in <code>spmodel</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

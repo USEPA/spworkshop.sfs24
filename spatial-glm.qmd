@@ -1,8 +1,26 @@
-# Spatial GLM of "Dancer" damselfly (_Argia_) {#spatial-glm}
+# A SPGLM Application to the "Dancer" Damselfly (_Argia_) {#spatial-glm}
 
 ```{r source_r, echo = FALSE}
 source("_common.R")
 ```
+
+
+Throughout this section, we will use the following packages:
+
+```{r, warning=F, message=F, eval=TRUE}
+library(finsyncR)
+library(tidyverse)
+library(sf)
+library(tigris)
+library(StreamCatTools)
+library(nhdplusTools)
+library(spmodel)
+library(data.table)
+library(pROC)
+library(knitr)
+library(prism)
+```
+
 
 ![Image from: inaturalist.org](https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg){height="25%" width="25%" fig-align="center"}
 
@@ -23,21 +41,6 @@ We encourage potential users of `finsyncR` to thoroughly read the GitHub tutoria
 ## Data Prep 
 
 ### Biological (Dependent) Data
-
-First, load `finsyncR`, `spmodel`, `StreamCatTools`, and other needed packages.
-
-```{r, warning=F, message=F, eval=TRUE}
-library(finsyncR)
-library(tidyverse)
-library(sf)
-library(tigris)
-library(StreamCatTools)
-library(nhdplusTools)
-library(spmodel)
-library(data.table)
-library(pROC)
-library(knitr)
-```
 
 Next, we will use `finsyncR` to get genus-level macroinvert data from just EPA and rarefy to 300 count. The code will also convert the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. Finally, we will include samples from boatable streams rather than just those that are wadeable. 
 
@@ -69,14 +72,13 @@ Let's massage the table with dplyr to get what we want, including data on the oc
 # Flexible code so we could model another taxon
 genus <- 'Argia'
 
-taxon = macros %>%
+taxon <- macros %>%
   dplyr::select(SampleID, 
                 ProjectLabel, 
                 CollectionDate,  
                 Latitude_dd,
                 Longitude_dd,
                 all_of(genus))  %>%
-  #filter(ProjectLabel != 'WSA') %>% 
   mutate(CollectionDate = date(CollectionDate),
          presence = 
            as.factor(pull(., genus)))  %>% 
@@ -261,8 +263,6 @@ riparian_imp <- riparian_imp %>%
 - We then stack the climate rasters and use `terra::extract()` to 
 
 ```{r, warning=F, message=F, eval=TRUE}
-library(prism)
-
 # Get these years of PRISM
 years <- c(2013, 2014, 2018, 2019)
 
@@ -307,7 +307,7 @@ tmn <- terra::extract(tmn,
 ### Combine Dependent and Independent Data
 
 ```{r, warning=F, message=F, eval=TRUE}
-model_data <-
+argia_model_data <-
   taxon_rg %>%
   left_join(sc, join_by(COMID)) %>%
   left_join(wetlands, join_by(COMID, year)) %>%
@@ -315,7 +315,7 @@ model_data <-
   left_join(tmn, join_by(COMID, year)) %>%
   drop_na()
 
-cor(model_data %>%
+cor(argia_model_data %>%
       st_drop_geometry() %>%
       select(WSAREASQKM:TMEANPRISMXXXXPT))
 
@@ -338,12 +338,12 @@ formula <-
   TMEANPRISMXXXXPT
 
 bin_mod <- spglm(formula = formula,
-                 data = model_data,
+                 data = argia_model_data,
                  family = 'binomial',
                  spcov_type = 'none')
 
 bin_spmod <- spglm(formula = formula,
-                   data = model_data,
+                   data = argia_model_data,
                    family = 'binomial',
                    spcov_type = 'exponential')
 
@@ -367,16 +367,16 @@ loocv_spmod <- loocv(bin_spmod, cv_predict = TRUE, se.fit = TRUE)
 prob_spmod <- to_prob(loocv_spmod$cv_predict)
 sefit_spmod <- loocv_spmod$se.fit
 
-pROC::auc(model_data$presence, prob_mod)
-pROC::auc(model_data$presence, prob_spmod)
+pROC::auc(argia_model_data$presence, prob_mod)
+pROC::auc(argia_model_data$presence, prob_spmod)
 
-model_data <- model_data %>%
+argia_model_data <- argia_model_data %>%
   mutate(prob_spmod = prob_spmod,
          sefit_spmod = sefit_spmod)
 
 ggplot() +
   geom_sf(data = region, fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = argia_model_data,
           aes(color = prob_spmod)) +
   scale_color_viridis_b() +
   theme_bw() +
@@ -384,7 +384,7 @@ ggplot() +
 
 ggplot() +
   geom_sf(data = region, fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = argia_model_data,
           aes(color = sefit_spmod)) +
   scale_color_distiller(palette = 'Reds', direction = 1) +
   theme_bw() +
@@ -425,7 +425,7 @@ tmn_prd <-
          TMEANPRISMXXXXPT = (PRISM_tmean_stable_4kmM3_201907_bil + PRISM_tmean_stable_4kmM3_201908_bil)/2) |> 
   select(COMID, TMEANPRISMXXXXPT)
 
-prediction <- sc_prd |> 
+argia_pred_data <- sc_prd |> 
   left_join(tmn_prd, join_by(COMID)) |>
   left_join(pourpoints, join_by(COMID == comid)) |> 
   st_as_sf() |>
@@ -436,19 +436,22 @@ prediction <- sc_prd |>
   na.omit() 
 
 argia_predict <- 
-  predict(bin_spmod, 
-          newdata = prediction,
+  augment(bin_spmod, 
+          newdata = argia_pred_data,
           type = 'response',
-          se.fit = TRUE,
+          se_fit = TRUE,
           local = TRUE) 
 
-prediction <-
-  prediction |> 
-  mutate(argia_predict = argia_predict$fit)
+ggplot() +
+  geom_sf(data = argia_predict,
+          aes(color = .fitted),
+          size = 0.9) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 2) +
+  theme_bw()
 
 ggplot() +
-  geom_sf(data = prediction,
-          aes(color = argia_predict),
+  geom_sf(data = argia_predict,
+          aes(color = .se.fit),
           size = 0.9) +
   scale_color_distiller(palette = 'YlOrRd', direction = 2) +
   theme_bw()

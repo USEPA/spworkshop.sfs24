@@ -4,6 +4,20 @@
 source("_common.R")
 ```
 
+
+Throughout this section, we will use the following packages:
+
+```{r}
+library(tidyverse)
+library(sf)
+library(mapview)
+library(nhdplusTools)
+library(FedData)
+library(terra)
+library(tidyterra)
+library(tictoc)
+```
+
 We will cover accessing geospatial metrics from StreamCat and LakeCat to use as covariates in  analyses. However, these data sources may not have all of the metrics you might wish to use. 
 
 For example, StreamCat/LakeCat do not include an extensive number of climate metrics beyond the long-term PRISM normals. In such cases, generating custom metrics for watersheds may be desirable. 
@@ -40,10 +54,6 @@ We can write a custom function to make this request. This code:
 - Massages the data returned by the API to create a `sf` object
 
 ```{r, warning=F, message=F}
-library(sf)
-library(tidyverse)
-library(ggplot2)
-
 # Create custom function to delineate watershed from StreamStats service
 streamstats_ws = function(state, longitude, latitude){
   p1 = 'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='
@@ -122,7 +132,6 @@ cal_map
 Let's zoom into the problem. To do this we'll use the `mapview` package. Here, we use `mapview::mapview()` to create an interactive map of the Calapooia watersheds.
 
 ```{r, warning=F, message=F}
-library(mapview)
 mapview::mapviewOptions(fgb=FALSE)
 
 mapview(cal_ws, alpha.regions=.08) + 
@@ -144,8 +153,6 @@ In the next section, we'll explore another method for watershed delineation.
 `nhdplusTools` includes network navigation options as well as watershed delineation. The delineation method differs from StreamStats in that the sub-catchments are pre-staged and based on the local catchments of the NHDPlus.To delineate a basin, we must identify the starting point and the NLDI service walks the network for us to generate the watershed.
 
 ```{r, warning=F, message=F}
-library(nhdplusTools)
-
 # Calapooia Watershed
 latitude <- 44.62892
 longitude <- -123.13113
@@ -176,7 +183,6 @@ However, you may notice the slight difference in the placement of the point and 
 Let's have a closer look at the two watersheds together:
 
 ```{r, warning=F, message=F}
-library(mapview)
 mapview::mapviewOptions(fgb=FALSE)
 
 mapview(cal_pt, col.regions = 'black') + 
@@ -246,13 +252,6 @@ Let's put it all together...
 ## Exercise Solution
 
 ```{r, warning=F, message=F}
-library(FedData)
-library(terra)
-library(tidyterra)
-library(tictoc)
-library(nhdplusTools)
-library(sf)
-
 tic()
 
 # Logan River Watershed

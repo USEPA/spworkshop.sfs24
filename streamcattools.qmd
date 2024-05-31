@@ -4,10 +4,22 @@
 source("_common.R")
 ```
 
-![](figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
+Throughout this section, we will use the following packages:
+
+```{r}
+library(StreamCatTools)
+library(tidyverse)
+library(sf)
+library(terra)
+library(FedData)
+library(nhdplusTools)
+library(mapview)
+```
 
 ## Why StreamCat/LakeCat?
+
+![](figures/streamcattools-med-dpi.png){#fig-foo height="192px" width="166.08px" fig-align="center"}
 
 The examples of watershed delineation and metric extraction we covered thus far have been for relatively small systems. The process to generate watershed information can be far more complicated for large watersheds, when the desired metrics are needed at many sites across a large geographic extent, or when data layers that are not served as part of other `R` packages.
 
@@ -20,12 +32,6 @@ Both datasets are now accessible through the `StreamCatTools` package.
 Let's revisit the Calapooia watershed and extract percent row crop for 2019: 
 
 ```{r, warning=F, message=F}
-library(FedData)
-library(terra)
-library(nhdplusTools)
-library(sf)
-library(tidyverse)
-
 # Calapooia Watershed
 latitude <- 44.62892
 longitude <- -123.13113
@@ -66,8 +72,6 @@ We can find the metric name by consulting the StreamCat [variable list](https://
 I can also be useful to explore the online map and table interfaces of [StreamCat](https://www.epa.gov/national-aquatic-resource-surveys/streamcat-web-tool-map-view). 
 
 ```{r, warning=F, message=F}
-library(StreamCatTools)
-
 comid <- sc_get_comid(pt)
 
 sc_get_data(comid = comid,
@@ -90,9 +94,6 @@ sc_get_data(comid = comid,
 We can see the difference between the local catchment and accumulative watershed boundaries in this map.
 
 ```{r, warning=F, message=F, echo=TRUE}
-library(mapview)
-library(nhdplusTools)
-library(tidyverse)
 trib_pt2 <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
 start_comid <- nhdplusTools::discover_nhdplus_id(trib_pt2)
 ws_source <- list(featureSource = "comid", featureID = start_comid)
@@ -130,8 +131,6 @@ sc_get_data(comid = comid,
 `StreamCatTools` also makes it very easy to grab data for entire regions. In this example, we will extract % crop for the entire state of Iowa and plot these percentages as a histogram.
 
 ```{r, warning=F, message=F, echo=TRUE}
-library(ggplot2)
-
 iowa_crop <- sc_get_data(state = 'IA',
                          metric = 'PctCrop2019', 
                          aoi = 'watershed')
@@ -186,8 +185,6 @@ The `R` function to access LakeCat data was designed to parallel StreamCat funct
 - Pull data on mean watershed elevation, calcium oxide content of the geology, % sand and organic matter content of soils, and % of the watershed composed of deciduous forest.
 
 ```{r, warning=F, message=F, echo=TRUE}
-library(nhdplusTools)
-
 # Pelican Lake, WI
 latitude <- 45.502840
 longitude <- -89.198694
@@ -252,8 +249,6 @@ ggplot() +
 ```
 
 In the next sections, we will put what we have learned about GIS in R together with the `spmodel` package to model two types of data. In the first example, we will model the specific conductivity of lakes in several midwestern states. Second, we will model the presence/absence of a damselfly genus (_Argia_) in the northeastern U.S. streams. We'll access _Argia_ presences/absences via another `R` package that was recently released called [`finsyncR`](https://usepa.github.io/finsyncR/). 
-
-
 ## R Code Appendix
 
 ```{r get-labels, echo = FALSE}

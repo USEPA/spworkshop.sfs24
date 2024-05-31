@@ -4,6 +4,17 @@
 source("_common.R")
 ```
 
+Throughout this section, we will use the following packages:
+
+```{r}
+library(tidyverse)
+library(sf)
+library(terra)
+library(FedData)
+library(tidyterra)
+library(maps)
+```
+
 ## Goals and Motivation
 
 Maintaining all analyses within a single software (`R`) can greatly simplify your research workflow. In this section, we'll cover the basics of doing GIS in `R`.
@@ -26,9 +37,6 @@ These data are a way of representing real-world features on a landscape in a hig
 We can represent these features in `R` without actually using GIS packages. In this example, we’ll represent several cities in Oregon with common `R` data structures that you are probably already familiar with.
 
 ```{r, warning=F, message=F}
-
-library(ggplot2)
-
 id <- c(1:5)
 cities <- c('Ashland','Corvallis','Bend','Portland','Newport')
 longitude <- c(-122.699, -123.275, -121.313, -122.670, -124.054)
@@ -68,7 +76,6 @@ In the next section we will introduce the `sf` package that will allow us to tak
 The [`sf` package](https://github.com/r-spatial/sf/) provides [simple features access](https://en.wikipedia.org/wiki/Simple_Features) for `R`. `sf` fits in within the "tidy" approach to data of Hadley Wickham's `tidyverse` and is an ever-expanding package with 113 contributors in GitHub. In short, much of what used to require ArcGIS license can now be done in `R` with `sf`:
 
 ```{r}
-library(sf)
 ls("package:sf")
 ```
 
@@ -81,7 +88,6 @@ In this code we will...
 - Define the (geographic) coordinate reference system (`crs`).
 
 ```{r, warning=F, message=F}
-
 print(oregon_cities)
 
 oregon_cities <- oregon_cities %>%
@@ -117,8 +123,6 @@ When we print the `oregon_cities` object, we can see it has changed from being a
 In addition, we see that the latitude and longitude columns have been moved to a new column called `"geometry"` that appears in parentheses. Unlike sp, simple features contain the geometric information in a single column. An important note about the geometry column is that it is "sticky", meaning that we can manipulate the sf object, such as with select in `tidyverse` (e.g., with `dplyr`) without explicitly referencing the geometry column without losing it:
 
 ```{r, warning=F, message=F}
-library(tidyverse)
-
 oregon_cities %>% 
   select(cities)
 ```
@@ -188,16 +192,22 @@ As noted above, the `sf` package provides a variety of GIS functions, such as bu
 cities_buffer <- 
   oregon_cities %>% 
   st_buffer(100000)
+```
 
-# Plot, color by city, and add centroids
-
+```{r, warning=F, message=F}
 #| label: buffered-cities1
 #| fig-cap: "Buffered cities w/ overlapping buffers."
+
+# Plot, color by city, and add centroids
 ggplot(data = cities_buffer) +
   geom_sf(aes(fill = cities), alpha = 0.5) +
   geom_sf(data = st_centroid(oregon_cities)) +
   theme_bw()
+```
 
+```{r}
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
 # Plot 2:
 
 oregon_cities %>% 
@@ -214,17 +224,11 @@ oregon_cities %>%
   
   mutate(area = st_area(.) %>% 
            units::drop_units(),
-         id = as.factor(1:nrow(.))) %>% 
+         id = as.factor(1:nrow(.)))  %>%
   
-  # Plot and color by id of polygons
-  
-#| label: buffered-cities2
-#| fig-cap: "Buffered cities w/ overlapping buffers split."
-
-ggplot() +
+  ggplot() +
   geom_sf(aes(fill = id), alpha = 0.5) +
   theme_bw()
-
 ```
 
 ## Raster data
@@ -236,7 +240,6 @@ There are several packages available to work with rasters in `R`, including the 
 Much like `sf`, `terra` has a large number of functions for working with raster data.
 
 ```{r, warning=F, message=F}
-library(terra)
 ls("package:terra")
 ```
 
@@ -248,7 +251,9 @@ r <- rast(ncol=10, nrow = 10)
 r[] <- runif(n=ncell(r))
 
 r
+```
 
+```{r, warning=F, message=F}
 #| label: basic-raster
 #| fig-cap: "Basic raster dataset in R."
 plot(r)
@@ -278,11 +283,15 @@ r3 <- sqrt(r * 5)
 
 s <- c(r, r2, r3)
 names(s) <- c('r1', 'r2', 'r3')
+```
 
+```{r}
 #| label: stacked-rasters
 #| fig-cap: "Plot of stacked rasters in R."
 plot(s)
+```
 
+```{r}
 # Manipulate all rasters in stack
 
 s2 <- (s + 5) / 3
@@ -290,7 +299,9 @@ s2 <- (s + 5) / 3
 # Give modified rasters a new name (add "modified")
 
 names(s2) <- paste0(names(s), " modified")
+```
 
+```{r}
 #| label: modified-stacked-rasters
 #| fig-cap: "Plot of stacked rasters in R."
 plot(c(s, s2))
@@ -321,8 +332,6 @@ plot(c(r, rcls))
 There are several (often very new) `R` packages for accessing and working with spatial data. In this code, we will use the`FedData` `R` package to download National Elevation Data. Although this example focuses on digital elevation data, the `FedData` package provides access to several federal datasets, including the National Land Cover Database (NLCD).
 
 ```{r, warning=F, message=F, eval=TRUE}
-library(FedData)
-
 # Select just Corvallis and calculate a 10,000-m buffer
 corvallis <- 
   oregon_cities %>%
@@ -352,8 +361,6 @@ ned <- terra::project(ned,
 The `tidyterra` package gives us a new "geometry" for ggplot called `geom_spatraster()`. 
 
 ```{r, warning=F, message=F, eval=TRUE}
-library(tidyterra)
-
 #| label: elevation-ggplot
 #| fig-cap: "ggplot of elevation data."
 ggplot() + 
@@ -379,11 +386,15 @@ To calculate these metrics on the elevation raster, we can use the `terrain()` f
 # Calculate several terrain metrics
 terrain_metrics <- terrain(ned, 
                            v = c('slope', 'roughness', 'TRI'))
+```
 
+```{r}
 #| label: terrain-plots
 #| fig-cap: "Plot of elevation-derived terrain metrics."
 plot(c(ned, terrain_metrics))
+```
 
+```{r}
 #| label: terrain-ggplots
 #| fig-cap: "ggplots of elevation-derived terrain metrics."
 ggplot() + 
@@ -429,13 +440,6 @@ In addition to zonal statistics, the `terra` package can be used to extract (`te
 ## Exercise Solution
 
 ```{r, warning=F, message=F}
-library(FedData)
-library(sf)
-library(tidyverse)
-library(terra)
-library(tidyterra)
-library(maps)
-
 data('us.cities')
 
 my_city <- us.cities %>% 

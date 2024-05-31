@@ -1,4 +1,4 @@
-# Spatial Linear Models in `spmodel` {#sec-splm}
+# Spatial Linear Models (SPLMs) in `spmodel` {#sec-splm}
 
 ```{r source_r, echo = FALSE}
 source("_common.R")

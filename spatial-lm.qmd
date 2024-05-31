@@ -1,4 +1,4 @@
-# Spatial LM of lake conductivity {#spatial-lm}
+# A SLM Application to Lake Conductivity {#spatial-lm}
 
 ```{r source_r, echo = FALSE}
 source("_common.R")
@@ -22,33 +22,26 @@ library(sf)
 library(tigris)
 library(StreamCatTools)
 library(spmodel)
-library(data.table)
+library(data.sfs2024)
 ```
 
 Read and prep table of lake conductivity values...
 
 ```{r, warning=F, message=F, eval=TRUE}
 # Read in states to give some context
-states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>% 
+states <- states(cb = TRUE, progress_bar = FALSE)  %>% 
   filter(!STUSPS %in% c('HI', 'PR', 'AK', 'MP', 'GU', 'AS', 'VI'))  %>% 
   st_transform(crs = 5070)
 
 # Read in lakes, select/massage columns, convert to spatial object
-lake_cond <- fread('data/nla_obs.csv') %>% 
-  select(UNIQUE_ID, COMID, COND_RESULT,
-         AREA_HA, DSGN_CYCLE,
-         XCOORD, YCOORD) %>% 
-  mutate(DSGN_CYCLE = factor(DSGN_CYCLE)) %>% 
-  st_as_sf(coords = c('XCOORD', 'YCOORD'), 
-           crs = "+proj=aea +lat_0=37.5 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +type=crs") %>% 
-  st_transform(crs = 5070)
+data("cond_nla_data")
 
 # Plot sample locations
 ggplot() +
   geom_sf(data = states,
           fill = NA) +
-  geom_sf(data = lake_cond,
-          aes(color = DSGN_CYCLE)) +
+  geom_sf(data = cond_nla_data,
+          aes(color = year)) +
   scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
   theme_bw() +
   theme(legend.position="bottom") 
@@ -65,9 +58,8 @@ Select sample sites within Minnesota and plot:
 MN <- states %>% 
   filter(STUSPS == 'MN')
 
-cond_mn <- lake_cond %>% 
-  st_filter(MN) %>% 
-  rename(year = DSGN_CYCLE)
+cond_mn <- cond_nla_data %>% 
+  st_filter(MN) 
 
 # Plot sample locations
 ggplot() +
@@ -97,7 +89,7 @@ We will use the similar watershed predictors as [Dumelle et al. (2023)](https://
 Already included with data table with the response variable are:
 
 - Lake Area (AREA_HA)
-- Sample year (DSGN_CYCLE)
+- Sample year (year)
 
 From LakeCat, we also will get the following predictor variables:
 
@@ -179,7 +171,7 @@ urb <-
 Now, join the various tables to make our model data:
 
 ```{r, warning=F, message=F, eval=TRUE}
-model_data <- cond_mn %>% 
+cond_model_data <- cond_mn %>% 
   left_join(mn_lakecat, join_by(COMID)) %>% 
   left_join(crop, join_by(COMID, year)) %>% 
   left_join(urb, join_by(COMID, year))
@@ -202,11 +194,11 @@ formula <-
   SWS
 
 cond_mod <- splm(formula = formula,
-                 data = model_data,
+                 data = cond_model_data,
                  spcov_type = 'none')
 
 cond_spmod <- splm(formula = formula,
-                   data = model_data,
+                   data = cond_model_data,
                    spcov_type = 'exponential')
 
 glances(cond_mod, cond_spmod)
@@ -220,11 +212,11 @@ summary(cond_spmod)
 Now, let's the leave-one-out procedure to estimate model performance and produce predicted values and standard errors.
 
 ```{r, warning=F, message=F, eval=TRUE}
-prd_mod <- spmodel::loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE) 
+prd_mod <- loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE) 
 
-prd_spmod <- spmodel::loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
+prd_spmod <- loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
 
-rbind(prd_mod %>% pluck('stats'),
+bind_rows(prd_mod %>% pluck('stats'),
       prd_spmod %>% pluck('stats'))
 
 ```
@@ -234,8 +226,8 @@ rbind(prd_mod %>% pluck('stats'),
 ```{r, warning=F, message=F, eval=TRUE}
 
 # Combine predictions with model data (spatial points)
-model_data <-
-  model_data %>% 
+cond_model_data <-
+  cond_model_data %>% 
   mutate(prd_cond = prd_spmod %>% 
            pluck('cv_predict'), 
          se_fit = prd_spmod %>% 
@@ -245,7 +237,7 @@ model_data <-
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = cond_model_data,
           aes(color = prd_cond)) +
   scale_color_distiller(palette = 'YlOrRd', direction = 1) +
   theme_bw() +
@@ -255,7 +247,7 @@ ggplot() +
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = cond_model_data,
           aes(color = se_fit)) +
   scale_color_distiller(palette = 'Reds', direction = 1) +
   theme_bw() +

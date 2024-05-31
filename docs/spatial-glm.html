@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.269">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Spatial Analysis and Statistical Modeling with R and spmodel - 7&nbsp; Spatial GLM of “Dancer” damselfly (Argia)</title>
+<title>Spatial Analysis and Statistical Modeling with R and spmodel - 8&nbsp; A SPGLM Application to the “Dancer” Damselfly (Argia)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -89,8 +89,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./spatial-lm.html" rel="next">
-<link href="./streamcattools.html" rel="prev">
+<link href="./references.html" rel="next">
+<link href="./spatial-lm.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -123,7 +123,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">A SPGLM Application to the “Dancer” Damselfly (<em>Argia</em>)</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -149,7 +149,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></a>
+  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code> (SLMs)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code> (SPGLMs)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -179,12 +179,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
+  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></a>
+  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">A SPGLM Application to the “Dancer” Damselfly (<em>Argia</em>)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -199,27 +199,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
 <li>
-<a href="#data-prep" id="toc-data-prep" class="nav-link active" data-scroll-target="#data-prep"><span class="toc-section-number">7.1</span>  Data Prep</a>
+<a href="#data-prep" id="toc-data-prep" class="nav-link active" data-scroll-target="#data-prep"><span class="toc-section-number">8.1</span>  Data Prep</a>
   <ul>
-<li><a href="#biological-dependent-data" id="toc-biological-dependent-data" class="nav-link" data-scroll-target="#biological-dependent-data"><span class="toc-section-number">7.1.1</span>  Biological (Dependent) Data</a></li>
-  <li><a href="#predictor-independent-data" id="toc-predictor-independent-data" class="nav-link" data-scroll-target="#predictor-independent-data"><span class="toc-section-number">7.1.2</span>  Predictor (Independent) Data</a></li>
-  <li><a href="#combine-dependent-and-independent-data" id="toc-combine-dependent-and-independent-data" class="nav-link" data-scroll-target="#combine-dependent-and-independent-data"><span class="toc-section-number">7.1.3</span>  Combine Dependent and Independent Data</a></li>
+<li><a href="#biological-dependent-data" id="toc-biological-dependent-data" class="nav-link" data-scroll-target="#biological-dependent-data"><span class="toc-section-number">8.1.1</span>  Biological (Dependent) Data</a></li>
+  <li><a href="#predictor-independent-data" id="toc-predictor-independent-data" class="nav-link" data-scroll-target="#predictor-independent-data"><span class="toc-section-number">8.1.2</span>  Predictor (Independent) Data</a></li>
+  <li><a href="#combine-dependent-and-independent-data" id="toc-combine-dependent-and-independent-data" class="nav-link" data-scroll-target="#combine-dependent-and-independent-data"><span class="toc-section-number">8.1.3</span>  Combine Dependent and Independent Data</a></li>
   </ul>
 </li>
   <li>
-<a href="#modeling-occurrence-of-genus-argia" id="toc-modeling-occurrence-of-genus-argia" class="nav-link" data-scroll-target="#modeling-occurrence-of-genus-argia"><span class="toc-section-number">7.2</span>  Modeling occurrence of genus <em>Argia</em></a>
+<a href="#modeling-occurrence-of-genus-argia" id="toc-modeling-occurrence-of-genus-argia" class="nav-link" data-scroll-target="#modeling-occurrence-of-genus-argia"><span class="toc-section-number">8.2</span>  Modeling occurrence of genus <em>Argia</em></a>
   <ul>
-<li><a href="#model-formulation" id="toc-model-formulation" class="nav-link" data-scroll-target="#model-formulation"><span class="toc-section-number">7.2.1</span>  Model formulation</a></li>
-  <li><a href="#model-performance" id="toc-model-performance" class="nav-link" data-scroll-target="#model-performance"><span class="toc-section-number">7.2.2</span>  Model performance</a></li>
-  <li><a href="#extra-mapping-predictions" id="toc-extra-mapping-predictions" class="nav-link" data-scroll-target="#extra-mapping-predictions"><span class="toc-section-number">7.2.3</span>  EXTRA: Mapping predictions</a></li>
+<li><a href="#model-formulation" id="toc-model-formulation" class="nav-link" data-scroll-target="#model-formulation"><span class="toc-section-number">8.2.1</span>  Model formulation</a></li>
+  <li><a href="#model-performance" id="toc-model-performance" class="nav-link" data-scroll-target="#model-performance"><span class="toc-section-number">8.2.2</span>  Model performance</a></li>
+  <li><a href="#extra-mapping-predictions" id="toc-extra-mapping-predictions" class="nav-link" data-scroll-target="#extra-mapping-predictions"><span class="toc-section-number">8.2.3</span>  EXTRA: Mapping predictions</a></li>
   </ul>
 </li>
-  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">7.3</span>  R Code Appendix</a></li>
+  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">8.3</span>  R Code Appendix</a></li>
   </ul></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title"><span id="spatial-glm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></span></h1>
+<h1 class="title"><span id="spatial-glm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">A SPGLM Application to the “Dancer” Damselfly (<em>Argia</em>)</span></span></h1>
 </div>
 
 
@@ -234,6 +234,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header><div class="cell">
 
+</div>
+<p>Throughout this section, we will use the following packages:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/finsyncR/">finsyncR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/StreamCatTools/">StreamCatTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://xrobin.github.io/pROC/">pROC</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/prism/">prism</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure"><p><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg" style="width:25.0%;height:25.0%" class="figure-img"></p>
@@ -250,23 +264,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><em>The sources of data for this package are the United States Environmental Protection Agency’s (USEPA) National Aquatic Resource Surveys (NARS), namely the National River and Streams Assessment (NRSA), and United States Geological Survey’s (USGS) BioData.</em></p>
 <p>In short, <code>finsyncR</code> provides us with access to thousands of biological samples across the U.S. from both EPA and USGS sources (e.g., <a href="https://www.science.org/doi/full/10.1126/sciadv.adf4896">Rumschlag et al.&nbsp;2023</a>). We’ll be using EPA data today. The EPA data are from the National Aquatic Resources Assessment’s <a href="https://www.epa.gov/national-aquatic-resource-surveys/wadeable-streams-assessment">Wadeable Streams Assessment</a> (2001-2004) and <a href="https://www.epa.gov/national-aquatic-resource-surveys/nrsa">National Rivers and Streams Assessments</a> (NRSA; 2008/2009, 2013/2014, and 2018/2019).</p>
 <p>We encourage potential users of <code>finsyncR</code> to thoroughly read the GitHub tutorial and other associated materials. A paper describing the package is currently under review in <em>Methods in Ecology and Evolution</em>.</p>
-<section id="data-prep" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="data-prep">
-<span class="header-section-number">7.1</span> Data Prep</h2>
-<section id="biological-dependent-data" class="level3" data-number="7.1.1"><h3 data-number="7.1.1" class="anchored" data-anchor-id="biological-dependent-data">
-<span class="header-section-number">7.1.1</span> Biological (Dependent) Data</h3>
-<p>First, load <code>finsyncR</code>, <code>spmodel</code>, <code>StreamCatTools</code>, and other needed packages.</p>
-<div class="cell">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/finsyncR/">finsyncR</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/StreamCatTools/">StreamCatTools</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://doi-usgs.github.io/nhdplusTools/">nhdplusTools</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://xrobin.github.io/pROC/">pROC</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="data-prep" class="level2" data-number="8.1"><h2 data-number="8.1" class="anchored" data-anchor-id="data-prep">
+<span class="header-section-number">8.1</span> Data Prep</h2>
+<section id="biological-dependent-data" class="level3" data-number="8.1.1"><h3 data-number="8.1.1" class="anchored" data-anchor-id="biological-dependent-data">
+<span class="header-section-number">8.1.1</span> Biological (Dependent) Data</h3>
 <p>Next, we will use <code>finsyncR</code> to get genus-level macroinvert data from just EPA and rarefy to 300 count. The code will also convert the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. Finally, we will include samples from boatable streams rather than just those that are wadeable.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>macros <span class="ot">&lt;-</span> <span class="fu">getInvertData</span>(<span class="at">dataType =</span> <span class="st">"occur"</span>,</span>
@@ -483,14 +484,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Flexible code so we could model another taxon</span></span>
 <span><span class="va">genus</span> <span class="op">&lt;-</span> <span class="st">'Argia'</span></span>
 <span></span>
-<span><span class="va">taxon</span> <span class="op">=</span> <span class="va">macros</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">taxon</span> <span class="op">&lt;-</span> <span class="va">macros</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">SampleID</span>, </span>
 <span>                <span class="va">ProjectLabel</span>, </span>
 <span>                <span class="va">CollectionDate</span>,  </span>
 <span>                <span class="va">Latitude_dd</span>,</span>
 <span>                <span class="va">Longitude_dd</span>,</span>
 <span>                <span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">genus</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co">#filter(ProjectLabel != 'WSA') %&gt;% </span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>CollectionDate <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/date.html">date</a></span><span class="op">(</span><span class="va">CollectionDate</span><span class="op">)</span>,</span>
 <span>         presence <span class="op">=</span> </span>
 <span>           <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">genus</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -584,8 +584,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="co">#&gt;   0   1 </span></span>
 <span><span class="co">#&gt; 485  65</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="predictor-independent-data" class="level3" data-number="7.1.2"><h3 data-number="7.1.2" class="anchored" data-anchor-id="predictor-independent-data">
-<span class="header-section-number">7.1.2</span> Predictor (Independent) Data</h3>
+</section><section id="predictor-independent-data" class="level3" data-number="8.1.2"><h3 data-number="8.1.2" class="anchored" data-anchor-id="predictor-independent-data">
+<span class="header-section-number">8.1.2</span> Predictor (Independent) Data</h3>
 <ol type="1">
 <li>Obtain list of NHDPlus COMIDs that match sample sites from <code>nhdplusTools</code>
 </li>
@@ -687,71 +687,69 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>We then stack the climate rasters and use <code><a href="https://rspatial.github.io/terra/reference/extract.html">terra::extract()</a></code> to</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(prism)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Get these years of PRISM</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">2014</span>, <span class="dv">2018</span>, <span class="dv">2019</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the PRISM directory (creates directory in not present)</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">prism_set_dl_dir</span>(<span class="st">"./data/prism_data"</span>, <span class="at">create =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Download monthly PRISM rasters (tmean)</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prism_monthlys</span>(<span class="st">'tmean'</span>, </span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">years =</span> years, </span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mon =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>, </span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">keepZip =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get these years of PRISM</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">2014</span>, <span class="dv">2018</span>, <span class="dv">2019</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set the PRISM directory (creates directory in not present)</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">prism_set_dl_dir</span>(<span class="st">"./data/prism_data"</span>, <span class="at">create =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Download monthly PRISM rasters (tmean)</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">get_prism_monthlys</span>(<span class="st">'tmean'</span>, </span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">years =</span> years, </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mon =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>, </span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">keepZip =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="er">|</span>                                                                   <span class="er">|</span>   <span class="dv">0</span>%</span>
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="er">|</span>                                                                   <span class="er">|</span>   <span class="dv">0</span>%</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="er">|========</span>                                                           <span class="er">|</span>  <span class="dv">12</span>%</span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="er">|========</span>                                                           <span class="er">|</span>  <span class="dv">12</span>%</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="er">|=================</span>                                                  <span class="er">|</span>  <span class="dv">25</span>%</span>
 <span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="er">|=================</span>                                                  <span class="er">|</span>  <span class="dv">25</span>%</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="er">|=========================</span>                                          <span class="er">|</span>  <span class="dv">38</span>%</span>
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="er">|=========================</span>                                          <span class="er">|</span>  <span class="dv">38</span>%</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================================</span>                                 <span class="er">|</span>  <span class="dv">50</span>%</span>
 <span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================================</span>                                 <span class="er">|</span>  <span class="dv">50</span>%</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==========================================</span>                         <span class="er">|</span>  <span class="dv">62</span>%</span>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==========================================</span>                         <span class="er">|</span>  <span class="dv">62</span>%</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================================================</span>                 <span class="er">|</span>  <span class="dv">75</span>%</span>
 <span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="er">|==================================================</span>                 <span class="er">|</span>  <span class="dv">75</span>%</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===========================================================</span>        <span class="er">|</span>  <span class="dv">88</span>%</span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===========================================================</span>        <span class="er">|</span>  <span class="dv">88</span>%</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>  <span class="sc">|</span>                                                                         </span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===================================================================|</span> <span class="dv">100</span>%</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Create stack of downloaded PRISM rasters</span></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>tmn <span class="ot">&lt;-</span> <span class="fu">pd_stack</span>((<span class="fu">prism_archive_subset</span>(<span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">years =</span> years, </span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">mon =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>)))</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract tmean at sample points and massage data</span></span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>tmn <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">extract</span>(tmn, </span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>                      <span class="co"># Transform taxon_rg to CRS of PRISM on the fly</span></span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>                      taxon_rg <span class="sc">%&gt;%</span> </span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(tmn))) <span class="sc">%&gt;%</span></span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add COMIDs to extracted values</span></span>
-<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">COMID =</span> comid_vect, .) <span class="sc">%&gt;%</span></span>
-<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove front and back text from PRISM year/month in names</span></span>
-<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>( <span class="sc">~</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(., <span class="st">'PRISM_tmean_stable_4kmM3_|_bil'</span>, <span class="st">''</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year</span></span>
-<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>COMID, <span class="at">names_to =</span> <span class="st">'year_month'</span>, </span>
-<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">'TMEANPRISMXXXXPT'</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create new column of year</span></span>
-<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(<span class="fu">ym</span>(year_month))) <span class="sc">%&gt;%</span> </span>
-<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Average July and August temperatures </span></span>
-<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">TMEANPRISMXXXXPT =</span> <span class="fu">mean</span>(TMEANPRISMXXXXPT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
-<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>            <span class="at">.by =</span> <span class="fu">c</span>(COMID, year))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="er">|===================================================================|</span> <span class="dv">100</span>%</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Create stack of downloaded PRISM rasters</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>tmn <span class="ot">&lt;-</span> <span class="fu">pd_stack</span>((<span class="fu">prism_archive_subset</span>(<span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">years =</span> years, </span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">mon =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">8</span>)))</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract tmean at sample points and massage data</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>tmn <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">extract</span>(tmn, </span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>                      <span class="co"># Transform taxon_rg to CRS of PRISM on the fly</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>                      taxon_rg <span class="sc">%&gt;%</span> </span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="fu">st_crs</span>(tmn))) <span class="sc">%&gt;%</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add COMIDs to extracted values</span></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">COMID =</span> comid_vect, .) <span class="sc">%&gt;%</span></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove front and back text from PRISM year/month in names</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>( <span class="sc">~</span> stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(., <span class="st">'PRISM_tmean_stable_4kmM3_|_bil'</span>, <span class="st">''</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year</span></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">!</span>COMID, <span class="at">names_to =</span> <span class="st">'year_month'</span>, </span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">'TMEANPRISMXXXXPT'</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create new column of year</span></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(<span class="fu">ym</span>(year_month))) <span class="sc">%&gt;%</span> </span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Average July and August temperatures </span></span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">TMEANPRISMXXXXPT =</span> <span class="fu">mean</span>(TMEANPRISMXXXXPT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), </span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a>            <span class="at">.by =</span> <span class="fu">c</span>(COMID, year))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="combine-dependent-and-independent-data" class="level3" data-number="7.1.3"><h3 data-number="7.1.3" class="anchored" data-anchor-id="combine-dependent-and-independent-data">
-<span class="header-section-number">7.1.3</span> Combine Dependent and Independent Data</h3>
+</section><section id="combine-dependent-and-independent-data" class="level3" data-number="8.1.3"><h3 data-number="8.1.3" class="anchored" data-anchor-id="combine-dependent-and-independent-data">
+<span class="header-section-number">8.1.3</span> Combine Dependent and Independent Data</h3>
 <div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">model_data</span> <span class="op">&lt;-</span></span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">argia_model_data</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sc</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">wetlands</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -759,7 +757,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">argia_model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">WSAREASQKM</span><span class="op">:</span><span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                    WSAREASQKM      ELEVWS WETINDEXWS       BFIWS</span></span>
@@ -790,11 +788,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="co">#&gt; PCTIMPXXXXWSRP100       0.43121267</span></span>
 <span><span class="co">#&gt; TMEANPRISMXXXXPT        1.00000000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section><section id="modeling-occurrence-of-genus-argia" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="modeling-occurrence-of-genus-argia">
-<span class="header-section-number">7.2</span> Modeling occurrence of genus <em>Argia</em>
+</section></section><section id="modeling-occurrence-of-genus-argia" class="level2" data-number="8.2"><h2 data-number="8.2" class="anchored" data-anchor-id="modeling-occurrence-of-genus-argia">
+<span class="header-section-number">8.2</span> Modeling occurrence of genus <em>Argia</em>
 </h2>
-<section id="model-formulation" class="level3" data-number="7.2.1"><h3 data-number="7.2.1" class="anchored" data-anchor-id="model-formulation">
-<span class="header-section-number">7.2.1</span> Model formulation</h3>
+<section id="model-formulation" class="level3" data-number="8.2.1"><h3 data-number="8.2.1" class="anchored" data-anchor-id="model-formulation">
+<span class="header-section-number">8.2.1</span> Model formulation</h3>
 <div class="cell">
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">formula</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">presence</span> <span class="op">~</span></span>
@@ -808,12 +806,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="va">TMEANPRISMXXXXPT</span></span>
 <span></span>
 <span><span class="va">bin_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                 data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                 data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>                 family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
 <span>                 spcov_type <span class="op">=</span> <span class="st">'none'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bin_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                   data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>                   family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
 <span>                   spcov_type <span class="op">=</span> <span class="st">'exponential'</span><span class="op">)</span></span>
 <span></span>
@@ -827,7 +825,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">bin_spmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt; spglm(formula = formula, family = "binomial", data = model_data, </span></span>
+<span><span class="co">#&gt; spglm(formula = formula, family = "binomial", data = argia_model_data, </span></span>
 <span><span class="co">#&gt;     spcov_type = "exponential")</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Deviance Residuals:</span></span>
@@ -858,8 +856,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="co">#&gt; dispersion </span></span>
 <span><span class="co">#&gt;          1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="model-performance" class="level3" data-number="7.2.2"><h3 data-number="7.2.2" class="anchored" data-anchor-id="model-performance">
-<span class="header-section-number">7.2.2</span> Model performance</h3>
+</section><section id="model-performance" class="level3" data-number="8.2.2"><h3 data-number="8.2.2" class="anchored" data-anchor-id="model-performance">
+<span class="header-section-number">8.2.2</span> Model performance</h3>
 <div class="cell">
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Function to convert from log odds to probability</span></span>
 <span><span class="va">to_prob</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
@@ -873,18 +871,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="va">prob_spmod</span> <span class="op">&lt;-</span> <span class="fu">to_prob</span><span class="op">(</span><span class="va">loocv_spmod</span><span class="op">$</span><span class="va">cv_predict</span><span class="op">)</span></span>
 <span><span class="va">sefit_spmod</span> <span class="op">&lt;-</span> <span class="va">loocv_spmod</span><span class="op">$</span><span class="va">se.fit</span></span>
 <span></span>
-<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_mod</span><span class="op">)</span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">argia_model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_mod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Area under the curve: 0.7908</span></span>
-<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_spmod</span><span class="op">)</span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">argia_model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_spmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Area under the curve: 0.9154</span></span>
 <span></span>
-<span><span class="va">model_data</span> <span class="op">&lt;-</span> <span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">argia_model_data</span> <span class="op">&lt;-</span> <span class="va">argia_model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prob_spmod <span class="op">=</span> <span class="va">prob_spmod</span>,</span>
 <span>         sefit_spmod <span class="op">=</span> <span class="va">sefit_spmod</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prob_spmod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -895,7 +893,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">sefit_spmod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'Reds'</span>, direction <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -904,8 +902,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="spatial-glm_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section><section id="extra-mapping-predictions" class="level3" data-number="7.2.3"><h3 data-number="7.2.3" class="anchored" data-anchor-id="extra-mapping-predictions">
-<span class="header-section-number">7.2.3</span> EXTRA: Mapping predictions</h3>
+</section><section id="extra-mapping-predictions" class="level3" data-number="8.2.3"><h3 data-number="8.2.3" class="anchored" data-anchor-id="extra-mapping-predictions">
+<span class="header-section-number">8.2.3</span> EXTRA: Mapping predictions</h3>
 <div class="cell">
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">state</span> <span class="op">&lt;-</span> <span class="va">region</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op">==</span> <span class="st">"NJ"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -926,7 +924,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>         <span class="va">PRECIP8110WS</span>, <span class="va">PCTWETLANDXXXXWS</span>, <span class="va">PCTIMPXXXXWSRP100</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">tmn_prd</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu">pd_stack</span><span class="op">(</span><span class="op">(</span><span class="fu">prism_archive_subset</span><span class="op">(</span><span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/prism/reference/pd_stack.html">pd_stack</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://docs.ropensci.org/prism/reference/prism_archive_subset.html">prism_archive_subset</a></span><span class="op">(</span><span class="st">"tmean"</span>,<span class="st">"monthly"</span>, </span>
 <span>                                 years <span class="op">=</span> <span class="fl">2019</span>, </span>
 <span>                                 mon <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tmn_prd</span> <span class="op">&lt;-</span></span>
@@ -938,43 +936,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>         TMEANPRISMXXXXPT <span class="op">=</span> <span class="op">(</span><span class="va">PRISM_tmean_stable_4kmM3_201907_bil</span> <span class="op">+</span> <span class="va">PRISM_tmean_stable_4kmM3_201908_bil</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">argia_pred_data</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn_prd</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">pourpoints</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span> <span class="op">==</span> <span class="va">comid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">WSAREASQKM</span>, <span class="va">ELEVWS</span>, <span class="va">WETINDEXWS</span>,</span>
 <span>         <span class="va">BFIWS</span>, <span class="va">PRECIP8110WS</span>, <span class="va">PCTWETLANDXXXXWS</span>,</span>
 <span>         <span class="va">PCTIMPXXXXWSRP100</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">argia_predict</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
-<span>          newdata <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>  <span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
+<span>          newdata <span class="op">=</span> <span class="va">argia_pred_data</span>,</span>
 <span>          type <span class="op">=</span> <span class="st">'response'</span>,</span>
-<span>          se.fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>          se_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>          local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">prediction</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>argia_predict <span class="op">=</span> <span class="va">argia_predict</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">prediction</span>,</span>
-<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_predict</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">.fitted</span><span class="op">)</span>,</span>
 <span>          size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="spatial-glm_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_predict</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">.se.fit</span><span class="op">)</span>,</span>
+<span>          size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="spatial-glm_files/figure-html/unnamed-chunk-16-2.png" class="img-fluid" width="672"></p>
 </div>
-</section></section><section id="r-code-appendix" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="r-code-appendix">
-<span class="header-section-number">7.3</span> R Code Appendix</h2>
+</div>
+</section></section><section id="r-code-appendix" class="level2" data-number="8.3"><h2 data-number="8.3" class="anchored" data-anchor-id="r-code-appendix">
+<span class="header-section-number">8.3</span> R Code Appendix</h2>
 <div class="cell">
 
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/finsyncR/">finsyncR</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/finsyncR/">finsyncR</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
@@ -984,6 +989,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://xrobin.github.io/pROC/">pROC</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/prism/">prism</a></span><span class="op">)</span></span>
 <span><span class="va">macros</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/finsyncR/reference/getInvertData.html">getInvertData</a></span><span class="op">(</span>dataType <span class="op">=</span> <span class="st">"occur"</span>,</span>
 <span>                        taxonLevel <span class="op">=</span> <span class="st">"Genus"</span>,</span>
 <span>                        agency <span class="op">=</span> <span class="st">"EPA"</span>,</span>
@@ -1001,14 +1007,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="co"># Flexible code so we could model another taxon</span></span>
 <span><span class="va">genus</span> <span class="op">&lt;-</span> <span class="st">'Argia'</span></span>
 <span></span>
-<span><span class="va">taxon</span> <span class="op">=</span> <span class="va">macros</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">taxon</span> <span class="op">&lt;-</span> <span class="va">macros</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">SampleID</span>, </span>
 <span>                <span class="va">ProjectLabel</span>, </span>
 <span>                <span class="va">CollectionDate</span>,  </span>
 <span>                <span class="va">Latitude_dd</span>,</span>
 <span>                <span class="va">Longitude_dd</span>,</span>
 <span>                <span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">genus</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="co">#filter(ProjectLabel != 'WSA') %&gt;% </span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>CollectionDate <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/date.html">date</a></span><span class="op">(</span><span class="va">CollectionDate</span><span class="op">)</span>,</span>
 <span>         presence <span class="op">=</span> </span>
 <span>           <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">genus</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -1130,8 +1135,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="va">riparian_imp</span> <span class="op">&lt;-</span> <span class="va">riparian_imp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">tmp_imp</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">tmpcol</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/prism/">prism</a></span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># Get these years of PRISM</span></span>
 <span><span class="va">years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2013</span>, <span class="fl">2014</span>, <span class="fl">2018</span>, <span class="fl">2019</span><span class="op">)</span></span>
 <span></span>
@@ -1171,7 +1174,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="co"># Average July and August temperatures </span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>TMEANPRISMXXXXPT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">TMEANPRISMXXXXPT</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
 <span>            .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">model_data</span> <span class="op">&lt;-</span></span>
+<span><span class="va">argia_model_data</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">taxon_rg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">sc</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">wetlands</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -1179,7 +1182,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html">drop_na</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html">cor</a></span><span class="op">(</span><span class="va">argia_model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">WSAREASQKM</span><span class="op">:</span><span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -1195,12 +1198,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="va">TMEANPRISMXXXXPT</span></span>
 <span></span>
 <span><span class="va">bin_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                 data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                 data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>                 family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
 <span>                 spcov_type <span class="op">=</span> <span class="st">'none'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bin_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/spglm.html">spglm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                   data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>                   family <span class="op">=</span> <span class="st">'binomial'</span>,</span>
 <span>                   spcov_type <span class="op">=</span> <span class="st">'exponential'</span><span class="op">)</span></span>
 <span></span>
@@ -1219,16 +1222,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="va">prob_spmod</span> <span class="op">&lt;-</span> <span class="fu">to_prob</span><span class="op">(</span><span class="va">loocv_spmod</span><span class="op">$</span><span class="va">cv_predict</span><span class="op">)</span></span>
 <span><span class="va">sefit_spmod</span> <span class="op">&lt;-</span> <span class="va">loocv_spmod</span><span class="op">$</span><span class="va">se.fit</span></span>
 <span></span>
-<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_mod</span><span class="op">)</span></span>
-<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_spmod</span><span class="op">)</span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">argia_model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_mod</span><span class="op">)</span></span>
+<span><span class="fu">pROC</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/auc.html">auc</a></span><span class="op">(</span><span class="va">argia_model_data</span><span class="op">$</span><span class="va">presence</span>, <span class="va">prob_spmod</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">model_data</span> <span class="op">&lt;-</span> <span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">argia_model_data</span> <span class="op">&lt;-</span> <span class="va">argia_model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prob_spmod <span class="op">=</span> <span class="va">prob_spmod</span>,</span>
 <span>         sefit_spmod <span class="op">=</span> <span class="va">sefit_spmod</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prob_spmod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_b</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1236,7 +1239,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">region</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">sefit_spmod</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'Reds'</span>, direction <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1272,29 +1275,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>         TMEANPRISMXXXXPT <span class="op">=</span> <span class="op">(</span><span class="va">PRISM_tmean_stable_4kmM3_201907_bil</span> <span class="op">+</span> <span class="va">PRISM_tmean_stable_4kmM3_201908_bil</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">argia_pred_data</span> <span class="op">&lt;-</span> <span class="va">sc_prd</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">tmn_prd</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">pourpoints</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span> <span class="op">==</span> <span class="va">comid</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">WSAREASQKM</span>, <span class="va">ELEVWS</span>, <span class="va">WETINDEXWS</span>,</span>
 <span>         <span class="va">BFIWS</span>, <span class="va">PRECIP8110WS</span>, <span class="va">PCTWETLANDXXXXWS</span>,</span>
 <span>         <span class="va">PCTIMPXXXXWSRP100</span>, <span class="va">TMEANPRISMXXXXPT</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">argia_predict</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
-<span>          newdata <span class="op">=</span> <span class="va">prediction</span>,</span>
+<span>  <span class="fu"><a href="https://generics.r-lib.org/reference/augment.html">augment</a></span><span class="op">(</span><span class="va">bin_spmod</span>, </span>
+<span>          newdata <span class="op">=</span> <span class="va">argia_pred_data</span>,</span>
 <span>          type <span class="op">=</span> <span class="st">'response'</span>,</span>
-<span>          se.fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>          se_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>          local <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">prediction</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">prediction</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>argia_predict <span class="op">=</span> <span class="va">argia_predict</span><span class="op">$</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_predict</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">.fitted</span><span class="op">)</span>,</span>
+<span>          size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">prediction</span>,</span>
-<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">argia_predict</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">argia_predict</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">.se.fit</span><span class="op">)</span>,</span>
 <span>          size <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1434,13 +1441,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./streamcattools.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></span>
+      <a href="./spatial-lm.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./spatial-lm.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

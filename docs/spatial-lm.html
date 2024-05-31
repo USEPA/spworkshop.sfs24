@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.269">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Spatial Analysis and Statistical Modeling with R and spmodel - 8&nbsp; Spatial LM of lake conductivity</title>
+<title>Spatial Analysis and Statistical Modeling with R and spmodel - 7&nbsp; A SLM Application to Lake Conductivity</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -89,8 +89,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
-<link href="./spatial-glm.html" rel="prev">
+<link href="./spatial-glm.html" rel="next">
+<link href="./streamcattools.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -123,7 +123,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -149,7 +149,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></a>
+  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code> (SLMs)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -159,7 +159,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code> (SPGLMs)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -179,12 +179,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
+  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></a>
+  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">A SPGLM Application to the “Dancer” Damselfly (<em>Argia</em>)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -199,26 +199,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
 <li>
-<a href="#data-prep" id="toc-data-prep" class="nav-link active" data-scroll-target="#data-prep"><span class="toc-section-number">8.1</span>  Data Prep</a>
+<a href="#data-prep" id="toc-data-prep" class="nav-link active" data-scroll-target="#data-prep"><span class="toc-section-number">7.1</span>  Data Prep</a>
   <ul>
-<li><a href="#conductivity-dependent-data" id="toc-conductivity-dependent-data" class="nav-link" data-scroll-target="#conductivity-dependent-data"><span class="toc-section-number">8.1.1</span>  Conductivity (Dependent) Data</a></li>
-  <li><a href="#lakecat-independent-data" id="toc-lakecat-independent-data" class="nav-link" data-scroll-target="#lakecat-independent-data"><span class="toc-section-number">8.1.2</span>  LakeCat (Independent) Data</a></li>
+<li><a href="#conductivity-dependent-data" id="toc-conductivity-dependent-data" class="nav-link" data-scroll-target="#conductivity-dependent-data"><span class="toc-section-number">7.1.1</span>  Conductivity (Dependent) Data</a></li>
+  <li><a href="#lakecat-independent-data" id="toc-lakecat-independent-data" class="nav-link" data-scroll-target="#lakecat-independent-data"><span class="toc-section-number">7.1.2</span>  LakeCat (Independent) Data</a></li>
   </ul>
 </li>
   <li>
-<a href="#modeling-lake-conductivity" id="toc-modeling-lake-conductivity" class="nav-link" data-scroll-target="#modeling-lake-conductivity"><span class="toc-section-number">8.2</span>  Modeling lake conductivity</a>
+<a href="#modeling-lake-conductivity" id="toc-modeling-lake-conductivity" class="nav-link" data-scroll-target="#modeling-lake-conductivity"><span class="toc-section-number">7.2</span>  Modeling lake conductivity</a>
   <ul>
-<li><a href="#model-formulation" id="toc-model-formulation" class="nav-link" data-scroll-target="#model-formulation"><span class="toc-section-number">8.2.1</span>  Model formulation</a></li>
-  <li><a href="#model-performance" id="toc-model-performance" class="nav-link" data-scroll-target="#model-performance"><span class="toc-section-number">8.2.2</span>  Model performance</a></li>
-  <li><a href="#map-predicted-values-and-standard-errors" id="toc-map-predicted-values-and-standard-errors" class="nav-link" data-scroll-target="#map-predicted-values-and-standard-errors"><span class="toc-section-number">8.2.3</span>  Map predicted values and standard errors</a></li>
+<li><a href="#model-formulation" id="toc-model-formulation" class="nav-link" data-scroll-target="#model-formulation"><span class="toc-section-number">7.2.1</span>  Model formulation</a></li>
+  <li><a href="#model-performance" id="toc-model-performance" class="nav-link" data-scroll-target="#model-performance"><span class="toc-section-number">7.2.2</span>  Model performance</a></li>
+  <li><a href="#map-predicted-values-and-standard-errors" id="toc-map-predicted-values-and-standard-errors" class="nav-link" data-scroll-target="#map-predicted-values-and-standard-errors"><span class="toc-section-number">7.2.3</span>  Map predicted values and standard errors</a></li>
   </ul>
 </li>
-  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">8.3</span>  R Code Appendix</a></li>
+  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">7.3</span>  R Code Appendix</a></li>
   </ul></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title"><span id="spatial-lm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></span></h1>
+<h1 class="title"><span id="spatial-lm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></span></h1>
 </div>
 
 
@@ -237,10 +237,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Conductivity is an important water quality measure and one of growing concern due to salinization of freshwater (<a href="https://www.science.org/doi/full/10.1126/science.aad3488">Cañedo-Argüelles et al.&nbsp;2016</a>, <a href="https://link.springer.com/article/10.1007/s10533-021-00784-w">Kaushal et al.&nbsp;2021</a>).</p>
 <p>In this exercise we will model the conductivity of lakes across Minnesota. To do so, we will read in a data set of lake conductivity measurements collected as part of EPA’s National Lakes Assessment.</p>
 <p>This analysis is based on a recent <a href="https://www.sciencedirect.com/science/article/pii/S2211675323000830">paper</a> by Michael Dumelle and others published in the journal <em>Spatial Statistics</em>. The GitHub repository for this paper is also <a href="https://github.com/USEPA/lake-conductivity-spin.manuscript">available</a>.</p>
-<section id="data-prep" class="level2" data-number="8.1"><h2 data-number="8.1" class="anchored" data-anchor-id="data-prep">
-<span class="header-section-number">8.1</span> Data Prep</h2>
-<section id="conductivity-dependent-data" class="level3" data-number="8.1.1"><h3 data-number="8.1.1" class="anchored" data-anchor-id="conductivity-dependent-data">
-<span class="header-section-number">8.1.1</span> Conductivity (Dependent) Data</h3>
+<section id="data-prep" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="data-prep">
+<span class="header-section-number">7.1</span> Data Prep</h2>
+<section id="conductivity-dependent-data" class="level3" data-number="7.1.1"><h3 data-number="7.1.1" class="anchored" data-anchor-id="conductivity-dependent-data">
+<span class="header-section-number">7.1.1</span> Conductivity (Dependent) Data</h3>
 <p>Load required packages…</p>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
@@ -248,31 +248,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/StreamCatTools/">StreamCatTools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">data.sfs2024</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Read and prep table of lake conductivity values…</p>
 <div class="cell">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Read in states to give some context</span></span>
-<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">STUSPS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'HI'</span>, <span class="st">'PR'</span>, <span class="st">'AK'</span>, <span class="st">'MP'</span>, <span class="st">'GU'</span>, <span class="st">'AS'</span>, <span class="st">'VI'</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Read in lakes, select/massage columns, convert to spatial object</span></span>
-<span><span class="va">lake_cond</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span><span class="op">(</span><span class="st">'data/nla_obs.csv'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">UNIQUE_ID</span>, <span class="va">COMID</span>, <span class="va">COND_RESULT</span>,</span>
-<span>         <span class="va">AREA_HA</span>, <span class="va">DSGN_CYCLE</span>,</span>
-<span>         <span class="va">XCOORD</span>, <span class="va">YCOORD</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>DSGN_CYCLE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">DSGN_CYCLE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'XCOORD'</span>, <span class="st">'YCOORD'</span><span class="op">)</span>, </span>
-<span>           crs <span class="op">=</span> <span class="st">"+proj=aea +lat_0=37.5 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +type=crs"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"cond_nla_data"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot sample locations</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">states</span>,</span>
 <span>          fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">lake_cond</span>,</span>
-<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">DSGN_CYCLE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cond_nla_data</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#a6cee3"</span>, <span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -289,9 +282,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">MN</span> <span class="op">&lt;-</span> <span class="va">states</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op">==</span> <span class="st">'MN'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cond_mn</span> <span class="op">&lt;-</span> <span class="va">lake_cond</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op">(</span><span class="va">MN</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">DSGN_CYCLE</span><span class="op">)</span></span>
+<span><span class="va">cond_mn</span> <span class="op">&lt;-</span> <span class="va">cond_nla_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op">(</span><span class="va">MN</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># Plot sample locations</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -319,13 +311,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="spatial-lm_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section><section id="lakecat-independent-data" class="level3" data-number="8.1.2"><h3 data-number="8.1.2" class="anchored" data-anchor-id="lakecat-independent-data">
-<span class="header-section-number">8.1.2</span> LakeCat (Independent) Data</h3>
+</section><section id="lakecat-independent-data" class="level3" data-number="7.1.2"><h3 data-number="7.1.2" class="anchored" data-anchor-id="lakecat-independent-data">
+<span class="header-section-number">7.1.2</span> LakeCat (Independent) Data</h3>
 <p>We will use the similar watershed predictors as <a href="https://www.sciencedirect.com/science/article/pii/S2211675323000830">Dumelle et al.&nbsp;(2023)</a>.</p>
 <p>Already included with data table with the response variable are:</p>
 <ul>
 <li>Lake Area (AREA_HA)</li>
-<li>Sample year (DSGN_CYCLE)</li>
+<li>Sample year (year)</li>
 </ul>
 <p>From LakeCat, we also will get the following predictor variables:</p>
 <ul>
@@ -401,15 +393,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Now, join the various tables to make our model data:</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">model_data</span> <span class="op">&lt;-</span> <span class="va">cond_mn</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cond_model_data</span> <span class="op">&lt;-</span> <span class="va">cond_mn</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">mn_lakecat</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">crop</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">urb</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section><section id="modeling-lake-conductivity" class="level2" data-number="8.2"><h2 data-number="8.2" class="anchored" data-anchor-id="modeling-lake-conductivity">
-<span class="header-section-number">8.2</span> Modeling lake conductivity</h2>
-<section id="model-formulation" class="level3" data-number="8.2.1"><h3 data-number="8.2.1" class="anchored" data-anchor-id="model-formulation">
-<span class="header-section-number">8.2.1</span> Model formulation</h3>
+</section></section><section id="modeling-lake-conductivity" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="modeling-lake-conductivity">
+<span class="header-section-number">7.2</span> Modeling lake conductivity</h2>
+<section id="model-formulation" class="level3" data-number="7.2.1"><h3 data-number="7.2.1" class="anchored" data-anchor-id="model-formulation">
+<span class="header-section-number">7.2.1</span> Model formulation</h3>
 <div class="cell">
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">formula</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">COND_RESULT</span><span class="op">)</span> <span class="op">~</span> </span>
@@ -423,11 +415,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="va">SWS</span></span>
 <span></span>
 <span><span class="va">cond_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                 data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                 data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>                 spcov_type <span class="op">=</span> <span class="st">'none'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cond_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                   data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>                   spcov_type <span class="op">=</span> <span class="st">'exponential'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">cond_mod</span>, <span class="va">cond_spmod</span><span class="op">)</span></span>
@@ -440,7 +432,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">cond_spmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt; splm(formula = formula, data = model_data, spcov_type = "exponential")</span></span>
+<span><span class="co">#&gt; splm(formula = formula, data = cond_model_data, spcov_type = "exponential")</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Residuals:</span></span>
 <span><span class="co">#&gt;      Min       1Q   Median       3Q      Max </span></span>
@@ -467,15 +459,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="co">#&gt;        de        ie     range </span></span>
 <span><span class="co">#&gt; 2.588e-01 1.367e-02 2.079e+04</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="model-performance" class="level3" data-number="8.2.2"><h3 data-number="8.2.2" class="anchored" data-anchor-id="model-performance">
-<span class="header-section-number">8.2.2</span> Model performance</h3>
+</section><section id="model-performance" class="level3" data-number="7.2.2"><h3 data-number="7.2.2" class="anchored" data-anchor-id="model-performance">
+<span class="header-section-number">7.2.2</span> Model performance</h3>
 <p>Now, let’s the leave-one-out procedure to estimate model performance and produce predicted values and standard errors.</p>
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">prd_mod</span> <span class="op">&lt;-</span> <span class="fu">spmodel</span><span class="fu">::</span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_mod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">prd_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_mod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">prd_spmod</span> <span class="op">&lt;-</span> <span class="fu">spmodel</span><span class="fu">::</span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_spmod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">prd_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_spmod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">prd_mod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'stats'</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="va">prd_mod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'stats'</span><span class="op">)</span>,</span>
 <span>      <span class="va">prd_spmod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'stats'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 4</span></span>
 <span><span class="co">#&gt;       bias  MSPE RMSPE  cor2</span></span>
@@ -483,13 +475,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="co">#&gt; 1 -0.00469 0.263 0.513 0.738</span></span>
 <span><span class="co">#&gt; 2 -0.00600 0.133 0.364 0.867</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section><section id="map-predicted-values-and-standard-errors" class="level3" data-number="8.2.3"><h3 data-number="8.2.3" class="anchored" data-anchor-id="map-predicted-values-and-standard-errors">
-<span class="header-section-number">8.2.3</span> Map predicted values and standard errors</h3>
+</section><section id="map-predicted-values-and-standard-errors" class="level3" data-number="7.2.3"><h3 data-number="7.2.3" class="anchored" data-anchor-id="map-predicted-values-and-standard-errors">
+<span class="header-section-number">7.2.3</span> Map predicted values and standard errors</h3>
 <div class="cell">
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span><span class="co"># Combine predictions with model data (spatial points)</span></span>
-<span><span class="va">model_data</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">cond_model_data</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">cond_model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prd_cond <span class="op">=</span> <span class="va">prd_spmod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>           <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'cv_predict'</span><span class="op">)</span>, </span>
 <span>         se_fit <span class="op">=</span> <span class="va">prd_spmod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -499,7 +491,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">MN</span>,</span>
 <span>          fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prd_cond</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -512,7 +504,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">MN</span>,</span>
 <span>          fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">se_fit</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'Reds'</span>, direction <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -521,8 +513,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="spatial-lm_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section></section><section id="r-code-appendix" class="level2" data-number="8.3"><h2 data-number="8.3" class="anchored" data-anchor-id="r-code-appendix">
-<span class="header-section-number">8.3</span> R Code Appendix</h2>
+</section></section><section id="r-code-appendix" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="r-code-appendix">
+<span class="header-section-number">7.3</span> R Code Appendix</h2>
 <div class="cell">
 
 </div>
@@ -532,28 +524,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/walkerke/tigris">tigris</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/StreamCatTools/">StreamCatTools</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://usepa.github.io/spmodel/">spmodel</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">data.sfs2024</span><span class="op">)</span></span>
 <span><span class="co"># Read in states to give some context</span></span>
-<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">tigris</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tigris/man/states.html">states</a></span><span class="op">(</span>cb <span class="op">=</span> <span class="cn">TRUE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">STUSPS</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'HI'</span>, <span class="st">'PR'</span>, <span class="st">'AK'</span>, <span class="st">'MP'</span>, <span class="st">'GU'</span>, <span class="st">'AS'</span>, <span class="st">'VI'</span><span class="op">)</span><span class="op">)</span>  <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Read in lakes, select/massage columns, convert to spatial object</span></span>
-<span><span class="va">lake_cond</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span><span class="op">(</span><span class="st">'data/nla_obs.csv'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">UNIQUE_ID</span>, <span class="va">COMID</span>, <span class="va">COND_RESULT</span>,</span>
-<span>         <span class="va">AREA_HA</span>, <span class="va">DSGN_CYCLE</span>,</span>
-<span>         <span class="va">XCOORD</span>, <span class="va">YCOORD</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>DSGN_CYCLE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">DSGN_CYCLE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span>coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'XCOORD'</span>, <span class="st">'YCOORD'</span><span class="op">)</span>, </span>
-<span>           crs <span class="op">=</span> <span class="st">"+proj=aea +lat_0=37.5 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +type=crs"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fl">5070</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"cond_nla_data"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Plot sample locations</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">states</span>,</span>
 <span>          fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">lake_cond</span>,</span>
-<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">DSGN_CYCLE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cond_nla_data</span>,</span>
+<span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#a6cee3"</span>, <span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span> </span>
@@ -561,9 +546,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="va">MN</span> <span class="op">&lt;-</span> <span class="va">states</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">STUSPS</span> <span class="op">==</span> <span class="st">'MN'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cond_mn</span> <span class="op">&lt;-</span> <span class="va">lake_cond</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op">(</span><span class="va">MN</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>year <span class="op">=</span> <span class="va">DSGN_CYCLE</span><span class="op">)</span></span>
+<span><span class="va">cond_mn</span> <span class="op">&lt;-</span> <span class="va">cond_nla_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_filter</a></span><span class="op">(</span><span class="va">MN</span><span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># Plot sample locations</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -630,7 +614,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>    <span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="va">tmpcol</span>, <span class="st">'PCTURB|WS'</span>, <span class="st">''</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">year</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">tmpcol</span><span class="op">)</span></span>
-<span><span class="va">model_data</span> <span class="op">&lt;-</span> <span class="va">cond_mn</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">cond_model_data</span> <span class="op">&lt;-</span> <span class="va">cond_mn</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">mn_lakecat</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">crop</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">urb</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/join_by.html">join_by</a></span><span class="op">(</span><span class="va">COMID</span>, <span class="va">year</span><span class="op">)</span><span class="op">)</span></span>
@@ -646,28 +630,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span>  <span class="va">SWS</span></span>
 <span></span>
 <span><span class="va">cond_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                 data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                 data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>                 spcov_type <span class="op">=</span> <span class="st">'none'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cond_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/splm.html">splm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">formula</span>,</span>
-<span>                   data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>                   data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>                   spcov_type <span class="op">=</span> <span class="st">'exponential'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">cond_mod</span>, <span class="va">cond_spmod</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">cond_spmod</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prd_mod</span> <span class="op">&lt;-</span> <span class="fu">spmodel</span><span class="fu">::</span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_mod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
+<span><span class="va">prd_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_mod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="va">prd_spmod</span> <span class="op">&lt;-</span> <span class="fu">spmodel</span><span class="fu">::</span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_spmod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">prd_spmod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">cond_spmod</span>, se.fit <span class="op">=</span> <span class="cn">TRUE</span>, cv_predict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">prd_mod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'stats'</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="va">prd_mod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'stats'</span><span class="op">)</span>,</span>
 <span>      <span class="va">prd_spmod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'stats'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="co"># Combine predictions with model data (spatial points)</span></span>
-<span><span class="va">model_data</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span><span class="va">cond_model_data</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">cond_model_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prd_cond <span class="op">=</span> <span class="va">prd_spmod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>           <span class="fu"><a href="https://purrr.tidyverse.org/reference/pluck.html">pluck</a></span><span class="op">(</span><span class="st">'cv_predict'</span><span class="op">)</span>, </span>
 <span>         se_fit <span class="op">=</span> <span class="va">prd_spmod</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -677,7 +661,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">MN</span>,</span>
 <span>          fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">prd_cond</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'YlOrRd'</span>, direction <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -687,7 +671,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">MN</span>,</span>
 <span>          fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">model_data</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">cond_model_data</span>,</span>
 <span>          <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">se_fit</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html">scale_color_distiller</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">'Reds'</span>, direction <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -828,13 +812,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./spatial-glm.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></span>
+      <a href="./streamcattools.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./spatial-glm.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">A SPGLM Application to the “Dancer” Damselfly (<em>Argia</em>)</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

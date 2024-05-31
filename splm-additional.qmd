@@ -4,7 +4,7 @@
 source("_common.R")
 ```
 
-Throughout this section, we will use both the `spmodel` package and the `ggplot2` package:
+Throughout this section, we will use the following packages:
 
 ```{r}
 library(spmodel)
