@@ -34,7 +34,7 @@ states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>%
   st_transform(crs = 5070)
 
 # Read in lakes, select/massage columns, convert to spatial object
-lake_cond <- fread('../nla_obs.csv') %>% 
+lake_cond <- fread('nla_obs.csv') %>% 
   select(UNIQUE_ID, COMID, COND_RESULT,
          AREA_HA, DSGN_CYCLE,
          XCOORD, YCOORD) %>% 
