@@ -128,6 +128,12 @@ remotes::install_github('USEPA/finsyncR')
 remotes::install_github('USEPA/StreamCatTools')
 ```
 
+Lastly, we have created an `R` package for this workshop that contains some data we will work with today. To install, run
+```{r}
+remotes::install_github('USEPA/spdata.sfs24')
+```
+
+
 ## How to follow along with material
 
 This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository](https://github.com/USEPA/spworkshop.sfs24), or simply clone directly and open the corresponding `.qmd` files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
