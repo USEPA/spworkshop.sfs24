@@ -1,5 +1,3 @@
-THIS REPOSITORY IS NOT CURRENTLY INTENDED FOR PUBLIC USE.
-
 # Welcome! 
 
 Welcome to the repository for the "Spatial Analysis and Statistical Modeling with R and `spmodel`" workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop's accompanying workbook, [visit here](https://usepa.github.io/spworkshop.sfs24/). To download the workshop's slides, [visit here](https://github.com/USEPA/spworkshop.sfs24/blob/main/slides.html). 
