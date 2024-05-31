@@ -203,6 +203,11 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
   </div>
 </li>
@@ -261,7 +266,7 @@ div.csl-indent {
 </div>
 <p>Hello 👋 and welcome! The purpose of this website is to provide workshop materials for the “Spatial Analysis and Statistical Modeling with R and <code>spmodel</code>” workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop’s accompanying workbook, <a href="https://usepa.github.io/spatial.sfs2024/">visit here</a>. To download the workshop’s slides, <a href="https://github.com/USEPA/spatial.sfs2024/blob/main/slides.html">visit here</a>. Slides are downloaded by clicking the “Download raw file” button via the ellipsis or downward arrow symbol on the right side of the screen.</p>
 <p>It is our hope that this workshop will provide attendees with the conceptual and practical knowledge to incorporate geospatial analyses into their <code>R</code> workflow to improve the interpretation of spatial data. In particular, this workshop will focus on the R package <code>spmodel</code>.</p>
-<p><strong>What is <code>spmodel</code>?</strong> The <code>spmodel</code> <code>R</code> package <span class="citation" data-cites="dumelle2023spmodel">(<a href="references.html#ref-dumelle2023spmodel" role="doc-biblioref">Dumelle, Higham, and Ver Hoef 2023</a>)</span> can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that <code>spmodel</code> can do include:</p>
+<p><strong>What is <code>spmodel</code>?</strong> The <code>spmodel</code> <code>R</code> package <span class="citation" data-cites="dumelle2023spmodel">(<a href="#ref-dumelle2023spmodel" role="doc-biblioref">Dumelle, Higham, and Ver Hoef 2023</a>)</span> can be used to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that <code>spmodel</code> can do include:</p>
 <ul>
 <li>Fit spatial linear and generalized linear models for point-referenced and areal (lattice) data</li>
 <li>Compare model fits and inspect model diagnostics</li>
@@ -293,8 +298,16 @@ div.csl-indent {
 <p><strong>Workshop Summary.</strong> The <code>spmodel</code> <code>R</code> package can be used to fit, summarize, and predict for a variety of spatial statistical models for both point-referenced and areal spatial data. What distinguishes <code>spmodel</code> from many other <code>R</code> packages for modeling spatial data is (1) a syntactic structure similar to the syntactic structure of base <code>R</code> functions <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> and <code><a href="https://rdrr.io/r/stats/glm.html">glm()</a></code> that makes <code>spmodel</code> relatively easy to learn, (2) the breadth of options that give the user a high amount of control over the model being fit, and (3) compatibility with other modern <code>R</code> packages like <code>broom</code> and <code>sf</code>. By the end of this workshop, participants can expect to be able to use <code>spmodel</code> to fit spatial linear models for point-referenced and areal (lattice) data, make predictions for unobserved spatial locations, fit anisotropic models for point-referenced data, fit spatial models with additional non-spatial random effects, fit generalized linear models for spatial data, and use big data methods to analyze large spatial data sets. More information on <code>spmodel</code> can be found on our website at <a href="https://usepa.github.io/spmodel/">https://usepa.github.io/spmodel/</a>.</p>
 <section id="workshop-agenda" class="level2"><h2 class="anchored" data-anchor-id="workshop-agenda">Workshop Agenda</h2>
 <ul>
-<li>9:00am - 10:00am EDT: XYZ</li>
-<li>10:00am - 11:00am EDT: XYZ</li>
+<li>9:00am - 9:30am ET: Introductions and Motivating Examples</li>
+<li>9:30am - 11:30am ET: Spatial Modeling in <code>R</code>
+</li>
+<li>11:30am - 12:30pm ET: Geospatial Analysis in <code>R</code>
+</li>
+<li>12:30pm - 1:30pm ET: Lunch</li>
+<li>1:30pm - 2:30pm ET: Geospatial Analysis in <code>R</code>
+</li>
+<li>2:30pm - 3:30pm ET: Applications to Real Aquatic Data</li>
+<li>3:30pm - 4:00pm ET: Questions and Wrap Up</li>
 </ul></section><section id="author-introduction" class="level2"><h2 class="anchored" data-anchor-id="author-introduction">Author Introduction</h2>
 <p><strong>Michael Dumelle</strong> (he/him/his) is a statistician for the United States Environmental Protection Agency (USEPA). He works primarily on facilitating the survey design and analysis of USEPA’s National Aquatic Resource Surveys (NARS), which characterize the condition of waters across the United States. His primary research interests are in spatial statistics, survey design, environmental and ecological applications, and software development.</p>
 <p><strong>Ryan Hill</strong> (he/him/his) is an aquatic ecologist with the U.S. EPA Office of Research and Development. He is interested in how watershed conditions drive differences in freshwater diversity and water quality across the United States. He has worked extensively with federal physical, chemical, and biological datasets to gain insights into the factors affecting water quality and biotic condition of freshwaters across the conterminous US. He has also worked to develop and distribute large datasets of geospatial watershed metrics of streams and lakes for the Agency (EPA’s StreamCat and LakeCat datasets).</p>
@@ -392,7 +405,7 @@ A BibTeX entry for LaTeX users is
 <p>The views expressed in this manuscript are those of the authors and do not necessarily represent the views or policies of the U.S. Environmental Protection Agency or the U.S. National Oceanic and Atmospheric Administration. Any mention of trade names, products, or services does not imply an endorsement by the U.S. government, the U.S. Environmental Protection Agency, or the U.S. National Oceanic and Atmospheric Administration. The U.S. Environmental Protection Agency and the U.S. National Oceanic and Atmospheric Administration do not endorse any commercial products, services, or enterprises.</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
 <div id="ref-dumelle2023spmodel" class="csl-entry" role="doc-biblioentry">
 Dumelle, Michael, Matt Higham, and Jay M. Ver Hoef. 2023. <span>“<span class="nocase">spmodel</span>: Spatial Statistical Modeling and Prediction in <span>R</span>.”</span> <em>PLOS ONE</em> 18 (3): 1–32. <a href="https://doi.org/10.1371/journal.pone.0282524">https://doi.org/10.1371/journal.pone.0282524</a>.
 </div>

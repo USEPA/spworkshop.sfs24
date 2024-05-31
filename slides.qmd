@@ -665,6 +665,1363 @@ Maintaining all analyses within a single software (`R`) can greatly simplify you
 - Generate point data from a set of latitudes and longitudes, such as from fields sites.
 - Read, write, query, and manipulate vector data using the `sf` package.
 
+## Points, lines, and polygons
+
+![Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/](figures/pts-lines-polys.png){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## Points, lines, and polygons
+
+We can represent these features in `R` without actually using GIS packages.
+
+```{r, warning=F, message=F}
+library(tidyverse)
+library(ggplot2)
+
+id <- c(1:5)
+cities <- c('Ashland','Corvallis','Bend','Portland','Newport')
+longitude <- c(-122.699, -123.275, -121.313, -122.670, -124.054)
+latitude <- c(42.189, 44.57, 44.061, 45.523, 44.652)
+population <- c(20062, 50297, 61362, 537557, 9603)
+
+oregon_cities <- data.frame(id, cities, longitude, latitude, population)
+```
+
+## Points, lines, and polygons
+
+```{r}
+#| label: fig-oregon-cities1
+#| fig-cap: "Oregon cities plotted from data frame."
+#| output-location: slide
+ggplot(
+  data = oregon_cities, 
+  aes(x = longitude, y = latitude, size = population, label = cities)
+) +
+  geom_point() +
+  geom_text(hjust = 1, vjust = 1) +
+  theme_bw()
+```
+
+## Points, lines, and polygons
+
+So, is this sufficient for working with spatial data in `R` and doing spatial analysis? What are we missing? 
+
+If you have worked with vector data before, you may know that these data also usually have:
+
+- A coordinate reference system
+- A bounding box or extent
+- Plot order
+- Additional data
+
+## Exploring the Simple Features (`sf`) package
+
+- The `sf` package provides simple features access for `R`
+- `sf` fits in within the "tidy" approach to data of Hadley Wickham's `tidyverse`
+- In short, much of what used to require ArcGIS license can now be done in `R` with `sf`
+
+## Exploring the Simple Features (`sf`) package
+
+```{r}
+library(sf)
+ls("package:sf")
+```
+
+## Exploring the Simple Features (`sf`) package
+
+- Convert the existing oregon cities data frame to a simple feature by:
+- Supplying the longitude and latitude (x and y).
+- Defining the (geographic) coordinate reference system (`crs`).
+
+## Exploring the Simple Features (`sf`) package
+
+```{r, warning=F, message=F}
+oregon_cities <- oregon_cities %>%
+  st_as_sf(coords = c('longitude', 'latitude'), crs = 4269)
+print(oregon_cities)
+```
+
+## Exploring the Simple Features (`sf`) package
+
+The `oregon_cities` object has now changed from being a standard data frame and includes features that are required for a true spatial object.
+
+- Geometry type
+- Bounding box
+- Coordinate reference system
+
+Latitude and longitude columns have been moved to a new column called `"geometry"` (sticky).
+
+## Coordinate Reference Systems
+
+`sf` also has functionality to re-project and manipulate spatial objects.
+
+![Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html](figures/crs-comparisons.jpg){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## Coordinate Reference Systems
+
+`oregon_cities` is currently in degrees, but certain applications may require an equal area projection and length units, such as meters. See: [epsg.org](epsg.org)
+
+With `sf` we can:
+
+- Check to see if the current CRS is equal to the Albers Equal-Area Conic Projection
+- Transform `oregon_cities` to CRS 5070
+
+## Coordinate Reference Systems
+
+```{r, warning=F, message=F}
+st_crs(oregon_cities) == st_crs(5070)
+
+oregon_cities <- 
+  oregon_cities %>% 
+  st_transform(crs = 5070)
+```
+
+## Coordinate Reference Systems
+
+Now let's plot the the transformed data...
+
+```{r, warning=F, message=F}
+#| label: fig-oregon-cities2
+#| fig-cap: "Oregon cities plotted in Albers Equal Area Projection."
+#| output-location: slide
+ggplot(data = oregon_cities) +
+  geom_sf_text(aes(label = cities),
+               hjust=0, vjust=1.5) +
+  geom_sf(aes(size = population)) + 
+  xlab('Longitude') +
+  ylab('Latitude') +
+  theme_bw()
+```
+
+## It all feels like `R`
+
+- There can be huge advantages to doing GIS tasks in `R` without going back and forth to other GIS software
+- If you are familiar with `R`, the leap to doing GIS here can be small
+- `sf` provides a large number of GIS functions, such as buffers, intersection, centroids, etc.
+
+## It all feels like `R`
+
+Example 1: Add 100 Km buffer to cities
+
+```{r, warning=F, message=F}
+cities_buffer <- 
+  oregon_cities %>% 
+  st_buffer(100000)
+```
+
+Plot map of buffered cities...
+
+```{r, warning=F, message=F}
+#| label: buffered-cities1
+#| fig-cap: "Buffered cities w/ overlapping buffers."
+#| output-location: slide
+ggplot(data = cities_buffer) +
+  geom_sf(aes(fill = cities), alpha = 0.5) +
+  geom_sf(data = st_centroid(oregon_cities)) +
+  theme_bw()
+```
+
+## It all feels like `R`
+
+Example 2: Split buffers into sub-units and calculate areas
+
+```{r, warning=F, message=F}
+cities_buffer <- cities_buffer %>% 
+  st_intersection() %>%
+  mutate(area = st_area(.) %>% 
+           units::drop_units(),
+         id = as.factor(1:nrow(.)))
+```
+
+Plot results:
+
+```{r, warning=F, message=F}
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+#| output-location: slide
+ggplot(data = cities_buffer) +
+  geom_sf(aes(fill = id), alpha = 0.5) +
+  theme_bw()
+```
+
+## Raster data
+
+- Another fundamental data type in GIS is the raster
+- Rasters are a way of displaying gridded data, where each member of the grid represents a landscape feature (e.g., elevation)
+- The `terra` package is now the best package for working with rasters
+
+## Raster data
+
+Much like `sf`, `terra` has a large number of functions for working with raster data.
+
+```{r, warning=F, message=F}
+library(terra)
+ls("package:terra")
+```
+
+## Raster data
+
+Create and define raster
+
+```{r, warning=F, message=F}
+r <- rast(ncol=10, nrow = 10)
+
+r[] <- runif(n=ncell(r))
+
+r
+```
+
+## Raster data
+
+```{r, warning=F, message=F}
+#| label: basic-raster
+#| fig-cap: "Basic raster in R."
+plot(r)
+```
+
+## Raster data
+
+We can access data from specific locations within a raster 
+
+```{r, warning=F, message=F, eval=TRUE}
+# Access data from the ith location in a raster
+r[12]
+
+# Access data based on row and column
+r[2, 2] 
+```
+
+## Raster data
+
+Rasters can be stacked which can make them very efficient to work with
+
+```{r, warning=F, message=F, eval=TRUE}
+# Create 2 new rasters based on raster r
+r2 <- r * 50
+r3 <- sqrt(r * 5)
+
+# Stack rasters and rename to be unique
+s <- c(r, r2, r3)
+names(s) <- c('r1', 'r2', 'r3')
+```
+
+## Raster data
+
+```{r, warning=F, message=F, eval=TRUE}
+plot(s)
+```
+
+## Working with real data
+
+- There are several packages for accessing geospatial data from the web
+- We will use the `FedData` package, but numerous other packages exist to access data within and without the U.S.
+- One useful example is the `elevatr` package for accessing elevation data around the world
+
+## Working with real data
+
+We will walk through an example of extracting information from a raster using a polygon layer. To do this we will:
+
+- Select just Corvallis among `oregon_cities`
+- Add a 10,000m buffer
+- Download National Elevation Data
+- Transform the projection system of the elevation data to match Corvallis
+- Calculate the average elevation within 10km of Corvallis
+
+## Working with real data
+
+1. Buffer Corvallis
+
+```{r, warning=F, message=F, eval=TRUE}
+library(FedData)
+
+# Select just Corvallis and calculate a 10,000-m buffer
+corvallis <- 
+  oregon_cities %>%
+  filter(cities == 'Corvallis') %>% 
+  st_buffer(10000)
+```
+
+```{r}
+#| echo: false
+
+ggplot() +
+  geom_sf(data = corvallis) + 
+  theme_bw()
+```
+
+## Working with real data
+
+2. Download NED based on Corvallis buffer
+
+```{r, warning=F, message=F, eval=TRUE}
+# Download national elevation data (ned)
+ned <- FedData::get_ned(
+  template = corvallis,
+  label = "corvallis")
+```
+
+
+3. Transform the CRS
+
+```{r, warning=F, message=F, eval=TRUE}
+ned <- terra::project(ned, 
+                      'epsg:5070',
+                      method = 'bilinear')
+```
+
+## Working with real data
+
+4. Mean elevation within polygon
+
+```{r, warning=F, message=F, eval=TRUE}
+# zonal function in terra to calculate zonal statistics
+terra::zonal(ned, 
+             
+             # Need to convert corvallis `sf` object to terra vector
+             terra::vect(corvallis), 
+             
+             # Metric to be calculated
+             mean, na.rm = T)
+```
+
+## Your Turn
+
+::: task
+1. Read in U.S. cities with `data('us.cities')` from the `maps` library
+2. Select the city of your choice and buffer it by 10Km. (We suggest converting to an equal area projection first)
+3. Read in National Elevation Data for your city with the `FedData` package
+4. Transform CRS of elevation data to match city
+5. Calculate the mean elevation within 10km of your city 
+:::
+
+```{r}
+#| echo: false
+
+countdown::countdown(minutes = 8)
+```
+
+## Solution
+
+1-2. Buffer city of your choice
+
+```{r}
+library(maps)
+data('us.cities')
+
+my_city <- us.cities %>% 
+  filter(name == 'Idaho Falls ID') %>% 
+  st_as_sf(coords = c('long', 'lat'), crs = 4269) %>% 
+  st_transform(crs = 5070) %>% 
+  st_buffer(10000)
+```
+
+## Solution
+
+3. Read in elevation data
+
+```{r}
+ned <- FedData::get_ned(
+  template = my_city,
+  label = "Idaho Falls")
+```
+
+## Solution
+
+4. Transform CRS
+
+```{r}
+ned <- terra::project(ned, 
+                      'epsg:5070',
+                      method = 'bilinear')
+```
+
+## Solution
+
+5. Calculate mean elevation within buffer
+
+```{r}
+terra::zonal(ned, 
+             terra::vect(my_city), 
+             mean, na.rm = T)
+```
+
+## Watershed Delineation
+
+- Characterizing watersheds is fundamental to much of our work in freshwater science
+- Although it is more than we can cover in today's workshop, we want you to be aware that there are several options for delineating watersheds in `R`
+- We'll provide two examples of how to delineate watersheds within the conterminous U.S. using two online services
+
+## USGS StreamStats
+
+The USGS's StreamStats is an online service and map interface that allows users to navigate to a desired location and delineate a watershed boundary with the click of a mouse:
+
+[https://streamstats.usgs.gov/ss/](https://streamstats.usgs.gov/ss/)
+
+In addition to the map interface, the data are also accessible via an API:
+
+[https://streamstats.usgs.gov/docs/streamstatsservices](https://streamstats.usgs.gov/docs/streamstatsservices)
+
+## USGS StreamStats
+
+It is also possible to replicate this functionality in R:
+
+```{r, warning=F, message=F}
+streamstats_ws = function(state, longitude, latitude){
+  p1 = 'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='
+  p2 = '&xlocation='
+  p3 = '&ylocation='
+  p4 = '&crs=4269&includeparameters=false&includeflowtypes=false&includefeatures=true&simplify=true'
+  query <-  paste0(p1, state, p2, toString(longitude), p3, toString(latitude), p4)
+  mydata <- jsonlite::fromJSON(query, simplifyVector = FALSE, simplifyDataFrame = FALSE)
+  poly_geojsonsting <- jsonlite::toJSON(mydata$featurecollection[[2]]$feature, auto_unbox = TRUE)
+  poly <- geojsonio::geojson_sf(poly_geojsonsting) 
+  poly
+}
+
+# Define location for delineation (Calapooia Watershed)
+state <- 'OR'
+latitude <- 44.62892
+longitude <- -123.13113
+
+# Delineate watershed
+cal_ws <- streamstats_ws('OR', longitude, latitude) %>% 
+  st_transform(crs = 5070)
+```
+
+## USGS StreamStats
+
+```{r, warning=F, message=F}
+#| echo: false
+
+cal_pt <- data.frame(ptid = 'Calapooia River', lon = longitude, lat = latitude)  %>% 
+  st_as_sf(coords = c('lon', 'lat'), crs = 4269) %>% 
+  st_transform(crs = 5070)
+
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+#| output-location: slide
+library(mapview)
+mapview::mapviewOptions(fgb=FALSE)
+mapview(cal_pt, col.regions = 'black') + 
+  mapview(cal_ws, alpha.regions = .08) 
+```
+
+## nhdplusTools
+
+- `nhdplusTools` is an `R` package that can access the Network Linked Data Index (NLDI) service, which provides navigation and extraction of NHDPlus data: [https://doi-usgs.github.io/nhdplusTools/](https://doi-usgs.github.io/nhdplusTools/)
+- `nhdplusTools` includes network navigation options as well as watershed delineation
+- The delineation method differs from StreamStats (based on National Hydrography IDs)
+
+## nhdplusTools 
+
+```{r, warning=F, message=F}
+library(nhdplusTools)
+
+# Simple feature option to generate point without any other attributes
+cal_pt <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
+
+# Identify the network location (NHDPlus common ID or COMID)
+start_comid <- nhdplusTools::discover_nhdplus_id(cal_pt)
+
+# Combine info into list (required by NLDI basin function)
+ws_source <- list(featureSource = "comid", featureID = start_comid)
+
+cal_ws2 <- nhdplusTools::get_nldi_basin(nldi_feature = ws_source)
+```
+
+## nhdplusTools 
+
+```{r, warning=F, message=F}
+#| echo: false
+
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+#| output-location: slide
+library(mapview)
+mapview::mapviewOptions(fgb=FALSE)
+mapview(cal_pt, col.regions = 'black') + 
+  mapview(cal_ws, alpha.regions = .08) + 
+  mapview(cal_ws2, alpha.regions = .08, col.regions = 'red') 
+```
+
+## nhdplusTools 
+
+`nhdplusTools` works by walking a network of pre-staged sub-catchments with unique IDs (COMIDs)
+
+```{r, warning=F, message=F}
+#| echo: false
+
+# Trib coordinates
+latitude <- 44.61892
+longitude <- -123.13731
+
+trib_pt2 <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
+start_comid <- nhdplusTools::discover_nhdplus_id(trib_pt2)
+ws_source <- list(featureSource = "comid", featureID = start_comid)
+
+streams <- nhdplusTools::navigate_nldi(ws_source, mode = "UT", 
+                                       distance_km = 2000) %>%
+  pluck('UT_flowlines')
+
+# Use get_nhdplus to access the individual stream sub-catchments
+cats <- nhdplusTools::get_nhdplus(comid = streams$nhdplus_comid,
+                                  realization = 'catchment')
+
+mapview(streams, legend = FALSE) + 
+  mapview(cats, alpha.regions=.08, col.regions = 'blue') 
+
+```
+
+## Other watershed delination methods 
+
+- Outside of the U.S., these tools are not available 
+- It is still possible to delineate a custom watershed from raw DEM data with help from the `whitebox` R package
+- This [book](https://vt-hydroinformatics.github.io/rgeowatersheds.html) walks through this process 
+- Jeff Hollister (U.S. EPA) developed an R package called [`elevatr`](https://cran.r-project.org/web/packages/elevatr/vignettes/introduction_to_elevatr.html#Point_elevation_from_Amazon_Web_Service_Terrain_Tiles) that can access DEM data from the web both within and outside the U.S.
+
+## Your Turn
+
+::: task
+1. Delineate the Logan River watershed in Utah at -111.855, 41.707
+2. Use `mapview::mapview` to plot watershed
+:::
+
+```{r}
+#| echo: false
+
+countdown::countdown(minutes = 8)
+```
+
+## Solution
+
+1. Delineate Logan River watershed
+
+```{r}
+# Logan River Watershed
+latitude <- 41.707
+longitude <- -111.855
+
+# Define the lat/lon
+start_point <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
+# Find COMID of this point
+start_comid <- nhdplusTools::discover_nhdplus_id(start_point)
+# Create a list object that defines the feature source and starting COMID
+ws_source <- list(featureSource = "comid", featureID = start_comid)
+# Delineate basin
+logan_ws <- nhdplusTools::get_nldi_basin(nldi_feature = ws_source)
+```
+
+## Solution
+
+2. Map the Logan River watershed
+
+```{r}
+mapview::mapview(logan_ws)
+```
+
+## StreamCatTools
+
+![](figures/streamcattools-med-dpi.png){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## Why StreamCat/LakeCat?
+
+- Examples covered are for single watersheds - but we often need data for hundreds or thousands
+- Overlaying watersheds onto numerous landscape rasters/layers is complicated/long process
+- StreamCat/LakeCat solves this issue by providing summarized data for all streams and lakes in the NHDPlus (medium resolution)
+
+## Why StreamCat/LakeCat?
+
+Let's revisit the Calapooia watershed and calculate percent row crop for 2019 with `FedData`
+
+- Download NLCD for 2019
+
+```{r}
+nlcd <- get_nlcd(
+  template = cal_ws2,
+  year = 2019,
+  label = 'Calapooia') %>%
+  terra::project('epsg:5070', method = 'near') 
+```
+
+## Why StreamCat/LakeCat?
+
+- Use terra to extract the watershed metrics
+
+```{r}
+terra::extract(nlcd,
+               terra::vect(cal_ws2)) %>%
+  group_by(Class) %>%
+  summarise(count = n()) %>%
+  mutate(percent = (count / sum(count)) * 100) %>%
+  filter(Class == 'Cultivated Crops') %>%
+  print()
+```
+
+## Why StreamCat/LakeCat?
+
+Now let's extract the same information using the `StreamCatTools` package to access the online StreamCat database
+
+```{r, warning=F, message=F}
+library(StreamCatTools)
+
+comid <- '23763521'
+
+sc_get_data(comid = comid,
+            metric = 'PctCrop2019', 
+            aoi = 'watershed')
+```
+
+
+## `StreamCatTools`
+
+- StreamCat and the `StreamCatTools` package provide access to the same information with much less code because StreamCat pre-stages watershed metrics for each NHDPlus catchment
+
+## `StreamCatTools`
+
+StreamCat also provides metrics at several scales
+
+![Geospatial framework of the StreamCat Dataset](figures/geospatialframework.png){#fig-foo height="100%" width="100%   " fig-align="center"}
+
+## `StreamCatTools`
+
+```{r, warning=F, message=F, echo=TRUE}
+sc_get_data(comid = comid,
+            metric = 'PctCrop2019', 
+            aoi = 'catchment,watershed')
+```
+
+## `StreamCatTools`
+
+For a subset of watershed metrics, summaries within ~100m of the stream segment are also available for catchments and watersheds:
+
+![Riparian buffers (red) of NHD stream lines (white) and on-network NLCD water pixels (blue).](figures/riparianbuffer.png){#fig-foo height="471px" width="480px" fig-align="center"}
+
+## `StreamCatTools`
+
+```{r, warning=F, message=F, echo=TRUE}
+sc_get_data(comid = comid,
+            metric = 'PctCrop2019', 
+            aoi = 'catchment,riparian_catchment,watershed,riparian_watershed') %>% 
+  as.data.frame()
+```
+
+## `StreamCatTools`
+
+`StreamCatTools` also makes it very easy to grab data for entire regions. 
+
+```{r, warning=F, message=F, echo=TRUE}
+library(ggplot2)
+
+iowa_crop <- sc_get_data(state = 'IA',
+                         metric = 'PctCrop2019', 
+                         aoi = 'watershed')
+```
+
+## `StreamCatTools`
+
+```{r, warning=F, message=F, echo=TRUE}
+#| label: iowa
+#| fig-cap: "Histogram of crop as a % of watersheds within Iowa in 2019."
+#| output-location: slide
+ggplot() + 
+  geom_histogram(data = iowa_crop,
+                 aes(x = PCTCROP2019WS)) + 
+  theme_bw()
+```
+
+## `StreamCatTools`
+
+- We can provide multiple metrics to the request by separating them with a comma. 
+- Note that the request is provided as a single string, `'PctCrop2001, PctCrop2019'`, rather than a vector of metrics: `c('PctCrop2001', 'PctCrop2019')`. 
+- The request itself is agnostic to formatting of the text. For example, these requests will also work: `'pctcrop2001, pctcrop2019'` or `'PCTCROP2001,PCTCROP2019'`.
+
+## `StreamCatTools`
+
+StreamCat contains hundreds of metrics and we recommend consulting the [metric list](https://www.epa.gov/national-aquatic-resource-surveys/streamcat-metrics-and-definitions) to identify those of interest for your study.
+
+## Accessing LakeCat
+
+The `R` function to access LakeCat data was designed to parallel StreamCat functions
+
+Let's walk through an example together that:
+
+- Define a `sf` object of a sample point at Pelican Lake, WI
+- Obtain the lake waterbody polygon
+- Extract the COMID (unique ID) to query LakeCat
+- Pull data on mean watershed elevation, calcium oxide content of the geology, % sand and organic matter content of soils, and % of the watershed composed of deciduous forest
+
+## Accessing LakeCat
+
+```{r, warning=F, message=F, echo=TRUE}
+library(nhdplusTools)
+
+# Pelican Lake, WI
+latitude <- 45.502840
+longitude <- -89.198694
+
+pelican_pt <- data.frame(site_name = 'Pelican Lake',
+                         latitude = latitude,
+                         longitude = longitude) %>% 
+  st_as_sf(coords = c('longitude', 'latitude'), crs = 4326)
+
+pelican_lake <- nhdplusTools::get_waterbodies(pelican_pt) 
+
+comid <- pelican_lake %>% 
+  pull(comid)
+
+lc_get_data(metric = 'elev, cao, sand, om, pctdecid2019',
+            aoi = 'watershed',
+            comid = comid)
+```
+
+## Your Turn
+
+::: task
+Query LakeCat to determine if the basins of these lakes had more deciduous or conifer forest in 2019:
+
+"9028333,9025609,9025611,9025635"
+
+The LakeCat [metrics page](https://www.epa.gov/national-aquatic-resource-surveys/lakecat-metrics-and-definitions) may help
+:::
+
+```{r}
+#| echo: false
+
+countdown::countdown(minutes = 5)
+```
+
+## Solution
+
+```{r}
+library(StreamCatTools)
+
+comids <- "9028333,9025609,9025611,9025635"
+
+lc_get_data(metric = 'pctdecid2019, pctconif2019',
+            aoi = 'watershed',
+            comid = comids) 
+```
+
+
+## Bringing it all together
+
+- To finish the workshop, we will walk through 2 examples of using `spmodel` to model phenomena in two types of freshwaters:
+  - Electrical conductivity of lake water across Minnesota
+  - The distribution of _Argia_ damselfly across several northeastern states
+  
+## Lake Conductivity
+
+- Conductivity is an important water quality measure and one of growing concern due to  salinization of freshwater ([Cañedo-Argüelles et al. 2016](https://www.science.org/doi/full/10.1126/science.aad3488), [Kaushal et al. 2021](https://link.springer.com/article/10.1007/s10533-021-00784-w))
+- This analysis is based on a recent [paper](https://www.sciencedirect.com/science/article/pii/S2211675323000830) by Michael Dumelle and others published in the journal _Spatial Statistics_. The GitHub repository for this paper is also [available](https://github.com/USEPA/lake-conductivity-spin.manuscript)
+
+## Data Prep: Conductivity (Dependent) Data
+
+Load required packages...
+
+```{r, warning=F, message=F, eval=TRUE}
+library(tidyverse)
+library(sf)
+library(tigris)
+library(StreamCatTools)
+library(spmodel)
+library(data.table)
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+Read and prep table of lake conductivity values...
+
+```{r, warning=F, message=F, eval=TRUE}
+# Read in states to give some context
+states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>% 
+  filter(!STUSPS %in% c('HI', 'PR', 'AK', 'MP', 'GU', 'AS', 'VI'))  %>% 
+  st_transform(crs = 5070)
+
+# Read in lakes, select/massage columns, convert to spatial object
+lake_cond <- fread('nla_obs.csv') %>% 
+  select(UNIQUE_ID, COMID, COND_RESULT,
+         AREA_HA, DSGN_CYCLE,
+         XCOORD, YCOORD) %>% 
+  mutate(DSGN_CYCLE = factor(DSGN_CYCLE)) %>% 
+  st_as_sf(coords = c('XCOORD', 'YCOORD'), 
+           crs = "+proj=aea +lat_0=37.5 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +type=crs") %>% 
+  st_transform(crs = 5070)
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+```{r}
+#| label: NLA
+#| fig-cap: "NLA lake sampes across the U.S."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = states,
+          fill = NA) +
+  geom_sf(data = lake_cond,
+          aes(color = DSGN_CYCLE)) +
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+Select sample sites within Minnesota
+
+```{r, warning=F, message=F, eval=TRUE}
+MN <- states %>% 
+  filter(STUSPS == 'MN')
+
+cond_mn <- lake_cond %>% 
+  st_filter(MN) %>% 
+  rename(year = DSGN_CYCLE)
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Observed log(conductivity)
+#| fig-cap: "Distribution of conductivity values."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = cond_mn,
+          aes(color = log(COND_RESULT))) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: LakeCat (Independent) Data
+
+We will use the similar watershed predictors as [Dumelle et al. (2023)](https://www.sciencedirect.com/science/article/pii/S2211675323000830). 
+
+Already included with data table with the response variable are:
+
+- Lake Area (AREA_HA)
+- Sample year (DSGN_CYCLE)
+
+## Data Prep: LakeCat (Independent) Data
+
+From LakeCat, we also will get the following predictor variables:
+
+- Local long-term air temperature 
+- Long-term watershed precipitation 
+- Sulfur content of underlying lithology
+
+## Data Prep: LakeCat (Independent) Data
+
+```{r}
+comids <- cond_mn$COMID
+
+mn_lakecat <- lc_get_data(comid = comids,
+                          metric = 'Tmean8110, Precip8110, S') %>% 
+  select(COMID, TMEAN8110CAT, PRECIP8110WS, SWS)
+
+mn_lakecat
+```
+
+## Data Prep: LakeCat (Independent) Data
+
+In addition to these static LakeCat data, we would also like to pull in data from specific years of NLCD to match sample years for % of watershed composed of crop area
+
+To do this we will need to:
+
+- Grab LakeCat NLCD % crop data for years 2006, 2011, 2016
+- Clean and pivot the columns and add a year column
+- Add 1 to each year since available NLCD are 1 year behind field samples
+
+## Data Prep: LakeCat (Independent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+crop <- 
+  
+  # Grab LakeCat crop data
+  lc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'pctcrop2006, pctcrop2011, pctcrop2016') %>% 
+  
+  # Remove watershed area from data
+  select(-WSAREASQKM) %>% 
+  
+  # Pivot table to long to create "year" column
+  pivot_longer(!COMID, names_to = 'tmpcol', values_to = 'PCTCROPWS') %>% 
+  
+  # Remove PCTCROP and WS to make "year" column
+  mutate(year = as.integer(
+    str_replace_all(tmpcol, 'PCTCROP|WS', ''))) %>% 
+  
+  # Add 1 to each year to match NLA years
+  mutate(year = factor(year + 1)) %>% 
+  
+  # Remove the tmp column
+  select(-tmpcol)
+```
+
+## Data Prep: LakeCat (Independent) Data
+
+Now, join the tables to make our model data
+
+```{r, warning=F, message=F, eval=TRUE}
+model_data <- cond_mn %>% 
+  left_join(mn_lakecat, join_by(COMID)) %>% 
+  left_join(crop, join_by(COMID, year))
+```
+
+## Modeling lake conductivity
+
+Define the formula
+
+```{r}
+formula <- 
+  log(COND_RESULT) ~ 
+  AREA_HA + 
+  year + 
+  TMEAN8110CAT +
+  PRECIP8110WS + 
+  PCTCROPWS + 
+  SWS
+```
+
+## Modeling lake conductivity
+
+Run a non-spatial and spatial model for comparison
+
+```{r}
+cond_mod <- splm(formula = formula,
+                 data = model_data,
+                 spcov_type = 'none')
+
+cond_spmod <- splm(formula = formula,
+                   data = model_data,
+                   spcov_type = 'exponential')
+
+summary(cond_spmod)
+```
+
+## Modeling lake conductivity
+
+Model comparison 
+
+```{r}
+glances(cond_mod, cond_spmod)
+```
+
+## Modeling lake conductivity
+
+Leave-one-out comparison
+
+```{r, warning=F, message=F, eval=TRUE}
+prd_mod <- spmodel::loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE) 
+
+prd_spmod <- spmodel::loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
+
+rbind(prd_mod %>% pluck('stats'),
+      prd_spmod %>% pluck('stats'))
+```
+
+## Map predicted values and standard errors
+
+Join back to model data for mapping
+
+```{r, warning=F, message=F, eval=TRUE}
+# Combine predictions with model data (spatial points)
+model_data <-
+  model_data %>% 
+  mutate(prd_cond = prd_spmod %>% 
+           pluck('cv_predict'), 
+         se_fit = prd_spmod %>% 
+           pluck('se.fit'))
+```
+
+## Map predicted values and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Predicted log(conductivity)
+#| fig-cap: "Predicted log(conductivity) values."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prd_cond)) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Map predicted values and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Conductivity standard errors
+#| fig-cap: "Model standard errors."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = se_fit)) +
+  scale_color_distiller(palette = 'Reds', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## _Argia_ distribution
+
+In this example, we will model the occurrence of the _Argia_ damselfly in several northeastern states
+
+![Image from: inaturalist.org](https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg){height="25%" width="25%" fig-align="center"}
+
+## `finsyncR`
+
+To start this exercise, we'll introduce a new `R` package called [`finsyncR`](https://usepa.github.io/finsyncR/). This package was developed by US EPA scientists and academic collaborators. 
+
+![](figures/finsyncR.png){#fig-foo height="33%" width="33%" fig-align="center"}
+
+## `finsyncR`
+
+- `finsyncR` provides us with access to thousands of biological samples across the U.S. from both EPA and USGS sources (e.g., [Rumschlag et al. 2023](https://www.science.org/doi/full/10.1126/sciadv.adf4896)). We'll be using EPA data today
+- The EPA data are from the National Aquatic Resources Assessment's [Wadeable Streams Assessment](https://www.epa.gov/national-aquatic-resource-surveys/wadeable-streams-assessment) (2001-2004) and [National Rivers and Streams Assessments](https://www.epa.gov/national-aquatic-resource-surveys/nrsa) (NRSA; 2008/2009, 2013/2014, and 2018/2019). 
+
+## Data Prep: Biological (Dependent) Data
+
+Load additional packages
+
+```{r, warning=F, message=F, eval=TRUE}
+library(finsyncR)
+library(pROC)
+```
+
+## Data Prep: Biological (Dependent) Data
+
+Next, use `finsyncR` to get genus-level macroinvert data from just EPA and rarefy to 300 count
+
+The code also converts the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. 
+
+```{r, warning=F, message=F, eval=TRUE}
+macros <- getInvertData(dataType = "occur",
+                        taxonLevel = "Genus",
+                        agency = "EPA",
+                        lifestage = FALSE,
+                        rarefy = TRUE,
+                        rarefyCount = 300,
+                        sharedTaxa = FALSE,
+                        seed = 1,
+                        boatableStreams = T)
+
+print(dim(macros))
+```
+
+## Data Prep: Biological (Dependent) Data
+
+Clean data:
+
+- Select columns of interest
+- Remove EPA's Wadeable Streams Assessment (2001-2004)
+- Convert "CollectionDate" to a date (`lubridate::date()`) and convert presence/absence to a factor
+- Convert table to a `sf` object and transform to EPSG:5070
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+# Flexible code so we could model another taxon
+genus <- 'Argia'
+
+taxon = macros %>%
+  dplyr::select(SampleID, 
+                ProjectLabel, 
+                CollectionDate,  
+                Latitude_dd,
+                Longitude_dd,
+                all_of(genus))  %>%
+  #filter(ProjectLabel != 'WSA') %>% 
+  mutate(CollectionDate = date(CollectionDate),
+         presence = 
+           as.factor(pull(., genus)))  %>% 
+  st_as_sf(coords = c('Longitude_dd', 'Latitude_dd'), crs = 4269)  %>% 
+  st_transform(crs = 5070)
+```
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Presence/Absense
+#| fig-cap: "Occurrence of Argia."
+#| output-location: slide
+ggplot() + 
+  geom_sf(data = states, fill = NA) +
+  geom_sf(data = taxon, 
+          aes(color = presence),
+          size = 1.5,
+          alpha = 0.65) + 
+  scale_color_manual(values=c("#d9d9d9", "#08519c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: NRSA samples
+#| fig-cap: "NRSA samples."
+#| output-location: slide
+ggplot() + 
+  geom_sf(data = states, fill = NA) +
+  geom_sf(data = taxon, 
+          aes(color = ProjectLabel),
+          size = 1.5,
+          alpha = 0.75) + 
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Biological (Dependent) Data
+
+For today's exercise, we'll narrow down the samples to the northeaster region of the U.S.
+
+- Select states from the northeaster U.S.
+- Select NRSA sample sites that intersect with these states.
+- Filter to just the 2013/2014 and 2018/2019 sample periods.
+- Create a new column for sample year.
+- Select desired columns.
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+region <- states %>% 
+  filter(STUSPS %in% c('VT', 'NH', 'ME', 'NY', 'RI',
+                       'MA', 'CT', 'NJ', 'PA', 'DE'))
+
+# Use region as spatial filter (sf::st_filter()) for taxon of interest
+taxon_rg <- taxon %>% 
+  st_filter(region) %>% 
+  filter(ProjectLabel %in% c('NRSA1314', 'NRSA1819')) %>% 
+  mutate(year = year(ymd(CollectionDate))) %>% 
+  select(SampleID:CollectionDate, presence:year) 
+
+taxon_rg %>% 
+  pull(presence) %>% 
+  table()
+```
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Northeast sites
+#| fig-cap: "Northeast sites."
+#| output-location: slide
+ggplot() + 
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = taxon_rg, 
+          aes(color = presence)) + 
+  scale_color_manual(values=c("#d9d9d9", "#08519c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Predictor (Independent) Data
+
+1. Obtain list of NHDPlus COMIDs that match sample sites from `nhdplusTools`
+
+- Use NLDI service via StreamCat to get the COMIDs
+- Create a vector of COMIDs by splitting the COMID string
+- Add COMID to our _Argia_ occurrence table
+
+## Data Prep: Predictor (Independent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+comids <- sc_get_comid(taxon_rg)
+
+#comids <- read_rds('./data/nrsa_comids.rds')
+comid_vect <- 
+  comids %>%
+  str_split(',') %>%
+  unlist() %>%
+  as.integer()
+
+taxon_rg <- 
+  taxon_rg %>%
+  mutate(COMID = comid_vect) 
+```
+
+## Data Prep: Predictor (Independent) Data
+
+2. Get non-varying StreamCat data.
+
+```{r, warning=F, message=F, eval=TRUE}
+sc <- 
+  sc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'bfi, precip8110, wetindex, elev',
+              showAreaSqKm = TRUE)
+```
+
+## Data Prep: Predictor (Independent) Data
+
+5. PRISM air temperatures for sample periods
+
+- The `prism` package requires that we set a temporary folder in our work space. Here, we set it to "prism_data" inside of our "data" folder. It will create this folder if it does not already exist.
+- We then stack the climate rasters and use `terra::extract()` to 
+
+## Data Prep: Predictor (Independent) Data
+
+Don't worry - we'll walk through this together
+
+```{r, warning=F, message=F, eval=TRUE}
+library(prism)
+
+# Get these years of PRISM
+years <- c(2013, 2014, 2018, 2019)
+
+# Set the PRISM directory (creates directory in not present)
+prism_set_dl_dir("./data/prism_data", create = TRUE)
+
+# Download monthly PRISM rasters (tmean)
+get_prism_monthlys('tmean', 
+                   years = years, 
+                   mon = 7:8, 
+                   keepZip = FALSE)
+
+# Create stack of downloaded PRISM rasters
+tmn <- pd_stack((prism_archive_subset("tmean","monthly", 
+                                      years = years, 
+                                      mon = 7:8)))
+
+# Extract tmean at sample points and massage data
+tmn <- terra::extract(tmn, 
+                      # Transform taxon_rg to CRS of PRISM on the fly
+                      taxon_rg %>% 
+                        st_transform(crs = st_crs(tmn))) %>%
+  
+  # Add COMIDs to extracted values
+  data.frame(COMID = comid_vect, .) %>%
+  
+  # Remove front and back text from PRISM year/month in names
+  rename_with( ~ stringr::str_replace_all(., 'PRISM_tmean_stable_4kmM3_|_bil', '')) %>% 
+  
+  # Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year
+  pivot_longer(!COMID, names_to = 'year_month', 
+               values_to = 'TMEANPRISMXXXXPT') %>% 
+  
+  # Create new column of year
+  mutate(year = year(ym(year_month))) %>% 
+  
+  # Average July and August temperatures 
+  summarise(TMEANPRISMXXXXPT = mean(TMEANPRISMXXXXPT, na.rm = TRUE), 
+            .by = c(COMID, year))
+```
+
+## Data Prep: Predictor (Independent) Data
+
+Combine Dependent and Independent Data
+
+```{r, warning=F, message=F, eval=TRUE}
+model_data <-
+  taxon_rg %>%
+  left_join(sc, join_by(COMID)) %>%
+  left_join(tmn, join_by(COMID, year)) %>%
+  drop_na()
+```
+
+## Modeling occurrence of genus _Argia_
+
+Model formulation
+
+```{r, warning=F, message=F, eval=TRUE}
+formula <-
+  presence ~
+  I(log10(WSAREASQKM)) +
+  ELEVWS +
+  WETINDEXWS +
+  BFIWS +
+  PRECIP8110WS +
+  TMEANPRISMXXXXPT
+```
+
+## Modeling occurrence of genus _Argia_
+
+Run non-spatial and spatial models for comparison
+
+```{r}
+bin_mod <- spglm(formula = formula,
+                 data = model_data,
+                 family = 'binomial',
+                 spcov_type = 'none')
+
+bin_spmod <- spglm(formula = formula,
+                   data = model_data,
+                   family = 'binomial',
+                   spcov_type = 'exponential')
+
+summary(bin_spmod)
+```
+
+## Model comparison/performance
+
+```{r}
+glances(bin_mod, bin_spmod)
+```
+
+## Model comparison/performance
+
+```{r, warning=F, message=F, eval=TRUE}
+# Function to convert from log odds to probability
+to_prob <- function(x) exp(x)/(1+exp(x))
+
+# loocv of non-spatial model
+loocv_mod <- loocv(bin_mod, cv_predict = TRUE, se.fit = TRUE) 
+
+# loocv of spatial model
+loocv_spmod <- loocv(bin_spmod, cv_predict = TRUE, se.fit = TRUE)
+
+pROC::auc(model_data$presence, loocv_mod$cv_predict)
+pROC::auc(model_data$presence, loocv_spmod$cv_predict)
+```
+
+## Map predictions and standard errors
+
+Extract values from `loocv()` object and join to model data for mapping
+
+```{r, warning=F, message=F, eval=TRUE}
+
+prob_spmod <- to_prob(loocv_spmod$cv_predict)
+sefit_spmod <- loocv_spmod$se.fit
+
+model_data <- model_data %>%
+  mutate(prob_spmod = prob_spmod,
+         sefit_spmod = sefit_spmod)
+```
+
+## Map predictions and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Predicted probabilities
+#| fig-cap: "Predicted probabilities."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prob_spmod)) +
+  scale_color_viridis_b() +
+  theme_bw() +
+  theme(legend.position="bottom")
+```
+
+## Map predictions and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Argia model standard errors
+#| fig-cap: "Argia model standard errors."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = sefit_spmod)) +
+  scale_color_distiller(palette = 'Reds', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom")
+```
+
 
 ## Acknowledgements
 

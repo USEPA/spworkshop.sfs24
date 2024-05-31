@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.2.269">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Spatial Analysis and Statistical Modeling with R and spmodel - 4&nbsp; GIS in R</title>
 <style>
@@ -14,10 +14,9 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -44,13 +43,43 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
+    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -86,129 +115,111 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit",
-    "search-label": "Search"
+    "search-submit-button-title": "Submit"
   }
 }</script>
 </head>
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./gis-in-r.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
-        <i class="bi bi-search"></i>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Spatial Analysis and Statistical Modeling with R and spmodel</a> 
     </div>
       </div>
-        <div class="mt-2 flex-shrink-0 align-items-center">
+      <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-        </div>
+      </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
 <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Welcome</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Welcome</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./splm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></span></a>
+  <a href="./splm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./splm-additional.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Additional <code>spmodel</code> Features</span></span></a>
+  <a href="./splm-additional.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Additional <code>spmodel</code> Features</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./gis-in-r.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></span></a>
+  <a href="./gis-in-r.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./watershed-delineation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Watershed Delineation in <code>R</code></span></span></a>
+  <a href="./watershed-delineation.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Watershed Delineation in <code>R</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./streamcattools.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></span></a>
+  <a href="./streamcattools.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">StreamCat &amp; LakeCat</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></span></a>
+  <a href="./spatial-glm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Spatial GLM of “Dancer” damselfly (<em>Argia</em>)</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></span></a>
+  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Spatial LM of lake conductivity</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
   </div>
 </li>
     </ul>
 </div>
-</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</nav><!-- margin-sidebar --><div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
    
   <ul>
-<li><a href="#goals-and-motivation" id="toc-goals-and-motivation" class="nav-link active" data-scroll-target="#goals-and-motivation"><span class="header-section-number">4.1</span> Goals and Motivation</a></li>
+<li><a href="#goals-and-motivation" id="toc-goals-and-motivation" class="nav-link active" data-scroll-target="#goals-and-motivation"><span class="toc-section-number">4.1</span>  Goals and Motivation</a></li>
   <li>
-<a href="#points-lines-and-polygons" id="toc-points-lines-and-polygons" class="nav-link" data-scroll-target="#points-lines-and-polygons"><span class="header-section-number">4.2</span> Points, lines, and polygons</a>
+<a href="#points-lines-and-polygons" id="toc-points-lines-and-polygons" class="nav-link" data-scroll-target="#points-lines-and-polygons"><span class="toc-section-number">4.2</span>  Points, lines, and polygons</a>
   <ul>
-<li><a href="#exploring-the-simple-features-sf-package" id="toc-exploring-the-simple-features-sf-package" class="nav-link" data-scroll-target="#exploring-the-simple-features-sf-package"><span class="header-section-number">4.2.1</span> Exploring the Simple Features (<code>sf</code>) package</a></li>
-  <li><a href="#coordinate-reference-systems" id="toc-coordinate-reference-systems" class="nav-link" data-scroll-target="#coordinate-reference-systems"><span class="header-section-number">4.2.2</span> Coordinate Reference Systems</a></li>
-  <li><a href="#it-all-feels-like-r" id="toc-it-all-feels-like-r" class="nav-link" data-scroll-target="#it-all-feels-like-r"><span class="header-section-number">4.2.3</span> It all feels like <code>R</code></a></li>
+<li><a href="#exploring-the-simple-features-sf-package" id="toc-exploring-the-simple-features-sf-package" class="nav-link" data-scroll-target="#exploring-the-simple-features-sf-package"><span class="toc-section-number">4.2.1</span>  Exploring the Simple Features (<code>sf</code>) package</a></li>
+  <li><a href="#coordinate-reference-systems" id="toc-coordinate-reference-systems" class="nav-link" data-scroll-target="#coordinate-reference-systems"><span class="toc-section-number">4.2.2</span>  Coordinate Reference Systems</a></li>
+  <li><a href="#it-all-feels-like-r" id="toc-it-all-feels-like-r" class="nav-link" data-scroll-target="#it-all-feels-like-r"><span class="toc-section-number">4.2.3</span>  It all feels like <code>R</code></a></li>
   </ul>
 </li>
   <li>
-<a href="#raster-data" id="toc-raster-data" class="nav-link" data-scroll-target="#raster-data"><span class="header-section-number">4.3</span> Raster data</a>
+<a href="#raster-data" id="toc-raster-data" class="nav-link" data-scroll-target="#raster-data"><span class="toc-section-number">4.3</span>  Raster data</a>
   <ul>
-<li><a href="#stacking-raster-data" id="toc-stacking-raster-data" class="nav-link" data-scroll-target="#stacking-raster-data"><span class="header-section-number">4.3.1</span> Stacking raster data</a></li>
+<li><a href="#stacking-raster-data" id="toc-stacking-raster-data" class="nav-link" data-scroll-target="#stacking-raster-data"><span class="toc-section-number">4.3.1</span>  Stacking raster data</a></li>
   </ul>
 </li>
-  <li><a href="#working-with-real-data" id="toc-working-with-real-data" class="nav-link" data-scroll-target="#working-with-real-data"><span class="header-section-number">4.4</span> Working with real data</a></li>
-  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="header-section-number">4.5</span> R Code Appendix</a></li>
+  <li><a href="#working-with-real-data" id="toc-working-with-real-data" class="nav-link" data-scroll-target="#working-with-real-data"><span class="toc-section-number">4.4</span>  Working with real data</a></li>
+  <li><a href="#r-code-appendix" id="toc-r-code-appendix" class="nav-link" data-scroll-target="#r-code-appendix"><span class="toc-section-number">4.5</span>  R Code Appendix</a></li>
   </ul></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title"><span id="gis-in-r" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></span></h1>
+<h1 class="title"><span id="gis-in-r" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">GIS in R</span></span></h1>
 </div>
 
 
@@ -221,7 +232,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
-</header><section id="goals-and-motivation" class="level2" data-number="4.1"><h2 data-number="4.1" class="anchored" data-anchor-id="goals-and-motivation">
+</header><div class="cell">
+
+</div>
+<section id="goals-and-motivation" class="level2" data-number="4.1"><h2 data-number="4.1" class="anchored" data-anchor-id="goals-and-motivation">
 <span class="header-section-number">4.1</span> Goals and Motivation</h2>
 <p>Maintaining all analyses within a single software (<code>R</code>) can greatly simplify your research workflow. In this section, we’ll cover the basics of doing GIS in <code>R</code>.</p>
 <p>By the end of this lesson, you should be able to:</p>
@@ -237,7 +251,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>These data are a way of representing real-world features on a landscape in a highly simplified way. The simplest of these features is a point, which is a 0-dimensional feature that can be used to represent a specific location on the earth, such as a single tree or an entire city. Linear, 1-dimensional features can be represented with points (or vertices) that are connected by a path to form a line and when many points are connected these form a polyline. Finally, when a polyline’s path returns to its origin to represent an enclosed space, such as a forest, watershed boundary, or lake, this forms a polygon.</p>
 <div id="fig-foo" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="figures/pts-lines-polys.png" style="height:100.0%" class="figure-img"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.1: Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/</figcaption></figure>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4.1: Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/</figcaption><p></p>
+</figure>
 </div>
 <p>We can represent these features in <code>R</code> without actually using GIS packages. In this example, we’ll represent several cities in Oregon with common <code>R</code> data structures that you are probably already familiar with.</p>
 <div class="cell">
@@ -263,7 +278,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div id="fig-oregon-cities1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="gis-in-r_files/figure-html/fig-oregon-cities1-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.2: Oregon cities plotted from data frame.</figcaption></figure>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4.2: Oregon cities plotted from data frame.</figcaption><p></p>
+</figure>
 </div>
 </div>
 </div>
@@ -294,70 +310,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;  [19] "get_key_pos"                  "NA_agr_"                     </span></span>
 <span><span class="co">#&gt;  [21] "NA_bbox_"                     "NA_crs_"                     </span></span>
 <span><span class="co">#&gt;  [23] "NA_m_range_"                  "NA_z_range_"                 </span></span>
-<span><span class="co">#&gt;  [25] "pivot_wider.sf"               "plot_sf"                     </span></span>
-<span><span class="co">#&gt;  [27] "rawToHex"                     "read_sf"                     </span></span>
-<span><span class="co">#&gt;  [29] "sf.colors"                    "sf_add_proj_units"           </span></span>
-<span><span class="co">#&gt;  [31] "sf_extSoftVersion"            "sf_proj_info"                </span></span>
-<span><span class="co">#&gt;  [33] "sf_proj_network"              "sf_proj_pipelines"           </span></span>
-<span><span class="co">#&gt;  [35] "sf_proj_search_paths"         "sf_project"                  </span></span>
-<span><span class="co">#&gt;  [37] "sf_use_s2"                    "st_agr"                      </span></span>
-<span><span class="co">#&gt;  [39] "st_agr&lt;-"                     "st_area"                     </span></span>
-<span><span class="co">#&gt;  [41] "st_as_binary"                 "st_as_grob"                  </span></span>
-<span><span class="co">#&gt;  [43] "st_as_s2"                     "st_as_sf"                    </span></span>
-<span><span class="co">#&gt;  [45] "st_as_sfc"                    "st_as_text"                  </span></span>
-<span><span class="co">#&gt;  [47] "st_axis_order"                "st_bbox"                     </span></span>
-<span><span class="co">#&gt;  [49] "st_bind_cols"                 "st_boundary"                 </span></span>
-<span><span class="co">#&gt;  [51] "st_break_antimeridian"        "st_buffer"                   </span></span>
-<span><span class="co">#&gt;  [53] "st_can_transform"             "st_cast"                     </span></span>
-<span><span class="co">#&gt;  [55] "st_centroid"                  "st_collection_extract"       </span></span>
-<span><span class="co">#&gt;  [57] "st_combine"                   "st_concave_hull"             </span></span>
-<span><span class="co">#&gt;  [59] "st_contains"                  "st_contains_properly"        </span></span>
-<span><span class="co">#&gt;  [61] "st_convex_hull"               "st_coordinates"              </span></span>
-<span><span class="co">#&gt;  [63] "st_covered_by"                "st_covers"                   </span></span>
-<span><span class="co">#&gt;  [65] "st_crop"                      "st_crosses"                  </span></span>
-<span><span class="co">#&gt;  [67] "st_crs"                       "st_crs&lt;-"                    </span></span>
-<span><span class="co">#&gt;  [69] "st_delete"                    "st_difference"               </span></span>
-<span><span class="co">#&gt;  [71] "st_dimension"                 "st_disjoint"                 </span></span>
-<span><span class="co">#&gt;  [73] "st_distance"                  "st_drivers"                  </span></span>
-<span><span class="co">#&gt;  [75] "st_drop_geometry"             "st_equals"                   </span></span>
-<span><span class="co">#&gt;  [77] "st_equals_exact"              "st_filter"                   </span></span>
-<span><span class="co">#&gt;  [79] "st_geometry"                  "st_geometry_type"            </span></span>
-<span><span class="co">#&gt;  [81] "st_geometry&lt;-"                "st_geometrycollection"       </span></span>
-<span><span class="co">#&gt;  [83] "st_graticule"                 "st_inscribed_circle"         </span></span>
-<span><span class="co">#&gt;  [85] "st_interpolate_aw"            "st_intersection"             </span></span>
-<span><span class="co">#&gt;  [87] "st_intersects"                "st_is"                       </span></span>
-<span><span class="co">#&gt;  [89] "st_is_empty"                  "st_is_longlat"               </span></span>
-<span><span class="co">#&gt;  [91] "st_is_simple"                 "st_is_valid"                 </span></span>
-<span><span class="co">#&gt;  [93] "st_is_within_distance"        "st_jitter"                   </span></span>
-<span><span class="co">#&gt;  [95] "st_join"                      "st_layers"                   </span></span>
-<span><span class="co">#&gt;  [97] "st_length"                    "st_line_merge"               </span></span>
-<span><span class="co">#&gt;  [99] "st_line_sample"               "st_linestring"               </span></span>
-<span><span class="co">#&gt; [101] "st_m_range"                   "st_make_grid"                </span></span>
-<span><span class="co">#&gt; [103] "st_make_valid"                "st_minimum_rotated_rectangle"</span></span>
-<span><span class="co">#&gt; [105] "st_multilinestring"           "st_multipoint"               </span></span>
-<span><span class="co">#&gt; [107] "st_multipolygon"              "st_nearest_feature"          </span></span>
-<span><span class="co">#&gt; [109] "st_nearest_points"            "st_node"                     </span></span>
-<span><span class="co">#&gt; [111] "st_normalize"                 "st_overlaps"                 </span></span>
-<span><span class="co">#&gt; [113] "st_perimeter"                 "st_point"                    </span></span>
-<span><span class="co">#&gt; [115] "st_point_on_surface"          "st_polygon"                  </span></span>
-<span><span class="co">#&gt; [117] "st_polygonize"                "st_precision"                </span></span>
-<span><span class="co">#&gt; [119] "st_precision&lt;-"               "st_read"                     </span></span>
-<span><span class="co">#&gt; [121] "st_read_db"                   "st_relate"                   </span></span>
-<span><span class="co">#&gt; [123] "st_reverse"                   "st_sample"                   </span></span>
-<span><span class="co">#&gt; [125] "st_segmentize"                "st_set_agr"                  </span></span>
-<span><span class="co">#&gt; [127] "st_set_crs"                   "st_set_geometry"             </span></span>
-<span><span class="co">#&gt; [129] "st_set_precision"             "st_sf"                       </span></span>
-<span><span class="co">#&gt; [131] "st_sfc"                       "st_shift_longitude"          </span></span>
-<span><span class="co">#&gt; [133] "st_simplify"                  "st_snap"                     </span></span>
-<span><span class="co">#&gt; [135] "st_sym_difference"            "st_touches"                  </span></span>
-<span><span class="co">#&gt; [137] "st_transform"                 "st_triangulate"              </span></span>
-<span><span class="co">#&gt; [139] "st_triangulate_constrained"   "st_union"                    </span></span>
-<span><span class="co">#&gt; [141] "st_viewport"                  "st_voronoi"                  </span></span>
-<span><span class="co">#&gt; [143] "st_within"                    "st_wrap_dateline"            </span></span>
-<span><span class="co">#&gt; [145] "st_write"                     "st_write_db"                 </span></span>
-<span><span class="co">#&gt; [147] "st_z_range"                   "st_zm"                       </span></span>
-<span><span class="co">#&gt; [149] "vec_cast.sfc"                 "vec_ptype2.sfc"              </span></span>
-<span><span class="co">#&gt; [151] "write_sf"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#&gt;  [25] "plot_sf"                      "rawToHex"                    </span></span>
+<span><span class="co">#&gt;  [27] "read_sf"                      "sf.colors"                   </span></span>
+<span><span class="co">#&gt;  [29] "sf_add_proj_units"            "sf_extSoftVersion"           </span></span>
+<span><span class="co">#&gt;  [31] "sf_proj_info"                 "sf_proj_network"             </span></span>
+<span><span class="co">#&gt;  [33] "sf_proj_pipelines"            "sf_proj_search_paths"        </span></span>
+<span><span class="co">#&gt;  [35] "sf_project"                   "sf_use_s2"                   </span></span>
+<span><span class="co">#&gt;  [37] "st_agr"                       "st_agr&lt;-"                    </span></span>
+<span><span class="co">#&gt;  [39] "st_area"                      "st_as_binary"                </span></span>
+<span><span class="co">#&gt;  [41] "st_as_grob"                   "st_as_s2"                    </span></span>
+<span><span class="co">#&gt;  [43] "st_as_sf"                     "st_as_sfc"                   </span></span>
+<span><span class="co">#&gt;  [45] "st_as_text"                   "st_axis_order"               </span></span>
+<span><span class="co">#&gt;  [47] "st_bbox"                      "st_bind_cols"                </span></span>
+<span><span class="co">#&gt;  [49] "st_boundary"                  "st_break_antimeridian"       </span></span>
+<span><span class="co">#&gt;  [51] "st_buffer"                    "st_can_transform"            </span></span>
+<span><span class="co">#&gt;  [53] "st_cast"                      "st_centroid"                 </span></span>
+<span><span class="co">#&gt;  [55] "st_collection_extract"        "st_combine"                  </span></span>
+<span><span class="co">#&gt;  [57] "st_concave_hull"              "st_contains"                 </span></span>
+<span><span class="co">#&gt;  [59] "st_contains_properly"         "st_convex_hull"              </span></span>
+<span><span class="co">#&gt;  [61] "st_coordinates"               "st_covered_by"               </span></span>
+<span><span class="co">#&gt;  [63] "st_covers"                    "st_crop"                     </span></span>
+<span><span class="co">#&gt;  [65] "st_crosses"                   "st_crs"                      </span></span>
+<span><span class="co">#&gt;  [67] "st_crs&lt;-"                     "st_delete"                   </span></span>
+<span><span class="co">#&gt;  [69] "st_difference"                "st_dimension"                </span></span>
+<span><span class="co">#&gt;  [71] "st_disjoint"                  "st_distance"                 </span></span>
+<span><span class="co">#&gt;  [73] "st_drivers"                   "st_drop_geometry"            </span></span>
+<span><span class="co">#&gt;  [75] "st_equals"                    "st_equals_exact"             </span></span>
+<span><span class="co">#&gt;  [77] "st_filter"                    "st_geometry"                 </span></span>
+<span><span class="co">#&gt;  [79] "st_geometry_type"             "st_geometry&lt;-"               </span></span>
+<span><span class="co">#&gt;  [81] "st_geometrycollection"        "st_graticule"                </span></span>
+<span><span class="co">#&gt;  [83] "st_inscribed_circle"          "st_interpolate_aw"           </span></span>
+<span><span class="co">#&gt;  [85] "st_intersection"              "st_intersects"               </span></span>
+<span><span class="co">#&gt;  [87] "st_is"                        "st_is_empty"                 </span></span>
+<span><span class="co">#&gt;  [89] "st_is_longlat"                "st_is_simple"                </span></span>
+<span><span class="co">#&gt;  [91] "st_is_valid"                  "st_is_within_distance"       </span></span>
+<span><span class="co">#&gt;  [93] "st_jitter"                    "st_join"                     </span></span>
+<span><span class="co">#&gt;  [95] "st_layers"                    "st_length"                   </span></span>
+<span><span class="co">#&gt;  [97] "st_line_interpolate"          "st_line_merge"               </span></span>
+<span><span class="co">#&gt;  [99] "st_line_project"              "st_line_sample"              </span></span>
+<span><span class="co">#&gt; [101] "st_linestring"                "st_m_range"                  </span></span>
+<span><span class="co">#&gt; [103] "st_make_grid"                 "st_make_valid"               </span></span>
+<span><span class="co">#&gt; [105] "st_minimum_rotated_rectangle" "st_multilinestring"          </span></span>
+<span><span class="co">#&gt; [107] "st_multipoint"                "st_multipolygon"             </span></span>
+<span><span class="co">#&gt; [109] "st_nearest_feature"           "st_nearest_points"           </span></span>
+<span><span class="co">#&gt; [111] "st_node"                      "st_normalize"                </span></span>
+<span><span class="co">#&gt; [113] "st_overlaps"                  "st_perimeter"                </span></span>
+<span><span class="co">#&gt; [115] "st_point"                     "st_point_on_surface"         </span></span>
+<span><span class="co">#&gt; [117] "st_polygon"                   "st_polygonize"               </span></span>
+<span><span class="co">#&gt; [119] "st_precision"                 "st_precision&lt;-"              </span></span>
+<span><span class="co">#&gt; [121] "st_read"                      "st_read_db"                  </span></span>
+<span><span class="co">#&gt; [123] "st_relate"                    "st_reverse"                  </span></span>
+<span><span class="co">#&gt; [125] "st_sample"                    "st_segmentize"               </span></span>
+<span><span class="co">#&gt; [127] "st_set_agr"                   "st_set_crs"                  </span></span>
+<span><span class="co">#&gt; [129] "st_set_geometry"              "st_set_precision"            </span></span>
+<span><span class="co">#&gt; [131] "st_sf"                        "st_sfc"                      </span></span>
+<span><span class="co">#&gt; [133] "st_shift_longitude"           "st_simplify"                 </span></span>
+<span><span class="co">#&gt; [135] "st_snap"                      "st_sym_difference"           </span></span>
+<span><span class="co">#&gt; [137] "st_touches"                   "st_transform"                </span></span>
+<span><span class="co">#&gt; [139] "st_triangulate"               "st_triangulate_constrained"  </span></span>
+<span><span class="co">#&gt; [141] "st_union"                     "st_viewport"                 </span></span>
+<span><span class="co">#&gt; [143] "st_voronoi"                   "st_within"                   </span></span>
+<span><span class="co">#&gt; [145] "st_wrap_dateline"             "st_write"                    </span></span>
+<span><span class="co">#&gt; [147] "st_write_db"                  "st_z_range"                  </span></span>
+<span><span class="co">#&gt; [149] "st_zm"                        "vec_cast.sfc"                </span></span>
+<span><span class="co">#&gt; [151] "vec_ptype2.sfc"               "write_sf"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Important for us today - the <code>sf</code> package is fast and simple to use. To get a sense of why simple features are simple, let’s make one from our Oregon cities.</p>
 <p>In this code we will…</p>
@@ -392,12 +408,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 4  4  Portland     537557  POINT (-122.67 45.523)</span></span>
 <span><span class="co">#&gt; 5  5   Newport       9603 POINT (-124.054 44.652)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
+<div class="callout-caption-container flex-fill">
 Reading and Writing vector files
 </div>
 </div>
@@ -441,7 +457,8 @@ Reading and Writing vector files
 <p>Although a full discussion of geographic projections is beyond the scope of this workshop, it’s worth understanding how they affect geographic data.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure"><p><img src="figures/crs-comparisons.jpg" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html</figcaption></figure>
+<p></p><figcaption class="figure-caption">Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html</figcaption><p></p>
+</figure>
 </div>
 <p>When we created the <code>oregon_cities</code> object, we defined the coordinate reference system with <code>crs = 4269</code>. Likewise, we can use the EPSG reference number of the Albers Equal-Area Conic Projection to transform the spatial object. At <a href="epsg.org">epsg.org</a>, we can see that this code is 5070.</p>
 <p>In this code we:</p>
@@ -482,16 +499,17 @@ Reading and Writing vector files
 <div class="cell-output-display">
 <div id="fig-oregon-cities2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="gis-in-r_files/figure-html/fig-oregon-cities2-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.3: Oregon cities plotted from sf object.</figcaption></figure>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4.3: Oregon cities plotted from sf object.</figcaption><p></p>
+</figure>
 </div>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
+<div class="callout-caption-container flex-fill">
 EPSG Codes
 </div>
 </div>
@@ -507,7 +525,7 @@ EPSG Codes
 </section><section id="it-all-feels-like-r" class="level3" data-number="4.2.3"><h3 data-number="4.2.3" class="anchored" data-anchor-id="it-all-feels-like-r">
 <span class="header-section-number">4.2.3</span> It all feels like <code>R</code>
 </h3>
-<p>There can be huge advantages to doing GIS tasks in <code>R</code>. First, there are huge advantages to keeping workflows within one software system. Second, if you are familiar with <code>R</code>, the leap to doing GIS in <code>R</code> will feel small.</p>
+<p>There can be huge advantages to doing GIS tasks in <code>R</code>, within one software system. If you are familiar with <code>R</code>, the leap to doing GIS in <code>R</code> will feel small.</p>
 <p>As noted above, the <code>sf</code> package provides a variety of GIS functions, such as buffers, intersection, centroids, etc. In addition, these functions can be combined with <code>tidyverse</code> functions in piped procedures.</p>
 <div class="cell">
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Plot 1:</span></span>
@@ -568,146 +586,148 @@ EPSG Codes
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="st">"package:terra"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   [1] "%in%"                  "activeCat"             "activeCat&lt;-"          </span></span>
-<span><span class="co">#&gt;   [4] "add_legend"            "add&lt;-"                 "addCats"              </span></span>
-<span><span class="co">#&gt;   [7] "adjacent"              "aggregate"             "align"                </span></span>
-<span><span class="co">#&gt;  [10] "all.equal"             "allNA"                 "animate"              </span></span>
-<span><span class="co">#&gt;  [13] "app"                   "approximate"           "area"                 </span></span>
-<span><span class="co">#&gt;  [16] "Arith"                 "as.array"              "as.bool"              </span></span>
-<span><span class="co">#&gt;  [19] "as.contour"            "as.data.frame"         "as.factor"            </span></span>
-<span><span class="co">#&gt;  [22] "as.int"                "as.lines"              "as.list"              </span></span>
-<span><span class="co">#&gt;  [25] "as.matrix"             "as.points"             "as.polygons"          </span></span>
-<span><span class="co">#&gt;  [28] "as.raster"             "atan_2"                "atan2"                </span></span>
-<span><span class="co">#&gt;  [31] "autocor"               "barplot"               "blocks"               </span></span>
-<span><span class="co">#&gt;  [34] "boundaries"            "boxplot"               "buffer"               </span></span>
-<span><span class="co">#&gt;  [37] "cartogram"             "catalyze"              "categories"           </span></span>
-<span><span class="co">#&gt;  [40] "cats"                  "cbind2"                "cellFromRowCol"       </span></span>
-<span><span class="co">#&gt;  [43] "cellFromRowColCombine" "cellFromXY"            "cells"                </span></span>
-<span><span class="co">#&gt;  [46] "cellSize"              "centroids"             "clamp"                </span></span>
-<span><span class="co">#&gt;  [49] "clamp_ts"              "classify"              "clearance"            </span></span>
-<span><span class="co">#&gt;  [52] "click"                 "colFromCell"           "colFromX"             </span></span>
-<span><span class="co">#&gt;  [55] "colorize"              "coltab"                "coltab&lt;-"             </span></span>
-<span><span class="co">#&gt;  [58] "combineGeoms"          "compare"               "Compare"              </span></span>
-<span><span class="co">#&gt;  [61] "compareGeom"           "concats"               "contour"              </span></span>
-<span><span class="co">#&gt;  [64] "convHull"              "costDist"              "countNA"              </span></span>
-<span><span class="co">#&gt;  [67] "cover"                 "crds"                  "crop"                 </span></span>
-<span><span class="co">#&gt;  [70] "crosstab"              "crs"                   "crs&lt;-"                </span></span>
-<span><span class="co">#&gt;  [73] "datatype"              "deepcopy"              "delaunay"             </span></span>
-<span><span class="co">#&gt;  [76] "densify"               "density"               "depth"                </span></span>
-<span><span class="co">#&gt;  [79] "depth&lt;-"               "describe"              "diff"                 </span></span>
-<span><span class="co">#&gt;  [82] "direction"             "disagg"                "distance"             </span></span>
-<span><span class="co">#&gt;  [85] "dots"                  "draw"                  "droplevels"           </span></span>
-<span><span class="co">#&gt;  [88] "elongate"              "emptyGeoms"            "erase"                </span></span>
-<span><span class="co">#&gt;  [91] "expanse"               "ext"                   "ext&lt;-"                </span></span>
-<span><span class="co">#&gt;  [94] "extend"                "extract"               "extractAlong"         </span></span>
-<span><span class="co">#&gt;  [97] "extractRange"          "fileBlocksize"         "fillHoles"            </span></span>
-<span><span class="co">#&gt; [100] "fillTime"              "flip"                  "focal"                </span></span>
-<span><span class="co">#&gt; [103] "focal3D"               "focalCor"              "focalCpp"             </span></span>
-<span><span class="co">#&gt; [106] "focalMat"              "focalPairs"            "focalReg"             </span></span>
-<span><span class="co">#&gt; [109] "focalValues"           "forceCCW"              "free_RAM"             </span></span>
-<span><span class="co">#&gt; [112] "freq"                  "gaps"                  "gdal"                 </span></span>
-<span><span class="co">#&gt; [115] "gdalCache"             "geom"                  "geomtype"             </span></span>
-<span><span class="co">#&gt; [118] "getGDALconfig"         "global"                "graticule"            </span></span>
-<span><span class="co">#&gt; [121] "gridDist"              "gridDistance"          "halo"                 </span></span>
-<span><span class="co">#&gt; [124] "has.colors"            "has.RGB"               "has.time"             </span></span>
-<span><span class="co">#&gt; [127] "hasMinMax"             "hasValues"             "head"                 </span></span>
-<span><span class="co">#&gt; [130] "hist"                  "ifel"                  "image"                </span></span>
-<span><span class="co">#&gt; [133] "impose"                "inext"                 "init"                 </span></span>
-<span><span class="co">#&gt; [136] "inMemory"              "inset"                 "interpIDW"            </span></span>
-<span><span class="co">#&gt; [139] "interpNear"            "interpolate"           "intersect"            </span></span>
-<span><span class="co">#&gt; [142] "is.bool"               "is.empty"              "is.factor"            </span></span>
-<span><span class="co">#&gt; [145] "is.int"                "is.lines"              "is.lonlat"            </span></span>
-<span><span class="co">#&gt; [148] "is.points"             "is.polygons"           "is.related"           </span></span>
-<span><span class="co">#&gt; [151] "is.rotated"            "is.valid"              "isFALSE"              </span></span>
-<span><span class="co">#&gt; [154] "isTRUE"                "k_means"               "lapp"                 </span></span>
-<span><span class="co">#&gt; [157] "layerCor"              "levels"                "linearUnits"          </span></span>
-<span><span class="co">#&gt; [160] "lines"                 "logic"                 "Logic"                </span></span>
-<span><span class="co">#&gt; [163] "longnames"             "longnames&lt;-"           "makeNodes"            </span></span>
-<span><span class="co">#&gt; [166] "makeTiles"             "makeValid"             "makeVRT"              </span></span>
-<span><span class="co">#&gt; [169] "map.pal"               "mask"                  "match"                </span></span>
-<span><span class="co">#&gt; [172] "math"                  "Math"                  "Math2"                </span></span>
-<span><span class="co">#&gt; [175] "mean"                  "median"                "mem_info"             </span></span>
-<span><span class="co">#&gt; [178] "merge"                 "mergeLines"            "mergeTime"            </span></span>
-<span><span class="co">#&gt; [181] "meta"                  "metags"                "metags&lt;-"             </span></span>
-<span><span class="co">#&gt; [184] "minCircle"             "minmax"                "minRect"              </span></span>
-<span><span class="co">#&gt; [187] "modal"                 "mosaic"                "na.omit"              </span></span>
-<span><span class="co">#&gt; [190] "NAflag"                "NAflag&lt;-"              "names"                </span></span>
-<span><span class="co">#&gt; [193] "ncell"                 "ncol"                  "ncol&lt;-"               </span></span>
-<span><span class="co">#&gt; [196] "nearby"                "nearest"               "nlyr"                 </span></span>
-<span><span class="co">#&gt; [199] "nlyr&lt;-"                "noNA"                  "normalize.longitude"  </span></span>
-<span><span class="co">#&gt; [202] "north"                 "not.na"                "nrow"                 </span></span>
-<span><span class="co">#&gt; [205] "nrow&lt;-"                "nsrc"                  "origin"               </span></span>
-<span><span class="co">#&gt; [208] "origin&lt;-"              "pairs"                 "panel"                </span></span>
-<span><span class="co">#&gt; [211] "patches"               "perim"                 "persp"                </span></span>
-<span><span class="co">#&gt; [214] "plet"                  "plot"                  "plotRGB"              </span></span>
-<span><span class="co">#&gt; [217] "points"                "polys"                 "predict"              </span></span>
-<span><span class="co">#&gt; [220] "princomp"              "project"               "quantile"             </span></span>
-<span><span class="co">#&gt; [223] "query"                 "rangeFill"             "rapp"                 </span></span>
-<span><span class="co">#&gt; [226] "rast"                  "rasterize"             "rasterizeGeom"        </span></span>
-<span><span class="co">#&gt; [229] "rasterizeWin"          "rcl"                   "readRDS"              </span></span>
-<span><span class="co">#&gt; [232] "readStart"             "readStop"              "readValues"           </span></span>
-<span><span class="co">#&gt; [235] "rectify"               "regress"               "relate"               </span></span>
-<span><span class="co">#&gt; [238] "removeDupNodes"        "res"                   "res&lt;-"                </span></span>
-<span><span class="co">#&gt; [241] "resample"              "rescale"               "rev"                  </span></span>
-<span><span class="co">#&gt; [244] "RGB"                   "RGB&lt;-"                 "roll"                 </span></span>
-<span><span class="co">#&gt; [247] "rotate"                "round"                 "rowColCombine"        </span></span>
-<span><span class="co">#&gt; [250] "rowColFromCell"        "rowFromCell"           "rowFromY"             </span></span>
-<span><span class="co">#&gt; [253] "same.crs"              "sapp"                  "saveRDS"              </span></span>
-<span><span class="co">#&gt; [256] "sbar"                  "scale"                 "scoff"                </span></span>
-<span><span class="co">#&gt; [259] "scoff&lt;-"               "sds"                   "segregate"            </span></span>
-<span><span class="co">#&gt; [262] "sel"                   "selectHighest"         "selectRange"          </span></span>
-<span><span class="co">#&gt; [265] "serialize"             "set.cats"              "set.crs"              </span></span>
-<span><span class="co">#&gt; [268] "set.ext"               "set.names"             "set.RGB"              </span></span>
-<span><span class="co">#&gt; [271] "set.values"            "setGDALconfig"         "setMinMax"            </span></span>
-<span><span class="co">#&gt; [274] "setValues"             "shade"                 "sharedPaths"          </span></span>
-<span><span class="co">#&gt; [277] "shift"                 "sieve"                 "simplifyGeom"         </span></span>
-<span><span class="co">#&gt; [280] "size"                  "snap"                  "sort"                 </span></span>
-<span><span class="co">#&gt; [283] "sources"               "spatSample"            "spin"                 </span></span>
-<span><span class="co">#&gt; [286] "split"                 "sprc"                  "stdev"                </span></span>
-<span><span class="co">#&gt; [289] "stretch"               "subset"                "subst"                </span></span>
-<span><span class="co">#&gt; [292] "summary"               "Summary"               "svc"                  </span></span>
-<span><span class="co">#&gt; [295] "symdif"                "t"                     "tail"                 </span></span>
-<span><span class="co">#&gt; [298] "tapp"                  "terrain"               "terraOptions"         </span></span>
-<span><span class="co">#&gt; [301] "text"                  "tighten"               "time"                 </span></span>
-<span><span class="co">#&gt; [304] "time&lt;-"                "timeInfo"              "tmpFiles"             </span></span>
-<span><span class="co">#&gt; [307] "trans"                 "trim"                  "union"                </span></span>
-<span><span class="co">#&gt; [310] "unique"                "units"                 "units&lt;-"              </span></span>
-<span><span class="co">#&gt; [313] "unserialize"           "unwrap"                "update"               </span></span>
-<span><span class="co">#&gt; [316] "values"                "values&lt;-"              "varnames"             </span></span>
-<span><span class="co">#&gt; [319] "varnames&lt;-"            "vect"                  "vector_layers"        </span></span>
-<span><span class="co">#&gt; [322] "viewshed"              "voronoi"               "vrt"                  </span></span>
-<span><span class="co">#&gt; [325] "vrt_tiles"             "weighted.mean"         "where.max"            </span></span>
-<span><span class="co">#&gt; [328] "where.min"             "which.lyr"             "which.max"            </span></span>
-<span><span class="co">#&gt; [331] "which.min"             "width"                 "window"               </span></span>
-<span><span class="co">#&gt; [334] "window&lt;-"              "wrap"                  "wrapCache"            </span></span>
-<span><span class="co">#&gt; [337] "writeCDF"              "writeRaster"           "writeStart"           </span></span>
-<span><span class="co">#&gt; [340] "writeStop"             "writeValues"           "writeVector"          </span></span>
-<span><span class="co">#&gt; [343] "xFromCell"             "xFromCol"              "xmax"                 </span></span>
-<span><span class="co">#&gt; [346] "xmax&lt;-"                "xmin"                  "xmin&lt;-"               </span></span>
-<span><span class="co">#&gt; [349] "xres"                  "xyFromCell"            "yFromCell"            </span></span>
-<span><span class="co">#&gt; [352] "yFromRow"              "ymax"                  "ymax&lt;-"               </span></span>
-<span><span class="co">#&gt; [355] "ymin"                  "ymin&lt;-"                "yres"                 </span></span>
-<span><span class="co">#&gt; [358] "zonal"                 "zoom"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#&gt;   [4] "add_box"               "add_legend"            "add&lt;-"                </span></span>
+<span><span class="co">#&gt;   [7] "addCats"               "adjacent"              "aggregate"            </span></span>
+<span><span class="co">#&gt;  [10] "align"                 "all.equal"             "allNA"                </span></span>
+<span><span class="co">#&gt;  [13] "animate"               "app"                   "approximate"          </span></span>
+<span><span class="co">#&gt;  [16] "area"                  "Arith"                 "as.array"             </span></span>
+<span><span class="co">#&gt;  [19] "as.bool"               "as.contour"            "as.data.frame"        </span></span>
+<span><span class="co">#&gt;  [22] "as.factor"             "as.int"                "as.lines"             </span></span>
+<span><span class="co">#&gt;  [25] "as.list"               "as.matrix"             "as.points"            </span></span>
+<span><span class="co">#&gt;  [28] "as.polygons"           "as.raster"             "atan_2"               </span></span>
+<span><span class="co">#&gt;  [31] "atan2"                 "autocor"               "barplot"              </span></span>
+<span><span class="co">#&gt;  [34] "blocks"                "boundaries"            "boxplot"              </span></span>
+<span><span class="co">#&gt;  [37] "buffer"                "cartogram"             "catalyze"             </span></span>
+<span><span class="co">#&gt;  [40] "categories"            "cats"                  "cbind2"               </span></span>
+<span><span class="co">#&gt;  [43] "cellFromRowCol"        "cellFromRowColCombine" "cellFromXY"           </span></span>
+<span><span class="co">#&gt;  [46] "cells"                 "cellSize"              "centroids"            </span></span>
+<span><span class="co">#&gt;  [49] "clamp"                 "clamp_ts"              "classify"             </span></span>
+<span><span class="co">#&gt;  [52] "clearance"             "click"                 "colFromCell"          </span></span>
+<span><span class="co">#&gt;  [55] "colFromX"              "colorize"              "coltab"               </span></span>
+<span><span class="co">#&gt;  [58] "coltab&lt;-"              "combineGeoms"          "compare"              </span></span>
+<span><span class="co">#&gt;  [61] "Compare"               "compareGeom"           "concats"              </span></span>
+<span><span class="co">#&gt;  [64] "contour"               "convHull"              "costDist"             </span></span>
+<span><span class="co">#&gt;  [67] "countNA"               "cover"                 "crds"                 </span></span>
+<span><span class="co">#&gt;  [70] "crop"                  "crosstab"              "crs"                  </span></span>
+<span><span class="co">#&gt;  [73] "crs&lt;-"                 "datatype"              "deepcopy"             </span></span>
+<span><span class="co">#&gt;  [76] "delaunay"              "densify"               "density"              </span></span>
+<span><span class="co">#&gt;  [79] "depth"                 "depth&lt;-"               "describe"             </span></span>
+<span><span class="co">#&gt;  [82] "diff"                  "direction"             "disagg"               </span></span>
+<span><span class="co">#&gt;  [85] "distance"              "dots"                  "draw"                 </span></span>
+<span><span class="co">#&gt;  [88] "droplevels"            "elongate"              "emptyGeoms"           </span></span>
+<span><span class="co">#&gt;  [91] "erase"                 "expanse"               "ext"                  </span></span>
+<span><span class="co">#&gt;  [94] "ext&lt;-"                 "extend"                "extract"              </span></span>
+<span><span class="co">#&gt;  [97] "extractAlong"          "extractRange"          "fileBlocksize"        </span></span>
+<span><span class="co">#&gt; [100] "fillHoles"             "fillTime"              "flip"                 </span></span>
+<span><span class="co">#&gt; [103] "focal"                 "focal3D"               "focalCor"             </span></span>
+<span><span class="co">#&gt; [106] "focalCpp"              "focalMat"              "focalPairs"           </span></span>
+<span><span class="co">#&gt; [109] "focalReg"              "focalValues"           "forceCCW"             </span></span>
+<span><span class="co">#&gt; [112] "free_RAM"              "freq"                  "gaps"                 </span></span>
+<span><span class="co">#&gt; [115] "gdal"                  "gdalCache"             "geom"                 </span></span>
+<span><span class="co">#&gt; [118] "geomtype"              "getGDALconfig"         "getTileExtents"       </span></span>
+<span><span class="co">#&gt; [121] "global"                "graticule"             "gridDist"             </span></span>
+<span><span class="co">#&gt; [124] "gridDistance"          "halo"                  "has.colors"           </span></span>
+<span><span class="co">#&gt; [127] "has.RGB"               "has.time"              "hasMinMax"            </span></span>
+<span><span class="co">#&gt; [130] "hasValues"             "head"                  "hist"                 </span></span>
+<span><span class="co">#&gt; [133] "identical"             "ifel"                  "image"                </span></span>
+<span><span class="co">#&gt; [136] "impose"                "inext"                 "init"                 </span></span>
+<span><span class="co">#&gt; [139] "inMemory"              "inset"                 "interpIDW"            </span></span>
+<span><span class="co">#&gt; [142] "interpNear"            "interpolate"           "intersect"            </span></span>
+<span><span class="co">#&gt; [145] "is.bool"               "is.empty"              "is.factor"            </span></span>
+<span><span class="co">#&gt; [148] "is.int"                "is.lines"              "is.lonlat"            </span></span>
+<span><span class="co">#&gt; [151] "is.points"             "is.polygons"           "is.related"           </span></span>
+<span><span class="co">#&gt; [154] "is.rotated"            "is.valid"              "isFALSE"              </span></span>
+<span><span class="co">#&gt; [157] "isTRUE"                "k_means"               "lapp"                 </span></span>
+<span><span class="co">#&gt; [160] "layerCor"              "levels"                "linearUnits"          </span></span>
+<span><span class="co">#&gt; [163] "lines"                 "logic"                 "Logic"                </span></span>
+<span><span class="co">#&gt; [166] "longnames"             "longnames&lt;-"           "makeNodes"            </span></span>
+<span><span class="co">#&gt; [169] "makeTiles"             "makeValid"             "makeVRT"              </span></span>
+<span><span class="co">#&gt; [172] "map.pal"               "mask"                  "match"                </span></span>
+<span><span class="co">#&gt; [175] "math"                  "Math"                  "Math2"                </span></span>
+<span><span class="co">#&gt; [178] "mean"                  "median"                "mem_info"             </span></span>
+<span><span class="co">#&gt; [181] "merge"                 "mergeLines"            "mergeTime"            </span></span>
+<span><span class="co">#&gt; [184] "meta"                  "metags"                "metags&lt;-"             </span></span>
+<span><span class="co">#&gt; [187] "minCircle"             "minmax"                "minRect"              </span></span>
+<span><span class="co">#&gt; [190] "modal"                 "mosaic"                "na.omit"              </span></span>
+<span><span class="co">#&gt; [193] "NAflag"                "NAflag&lt;-"              "names"                </span></span>
+<span><span class="co">#&gt; [196] "ncell"                 "ncol"                  "ncol&lt;-"               </span></span>
+<span><span class="co">#&gt; [199] "nearby"                "nearest"               "nlyr"                 </span></span>
+<span><span class="co">#&gt; [202] "nlyr&lt;-"                "noNA"                  "normalize.longitude"  </span></span>
+<span><span class="co">#&gt; [205] "north"                 "not.na"                "nrow"                 </span></span>
+<span><span class="co">#&gt; [208] "nrow&lt;-"                "nsrc"                  "origin"               </span></span>
+<span><span class="co">#&gt; [211] "origin&lt;-"              "pairs"                 "panel"                </span></span>
+<span><span class="co">#&gt; [214] "patches"               "perim"                 "persp"                </span></span>
+<span><span class="co">#&gt; [217] "plet"                  "plot"                  "plotRGB"              </span></span>
+<span><span class="co">#&gt; [220] "points"                "polys"                 "prcomp"               </span></span>
+<span><span class="co">#&gt; [223] "predict"               "princomp"              "project"              </span></span>
+<span><span class="co">#&gt; [226] "quantile"              "query"                 "rangeFill"            </span></span>
+<span><span class="co">#&gt; [229] "rapp"                  "rast"                  "rasterize"            </span></span>
+<span><span class="co">#&gt; [232] "rasterizeGeom"         "rasterizeWin"          "rcl"                  </span></span>
+<span><span class="co">#&gt; [235] "readRDS"               "readStart"             "readStop"             </span></span>
+<span><span class="co">#&gt; [238] "readValues"            "rectify"               "regress"              </span></span>
+<span><span class="co">#&gt; [241] "relate"                "removeDupNodes"        "res"                  </span></span>
+<span><span class="co">#&gt; [244] "res&lt;-"                 "resample"              "rescale"              </span></span>
+<span><span class="co">#&gt; [247] "rev"                   "RGB"                   "RGB&lt;-"                </span></span>
+<span><span class="co">#&gt; [250] "roll"                  "rotate"                "round"                </span></span>
+<span><span class="co">#&gt; [253] "rowColCombine"         "rowColFromCell"        "rowFromCell"          </span></span>
+<span><span class="co">#&gt; [256] "rowFromY"              "same.crs"              "sapp"                 </span></span>
+<span><span class="co">#&gt; [259] "saveRDS"               "sbar"                  "scale"                </span></span>
+<span><span class="co">#&gt; [262] "scoff"                 "scoff&lt;-"               "sds"                  </span></span>
+<span><span class="co">#&gt; [265] "segregate"             "sel"                   "selectHighest"        </span></span>
+<span><span class="co">#&gt; [268] "selectRange"           "serialize"             "set.cats"             </span></span>
+<span><span class="co">#&gt; [271] "set.crs"               "set.ext"               "set.names"            </span></span>
+<span><span class="co">#&gt; [274] "set.RGB"               "set.values"            "setGDALconfig"        </span></span>
+<span><span class="co">#&gt; [277] "setMinMax"             "setValues"             "shade"                </span></span>
+<span><span class="co">#&gt; [280] "sharedPaths"           "shift"                 "sieve"                </span></span>
+<span><span class="co">#&gt; [283] "simplifyGeom"          "size"                  "snap"                 </span></span>
+<span><span class="co">#&gt; [286] "sort"                  "sources"               "spatSample"           </span></span>
+<span><span class="co">#&gt; [289] "spin"                  "split"                 "sprc"                 </span></span>
+<span><span class="co">#&gt; [292] "stdev"                 "stretch"               "subset"               </span></span>
+<span><span class="co">#&gt; [295] "subst"                 "summary"               "Summary"              </span></span>
+<span><span class="co">#&gt; [298] "svc"                   "symdif"                "t"                    </span></span>
+<span><span class="co">#&gt; [301] "tail"                  "tapp"                  "terrain"              </span></span>
+<span><span class="co">#&gt; [304] "terraOptions"          "text"                  "tighten"              </span></span>
+<span><span class="co">#&gt; [307] "time"                  "time&lt;-"                "timeInfo"             </span></span>
+<span><span class="co">#&gt; [310] "tmpFiles"              "trans"                 "trim"                 </span></span>
+<span><span class="co">#&gt; [313] "union"                 "unique"                "units"                </span></span>
+<span><span class="co">#&gt; [316] "units&lt;-"               "unserialize"           "unwrap"               </span></span>
+<span><span class="co">#&gt; [319] "update"                "values"                "values&lt;-"             </span></span>
+<span><span class="co">#&gt; [322] "varnames"              "varnames&lt;-"            "vect"                 </span></span>
+<span><span class="co">#&gt; [325] "vector_layers"         "viewshed"              "voronoi"              </span></span>
+<span><span class="co">#&gt; [328] "vrt"                   "vrt_tiles"             "weighted.mean"        </span></span>
+<span><span class="co">#&gt; [331] "where.max"             "where.min"             "which.lyr"            </span></span>
+<span><span class="co">#&gt; [334] "which.max"             "which.min"             "width"                </span></span>
+<span><span class="co">#&gt; [337] "window"                "window&lt;-"              "wrap"                 </span></span>
+<span><span class="co">#&gt; [340] "wrapCache"             "writeCDF"              "writeRaster"          </span></span>
+<span><span class="co">#&gt; [343] "writeStart"            "writeStop"             "writeValues"          </span></span>
+<span><span class="co">#&gt; [346] "writeVector"           "xapp"                  "xFromCell"            </span></span>
+<span><span class="co">#&gt; [349] "xFromCol"              "xmax"                  "xmax&lt;-"               </span></span>
+<span><span class="co">#&gt; [352] "xmin"                  "xmin&lt;-"                "xres"                 </span></span>
+<span><span class="co">#&gt; [355] "xyFromCell"            "yFromCell"             "yFromRow"             </span></span>
+<span><span class="co">#&gt; [358] "ymax"                  "ymax&lt;-"                "ymin"                 </span></span>
+<span><span class="co">#&gt; [361] "ymin&lt;-"                "yres"                  "zonal"                </span></span>
+<span><span class="co">#&gt; [364] "zoom"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Let’s create an empty RasterLayer object - we have to define the matrix (rows and columns) the spatial bounding box, and then we provide values to the cells using the runif function to derive random values from the uniform distribution.</p>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>ncol<span class="op">=</span><span class="fl">10</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span>ncol<span class="op">=</span><span class="fl">10</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">r</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">ncell</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">r</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">ncell</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">r</span></span>
 <span><span class="co">#&gt; class       : SpatRaster </span></span>
 <span><span class="co">#&gt; dimensions  : 10, 10, 1  (nrow, ncol, nlyr)</span></span>
 <span><span class="co">#&gt; resolution  : 36, 18  (x, y)</span></span>
 <span><span class="co">#&gt; extent      : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)</span></span>
-<span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (CRS84) (OGC:CRS84) </span></span>
+<span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 </span></span>
 <span><span class="co">#&gt; source(s)   : memory</span></span>
-<span><span class="co">#&gt; name        :        lyr.1 </span></span>
-<span><span class="co">#&gt; min value   : 0.0002964453 </span></span>
-<span><span class="co">#&gt; max value   : 0.9977271722</span></span>
+<span><span class="co">#&gt; name        :      lyr.1 </span></span>
+<span><span class="co">#&gt; min value   : 0.02668868 </span></span>
+<span><span class="co">#&gt; max value   : 0.98013212</span></span>
 <span></span>
 <span><span class="co">#| label: basic-raster</span></span>
 <span><span class="co">#| fig-cap: "Basic raster dataset in R."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="gis-in-r_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -716,13 +736,13 @@ EPSG Codes
 <div class="cell">
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Access data from the ith location in a raster</span></span>
 <span><span class="va">r</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span></span>
-<span><span class="co">#&gt;          lyr.1</span></span>
-<span><span class="co">#&gt; 1 0.0002964453</span></span>
+<span><span class="co">#&gt;       lyr.1</span></span>
+<span><span class="co">#&gt; 1 0.5380978</span></span>
 <span></span>
 <span><span class="co"># Access data based on row and column</span></span>
 <span><span class="va">r</span><span class="op">[</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">]</span> </span>
-<span><span class="co">#&gt;          lyr.1</span></span>
-<span><span class="co">#&gt; 1 0.0002964453</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#&gt;       lyr.1</span></span>
+<span><span class="co">#&gt; 1 0.5380978</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="stacking-raster-data" class="level3" data-number="4.3.1"><h3 data-number="4.3.1" class="anchored" data-anchor-id="stacking-raster-data">
 <span class="header-section-number">4.3.1</span> Stacking raster data</h3>
@@ -736,11 +756,11 @@ EPSG Codes
 <span><span class="co"># Stack rasters and rename to be unique</span></span>
 <span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">r2</span>, <span class="va">r3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'r1'</span>, <span class="st">'r2'</span>, <span class="st">'r3'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'r1'</span>, <span class="st">'r2'</span>, <span class="st">'r3'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: stacked-rasters</span></span>
 <span><span class="co">#| fig-cap: "Plot of stacked rasters in R."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="gis-in-r_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -751,26 +771,26 @@ EPSG Codes
 <span></span>
 <span><span class="co"># Give modified rasters a new name (add "modified")</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">s2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>, <span class="st">" modified"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">s2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>, <span class="st">" modified"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: modified-stacked-rasters</span></span>
 <span><span class="co">#| fig-cap: "Plot of stacked rasters in R."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">s2</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">s2</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="gis-in-r_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
+<div class="callout-caption-container flex-fill">
 Reclassifying rasters
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>You can also relcassify rasters values with <code><a href="https://rdrr.io/pkg/terra/man/classify.html">terra::classify()</a></code></p>
+<p>You can also relcassify rasters values with <code><a href="https://rspatial.github.io/terra/reference/classify.html">terra::classify()</a></code></p>
 <div class="cell">
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span><span class="co"># Create a matrix where first 2 values are raster values and third value is the class value:</span></span>
@@ -780,9 +800,9 @@ Reclassifying rasters
 <span></span>
 <span><span class="co"># Reclassify r based on the reclass matrix</span></span>
 <span><span class="va">rcls</span> <span class="op">&lt;-</span> <span class="va">r</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/classify.html">classify</a></span><span class="op">(</span><span class="va">class_table</span><span class="op">)</span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/classify.html">classify</a></span><span class="op">(</span><span class="va">class_table</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">rcls</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">rcls</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="gis-in-r_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -806,15 +826,15 @@ Reclassifying rasters
 <span>  template <span class="op">=</span> <span class="va">corvallis</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"corvallis"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">ned</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"elevation"</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">ned</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"elevation"</span></span>
 <span></span>
 <span><span class="co"># Check whether the elevation and buffer data share the same geographic reference system</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">ned</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">corvallis</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We can transform the projection of the raster with <code><a href="https://rdrr.io/pkg/terra/man/project.html">terra::project()</a></code>. Because the raster represents continuous data, we will use the bilinear interpolation method. For categorical data (e.g., land cover), it is best to use <code>method = 'near'</code></p>
+<p>We can transform the projection of the raster with <code><a href="https://rspatial.github.io/terra/reference/project.html">terra::project()</a></code>. Because the raster represents continuous data, we will use the bilinear interpolation method. For categorical data (e.g., land cover), it is best to use <code>method = 'near'</code></p>
 <div class="cell">
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ned</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html">project</a></span><span class="op">(</span><span class="va">ned</span>, </span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ned</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html">project</a></span><span class="op">(</span><span class="va">ned</span>, </span>
 <span>                      <span class="st">'epsg:5070'</span>,</span>
 <span>                      method <span class="op">=</span> <span class="st">'bilinear'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -838,17 +858,17 @@ Reclassifying rasters
 <p>In addition to elevation, we can derive several topographic indices, including slope and roughness.</p>
 <div class="cell">
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Calculate several terrain metrics</span></span>
-<span><span class="op">?</span><span class="fu">terra</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/terra/man/terrain.html">terrain</a></span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="op">?</span><span class="fu">terra</span><span class="fu">::</span><span class="va"><a href="https://rspatial.github.io/terra/reference/terrain.html">terrain</a></span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>To calculate these metrics on the elevation raster, we can use the <code><a href="https://rdrr.io/pkg/terra/man/terrain.html">terrain()</a></code> function from the <code>terra</code> package.</p>
+<p>To calculate these metrics on the elevation raster, we can use the <code><a href="https://rspatial.github.io/terra/reference/terrain.html">terrain()</a></code> function from the <code>terra</code> package.</p>
 <div class="cell">
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Calculate several terrain metrics</span></span>
-<span><span class="va">terrain_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/terrain.html">terrain</a></span><span class="op">(</span><span class="va">ned</span>, </span>
+<span><span class="va">terrain_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/terrain.html">terrain</a></span><span class="op">(</span><span class="va">ned</span>, </span>
 <span>                           v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'slope'</span>, <span class="st">'roughness'</span>, <span class="st">'TRI'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: terrain-plots</span></span>
 <span><span class="co">#| fig-cap: "Plot of elevation-derived terrain metrics."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ned</span>, <span class="va">terrain_metrics</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ned</span>, <span class="va">terrain_metrics</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="gis-in-r_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -874,22 +894,23 @@ Reclassifying rasters
 <span><span class="va">terrain_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">terrain_metrics</span>, <span class="va">ned</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># zonal function in terra to calculate zonal statistics</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/zonal.html">zonal</a></span><span class="op">(</span><span class="va">terrain_metrics</span>, </span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/zonal.html">zonal</a></span><span class="op">(</span><span class="va">terrain_metrics</span>, </span>
 <span>             </span>
 <span>             <span class="co"># Need to convert corvallis `sf` object to terra vector</span></span>
-<span>             <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">corvallis</span><span class="op">)</span>, </span>
+<span>             <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">corvallis</span><span class="op">)</span>, </span>
 <span>             </span>
 <span>             <span class="co"># Metric to be calculated</span></span>
 <span>             <span class="va">mean</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      slope roughness      TRI elevation</span></span>
 <span><span class="co">#&gt; 1 4.638052  5.604068 1.717456  119.6678</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout callout-style-default callout-important no-icon callout-titled">
+<p>In addition to zonal statistics, the <code>terra</code> package can be used to extract (<code><a href="https://rspatial.github.io/terra/reference/extract.html">terra::extract()</a></code>) the total number of pixels of different categories within a polygon, which can be converted to area (see exercise below). <code><a href="https://rspatial.github.io/terra/reference/extract.html">terra::extract()</a></code> is also used to drop points through raster to obtain data at lat/lon locations.</p>
+<div class="callout-important callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
+<div class="callout-caption-container flex-fill">
 Exercise
 </div>
 </div>
@@ -902,12 +923,12 @@ Exercise
 </ol>
 </div>
 </div>
-<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-important callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
+<div class="callout-caption-container flex-fill">
 Exercise Solution
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
@@ -934,11 +955,11 @@ Exercise Solution
 <span>  template <span class="op">=</span> <span class="va">my_city</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2021</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">'city'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html">project</a></span><span class="op">(</span><span class="st">'epsg:5070'</span>,</span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html">project</a></span><span class="op">(</span><span class="st">'epsg:5070'</span>,</span>
 <span>               method <span class="op">=</span> <span class="st">'near'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">city_nlcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/extract.html">extract</a></span><span class="op">(</span><span class="va">nlcd</span>, </span>
-<span>                            <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">city_nlcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">nlcd</span>, </span>
+<span>                            <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">city_nlcd</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">Class</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -964,8 +985,8 @@ Exercise Solution
 <span><span class="co"># Bonus: mapping land cover w/ city radius</span></span>
 <span></span>
 <span><span class="co"># Mask then crop the NLCD to the buffer</span></span>
-<span><span class="va">nlcd_crop</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/mask.html">mask</a></span><span class="op">(</span><span class="va">nlcd</span>, <span class="va">my_city</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/crop.html">crop</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span></span>
+<span><span class="va">nlcd_crop</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html">mask</a></span><span class="op">(</span><span class="va">nlcd</span>, <span class="va">my_city</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crop.html">crop</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://dieghernan.github.io/tidyterra/reference/geom_spatraster.html">geom_spatraster</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">nlcd_crop</span><span class="op">)</span> <span class="op">+</span></span>
@@ -980,11 +1001,14 @@ Exercise Solution
 </div>
 </div>
 </div>
-<p>Zonal statistics are fundamental to generating data summaries that are useful for ecological/statistical analyses, and the <code>terra</code> package has greatly improved the processing speed of zonal stats in <code>R</code>.</p>
+<p>Zonal statistics and tabulation of areas are fundamental to generating data summaries that are useful for ecological/statistical analyses, and the <code>terra</code> package has greatly improved the processing speed of zonal stats in <code>R</code>.</p>
 <p>However, most analyses in aquatic ecology are not based on buffered points, like we covered here. In addition, zonal statistics over large geographic areas can still be a big task for <code>R</code>, such as for large watersheds.</p>
 <p>In the next sections, we’ll first cover how to generate watershed boundaries to generate watershed summaries. After that, we’ll discuss the <code>StreamCatTools</code> package for accessing a variety of watershed metrics for which the zonal statistics have already been calculated.</p>
 </section><section id="r-code-appendix" class="level2" data-number="4.5"><h2 data-number="4.5" class="anchored" data-anchor-id="r-code-appendix">
 <span class="header-section-number">4.5</span> R Code Appendix</h2>
+<div class="cell">
+
+</div>
 <div class="cell">
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
@@ -1062,7 +1086,7 @@ Exercise Solution
 <span>  </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>area <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_area</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>           <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/drop_units.html">drop_units</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>         id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/is.bool.html">as.factor</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>         id <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/is.bool.html">as.factor</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  </span>
 <span>  <span class="co"># Plot and color by id of polygons</span></span>
 <span>  </span>
@@ -1075,15 +1099,15 @@ Exercise Solution
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="st">"package:terra"</span><span class="op">)</span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>ncol<span class="op">=</span><span class="fl">10</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span>ncol<span class="op">=</span><span class="fl">10</span>, nrow <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">r</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">ncell</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">r</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n<span class="op">=</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">ncell</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">r</span></span>
 <span></span>
 <span><span class="co">#| label: basic-raster</span></span>
 <span><span class="co">#| fig-cap: "Basic raster dataset in R."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
 <span><span class="co"># Access data from the ith location in a raster</span></span>
 <span><span class="va">r</span><span class="op">[</span><span class="fl">12</span><span class="op">]</span></span>
 <span></span>
@@ -1097,11 +1121,11 @@ Exercise Solution
 <span><span class="co"># Stack rasters and rename to be unique</span></span>
 <span></span>
 <span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">r2</span>, <span class="va">r3</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'r1'</span>, <span class="st">'r2'</span>, <span class="st">'r3'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'r1'</span>, <span class="st">'r2'</span>, <span class="st">'r3'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: stacked-rasters</span></span>
 <span><span class="co">#| fig-cap: "Plot of stacked rasters in R."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Manipulate all rasters in stack</span></span>
 <span></span>
@@ -1109,11 +1133,11 @@ Exercise Solution
 <span></span>
 <span><span class="co"># Give modified rasters a new name (add "modified")</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">s2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>, <span class="st">" modified"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">s2</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>, <span class="st">" modified"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: modified-stacked-rasters</span></span>
 <span><span class="co">#| fig-cap: "Plot of stacked rasters in R."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">s2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">s2</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create a matrix where first 2 values are raster values and third value is the class value:</span></span>
 <span><span class="va">class_table</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">1</span>,</span>
@@ -1122,9 +1146,9 @@ Exercise Solution
 <span></span>
 <span><span class="co"># Reclassify r based on the reclass matrix</span></span>
 <span><span class="va">rcls</span> <span class="op">&lt;-</span> <span class="va">r</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/classify.html">classify</a></span><span class="op">(</span><span class="va">class_table</span><span class="op">)</span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/classify.html">classify</a></span><span class="op">(</span><span class="va">class_table</span><span class="op">)</span> </span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">rcls</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">rcls</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/FedData/">FedData</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Select just Corvallis and calculate a 10,000-m buffer</span></span>
@@ -1138,11 +1162,11 @@ Exercise Solution
 <span>  template <span class="op">=</span> <span class="va">corvallis</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">"corvallis"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/names.html">names</a></span><span class="op">(</span><span class="va">ned</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"elevation"</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">ned</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"elevation"</span></span>
 <span></span>
 <span><span class="co"># Check whether the elevation and buffer data share the same geographic reference system</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">ned</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">corvallis</span><span class="op">)</span></span>
-<span><span class="va">ned</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html">project</a></span><span class="op">(</span><span class="va">ned</span>, </span>
+<span><span class="va">ned</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html">project</a></span><span class="op">(</span><span class="va">ned</span>, </span>
 <span>                      <span class="st">'epsg:5070'</span>,</span>
 <span>                      method <span class="op">=</span> <span class="st">'bilinear'</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dieghernan.github.io/tidyterra/">tidyterra</a></span><span class="op">)</span></span>
@@ -1157,14 +1181,14 @@ Exercise Solution
 <span>          lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># Calculate several terrain metrics</span></span>
-<span><span class="op">?</span><span class="fu">terra</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/terra/man/terrain.html">terrain</a></span></span>
+<span><span class="op">?</span><span class="fu">terra</span><span class="fu">::</span><span class="va"><a href="https://rspatial.github.io/terra/reference/terrain.html">terrain</a></span></span>
 <span><span class="co"># Calculate several terrain metrics</span></span>
-<span><span class="va">terrain_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/terrain.html">terrain</a></span><span class="op">(</span><span class="va">ned</span>, </span>
+<span><span class="va">terrain_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/terrain.html">terrain</a></span><span class="op">(</span><span class="va">ned</span>, </span>
 <span>                           v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'slope'</span>, <span class="st">'roughness'</span>, <span class="st">'TRI'</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: terrain-plots</span></span>
 <span><span class="co">#| fig-cap: "Plot of elevation-derived terrain metrics."</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ned</span>, <span class="va">terrain_metrics</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ned</span>, <span class="va">terrain_metrics</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#| label: terrain-ggplots</span></span>
 <span><span class="co">#| fig-cap: "ggplots of elevation-derived terrain metrics."</span></span>
@@ -1181,10 +1205,10 @@ Exercise Solution
 <span><span class="va">terrain_metrics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">terrain_metrics</span>, <span class="va">ned</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># zonal function in terra to calculate zonal statistics</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/zonal.html">zonal</a></span><span class="op">(</span><span class="va">terrain_metrics</span>, </span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/zonal.html">zonal</a></span><span class="op">(</span><span class="va">terrain_metrics</span>, </span>
 <span>             </span>
 <span>             <span class="co"># Need to convert corvallis `sf` object to terra vector</span></span>
-<span>             <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">corvallis</span><span class="op">)</span>, </span>
+<span>             <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">corvallis</span><span class="op">)</span>, </span>
 <span>             </span>
 <span>             <span class="co"># Metric to be calculated</span></span>
 <span>             <span class="va">mean</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
@@ -1207,11 +1231,11 @@ Exercise Solution
 <span>  template <span class="op">=</span> <span class="va">my_city</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2021</span>,</span>
 <span>  label <span class="op">=</span> <span class="st">'city'</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html">project</a></span><span class="op">(</span><span class="st">'epsg:5070'</span>,</span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html">project</a></span><span class="op">(</span><span class="st">'epsg:5070'</span>,</span>
 <span>               method <span class="op">=</span> <span class="st">'near'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">city_nlcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/extract.html">extract</a></span><span class="op">(</span><span class="va">nlcd</span>, </span>
-<span>                            <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">city_nlcd</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html">extract</a></span><span class="op">(</span><span class="va">nlcd</span>, </span>
+<span>                            <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">city_nlcd</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">Class</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -1221,8 +1245,8 @@ Exercise Solution
 <span><span class="co"># Bonus: mapping land cover w/ city radius</span></span>
 <span></span>
 <span><span class="co"># Mask then crop the NLCD to the buffer</span></span>
-<span><span class="va">nlcd_crop</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/mask.html">mask</a></span><span class="op">(</span><span class="va">nlcd</span>, <span class="va">my_city</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/crop.html">crop</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span></span>
+<span><span class="va">nlcd_crop</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html">mask</a></span><span class="op">(</span><span class="va">nlcd</span>, <span class="va">my_city</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crop.html">crop</a></span><span class="op">(</span><span class="va">my_city</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://dieghernan.github.io/tidyterra/reference/geom_spatraster.html">geom_spatraster</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">nlcd_crop</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1260,23 +1284,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
-      }
-    }
-    return false;
-  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
+    target: function(trigger) {
+      return trigger.previousElementSibling;
     }
   });
   clipboard.on('success', function(e) {
@@ -1341,92 +1351,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -1479,9 +1403,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">Workshop materials created by Michael Dumelle and Ryan Hill</div>   
-    <div class="nav-footer-center">
-      &nbsp;
-    </div>
     <div class="nav-footer-right">This book was built with <a href="https://quarto.org/">Quarto</a>.</div>
   </div>
 </footer>

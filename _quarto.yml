@@ -19,8 +19,8 @@ book:
     - gis-in-r.qmd
     - watershed-delineation.qmd
     - streamcattools.qmd
-    - spatial-glm.qmd
     - spatial-lm.qmd
+    - spatial-glm.qmd
     - references.qmd
 
 bibliography: references.bib

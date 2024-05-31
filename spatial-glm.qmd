@@ -428,7 +428,8 @@ tmn_prd <-
 prediction <- sc_prd |> 
   left_join(tmn_prd, join_by(COMID)) |>
   left_join(pourpoints, join_by(COMID == comid)) |> 
-  st_as_sf() |> 
+  st_as_sf() |>
+  st_transform(crs = 5070) |>
   select(COMID, WSAREASQKM, ELEVWS, WETINDEXWS,
          BFIWS, PRECIP8110WS, PCTWETLANDXXXXWS,
          PCTIMPXXXXWSRP100, TMEANPRISMXXXXPT) |> 
@@ -439,12 +440,11 @@ argia_predict <-
           newdata = prediction,
           type = 'response',
           se.fit = TRUE,
-          local = TRUE) |> 
-  to_prob()
+          local = TRUE) 
 
 prediction <-
   prediction |> 
-  mutate(argia_predict = argia_predict)
+  mutate(argia_predict = argia_predict$fit)
 
 ggplot() +
   geom_sf(data = prediction,
