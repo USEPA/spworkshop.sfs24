@@ -43,6 +43,7 @@ Maintaining all analyses within a single software (`R`) can greatly simplify you
 We can represent these features in `R` without actually using GIS packages.
 
 ```{r, warning=F, message=F}
+library(tidyverse)
 library(ggplot2)
 
 id <- c(1:5)
@@ -59,7 +60,7 @@ oregon_cities <- data.frame(id, cities, longitude, latitude, population)
 ```{r}
 #| label: fig-oregon-cities1
 #| fig-cap: "Oregon cities plotted from data frame."
-#| #| output-location: slide
+#| output-location: slide
 ggplot(
   data = oregon_cities, 
   aes(x = longitude, y = latitude, size = population, label = cities)
@@ -79,4 +80,442 @@ If you have worked with vector data before, you may know that these data also us
 - A bounding box or extent
 - Plot order
 - Additional data
+
+## Exploring the Simple Features (`sf`) package
+
+- The `sf` package provides simple features access for `R`
+- `sf` fits in within the "tidy" approach to data of Hadley Wickham's `tidyverse`
+- In short, much of what used to require ArcGIS license can now be done in `R` with `sf`
+
+## Exploring the Simple Features (`sf`) package
+
+```{r}
+library(sf)
+ls("package:sf")
+```
+
+## Exploring the Simple Features (`sf`) package
+
+- Convert the existing oregon cities data frame to a simple feature by:
+  - Supplying the longitude and latitude (x and y).
+  - Defining the (geographic) coordinate reference system (`crs`).
+
+## Exploring the Simple Features (`sf`) package
+
+```{r, warning=F, message=F}
+oregon_cities <- oregon_cities %>%
+  st_as_sf(coords = c('longitude', 'latitude'), crs = 4269)
+print(oregon_cities)
+```
+
+## Exploring the Simple Features (`sf`) package
+
+The `oregon_cities` object has now changed from being a standard data frame and includes features that are required for a true spatial object.
+
+- Geometry type
+- Bounding box
+- Coordinate reference system
+
+Latitude and longitude columns have been moved to a new column called `"geometry"` (sticky).
+
+## Coordinate Reference Systems
+
+`sf` also has functionality to re-project and manipulate spatial objects.
+
+![Image from: https://nceas.github.io/oss-lessons/spatial-data-gis-law/1-mon-spatial-data-intro.html](figures/crs-comparisons.jpg){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## Coordinate Reference Systems
+
+`oregon_cities` is currently in degrees, but certain applications may require an equal area projection and length units, such as meters. See: [epsg.org](epsg.org)
+
+With `sf` we can:
+
+- Check to see if the current CRS is equal to the Albers Equal-Area Conic Projection
+- Transform `oregon_cities` to CRS 5070
+
+## Coordinate Reference Systems
+
+```{r, warning=F, message=F}
+st_crs(oregon_cities) == st_crs(5070)
+
+oregon_cities <- 
+  oregon_cities %>% 
+  st_transform(crs = 5070)
+```
+
+## Coordinate Reference Systems
+
+Now let's plot the the transformed data...
+
+```{r, warning=F, message=F}
+#| label: fig-oregon-cities2
+#| fig-cap: "Oregon cities plotted in Albers Equal Area Projection."
+#| output-location: slide
+ggplot(data = oregon_cities) +
+  geom_sf_text(aes(label = cities),
+               hjust=0, vjust=1.5) +
+  geom_sf(aes(size = population)) + 
+  xlab('Longitude') +
+  ylab('Latitude') +
+  theme_bw()
+```
+
+## It all feels like `R`
+
+- There can be huge advantages to doing GIS tasks in `R` without going back and forth to other GIS software
+- If you are familiar with `R`, the leap to doing GIS here can be small
+- `sf` provides a large number of GIS functions, such as buffers, intersection, centroids, etc.
+
+## It all feels like `R`
+
+Example 1: Add 100 Km buffer to cities
+
+```{r, warning=F, message=F}
+cities_buffer <- 
+  oregon_cities %>% 
+  st_buffer(100000)
+```
+
+Plot map of buffered cities...
+
+```{r, warning=F, message=F}
+#| label: buffered-cities1
+#| fig-cap: "Buffered cities w/ overlapping buffers."
+#| output-location: slide
+ggplot(data = cities_buffer) +
+  geom_sf(aes(fill = cities), alpha = 0.5) +
+  geom_sf(data = st_centroid(oregon_cities)) +
+  theme_bw()
+```
+
+## It all feels like `R`
+
+Example 2: Split buffers into sub-units and calculate areas
+
+```{r, warning=F, message=F}
+cities_buffer <- cities_buffer %>% 
+  st_buffer(100000) %>%
+  st_intersection() %>%
+  mutate(area = st_area(.) %>% 
+           units::drop_units(),
+         id = as.factor(1:nrow(.)))
+```
+
+Plot results:
+
+```{r, warning=F, message=F}
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+#| output-location: slide
+ggplot(data = cities_buffer) +
+  geom_sf(aes(fill = id), alpha = 0.5) +
+  theme_bw()
+```
+
+## Raster data
+
+- Another fundamental data type in GIS is the raster
+- Rasters are a way of displaying gridded data, where each member of the grid represents a landscape feature (e.g., elevation)
+- The `terra` package is now the best package for working with rasters
+
+## Raster data
+
+Much like `sf`, `terra` has a large number of functions for working with raster data.
+
+```{r, warning=F, message=F}
+library(terra)
+ls("package:terra")
+```
+
+## Raster data
+
+Create and define raster
+
+```{r, warning=F, message=F}
+r <- rast(ncol=10, nrow = 10)
+
+r[] <- runif(n=ncell(r))
+
+r
+```
+
+## Raster data
+
+```{r, warning=F, message=F}
+#| label: basic-raster
+#| fig-cap: "Basic raster in R."
+plot(r)
+```
+
+## Raster data
+
+We can access data from specific locations within a raster 
+
+```{r, warning=F, message=F, eval=TRUE}
+# Access data from the ith location in a raster
+r[12]
+
+# Access data based on row and column
+r[2, 2] 
+```
+
+## Raster data
+
+Rasters can be stacked which can make them very efficient to work with
+
+```{r, warning=F, message=F, eval=TRUE}
+# Create 2 new rasters based on raster r
+r2 <- r * 50
+r3 <- sqrt(r * 5)
+
+# Stack rasters and rename to be unique
+s <- c(r, r2, r3)
+names(s) <- c('r1', 'r2', 'r3')
+```
+
+## Raster data
+
+```{r, warning=F, message=F, eval=TRUE}
+plot(s)
+```
+
+## Working with real data
+
+- There are several packages for accessing geospatial data from the web
+- We will use the `FedData` package, but numerous other packages exist to access data within and without the U.S.
+  - One useful example is the `elevatr` package for accessing elevation data around the world
+
+## Working with real data
+
+We will walk through an example of extracting information from a raster using a polygon layer. To do this we will:
+
+- Select just Corvallis among `oregon_cities`
+- Add a 10,000m buffer
+- Download National Elevation Data
+- Transform the projection system of the elevation data to match Corvallis
+- Calculate the average elevation within 10km of Corvallis
+
+## Working with real data
+
+1. Buffer Corvallis
+
+```{r, warning=F, message=F, eval=TRUE}
+library(FedData)
+
+# Select just Corvallis and calculate a 10,000-m buffer
+corvallis <- 
+  oregon_cities %>%
+  filter(cities == 'Corvallis') %>% 
+  st_buffer(10000)
+```
+
+```{r}
+#| echo: false
+
+ggplot() +
+  geom_sf(data = corvallis) + 
+  theme_bw()
+```
+
+## Working with real data
+
+2. Download NED based on Corvallis buffer
+
+```{r, warning=F, message=F, eval=TRUE}
+# Download national elevation data (ned)
+ned <- FedData::get_ned(
+  template = corvallis,
+  label = "corvallis")
+```
+
+
+3. Transform the CRS
+
+```{r, warning=F, message=F, eval=TRUE}
+ned <- terra::project(ned, 
+                      'epsg:5070',
+                      method = 'bilinear')
+```
+
+## Working with real data
+
+4. Mean elevation within polygon
+
+```{r, warning=F, message=F, eval=TRUE}
+# zonal function in terra to calculate zonal statistics
+terra::zonal(ned, 
+            
+             # Need to convert corvallis `sf` object to terra vector
+             terra::vect(corvallis), 
+             
+             # Metric to be calculated
+             mean, na.rm = T)
+```
+
+## Your Turn
+
+::: task
+1. Read in U.S. cities with `data('us.cities')` from the `maps` library
+2. Select the city of your choice and buffer it by 10Km. (We suggest converting to an equal area projection first)
+3. Read in National Elevation Data for your city with the `FedData` package
+4. Transform CRS of elevation data to match city
+5. Calculate the mean elevation within 10km of your city 
+:::
+
+```{r}
+#| echo: false
+
+countdown::countdown(minutes = 8)
+```
+
+## Solution
+
+1-2. Buffer city of your choice
+
+```{r}
+library(maps)
+data('us.cities')
+
+my_city <- us.cities %>% 
+  filter(name == 'Idaho Falls ID') %>% 
+  st_as_sf(coords = c('long', 'lat'), crs = 4269) %>% 
+  st_transform(crs = 5070) %>% 
+  st_buffer(10000)
+```
+
+## Solution
+
+3. Read in elevation data
+
+```{r}
+ned <- FedData::get_ned(
+  template = my_city,
+  label = "Idaho Falls")
+```
+
+## Solution
+
+4. Transform CRS
+
+```{r}
+ned <- terra::project(ned, 
+                      'epsg:5070',
+                      method = 'bilinear')
+```
+
+## Solution
+
+5. Calculate mean elevation within buffer
+
+```{r}
+terra::zonal(ned, 
+             terra::vect(my_city), 
+             mean, na.rm = T)
+```
+
+## Watershed Delineation
+
+- Characterizing watersheds is fundamental to much of our work in freshwater science
+- Although it is more than we can cover in today's workshop, we want you to be aware that there are several options for delineating watersheds in `R`
+- We'll provide two examples of how to delineate watersheds within the conterminous U.S. using two online services
+
+## USGS StreamStats
+
+The USGS's StreamStats is an online service and map interface that allows users to navigate to a desired location and delineate a watershed boundary with the click of a mouse:
+
+[https://streamstats.usgs.gov/ss/](https://streamstats.usgs.gov/ss/)
+
+In addition to the map interface, the data are also accessible via an API:
+
+[https://streamstats.usgs.gov/docs/streamstatsservices](https://streamstats.usgs.gov/docs/streamstatsservices)
+
+## USGS StreamStats
+
+It is also possible to replicate this functionality in R:
+
+```{r, warning=F, message=F}
+streamstats_ws = function(state, longitude, latitude){
+  p1 = 'https://streamstats.usgs.gov/streamstatsservices/watershed.geojson?rcode='
+  p2 = '&xlocation='
+  p3 = '&ylocation='
+  p4 = '&crs=4269&includeparameters=false&includeflowtypes=false&includefeatures=true&simplify=true'
+  query <-  paste0(p1, state, p2, toString(longitude), p3, toString(latitude), p4)
+  mydata <- jsonlite::fromJSON(query, simplifyVector = FALSE, simplifyDataFrame = FALSE)
+  poly_geojsonsting <- jsonlite::toJSON(mydata$featurecollection[[2]]$feature, auto_unbox = TRUE)
+  poly <- geojsonio::geojson_sf(poly_geojsonsting) 
+  poly
+}
+
+# Define location for delineation (Calapooia Watershed)
+state <- 'OR'
+latitude <- 44.62892
+longitude <- -123.13113
+
+# Delineate watershed
+cal_ws <- streamstats_ws('OR', longitude, latitude) %>% 
+  st_transform(crs = 5070)
+```
+
+## USGS StreamStats
+
+```{r, warning=F, message=F}
+#| echo: false
+
+cal_pt <- data.frame(ptid = 'Calapooia River', lon = longitude, lat = latitude)  %>% 
+  st_as_sf(coords = c('lon', 'lat'), crs = 4269) %>% 
+  st_transform(crs = 5070)
+
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+#| output-location: slide
+library(mapview)
+mapview::mapviewOptions(fgb=FALSE)
+mapview(cal_pt, col.regions = 'black') + 
+  mapview(cal_ws, alpha.regions = .08) 
+```
+
+## nhdplusTools
+
+- `nhdplusTools` is an `R` package that can access the Network Linked Data Index (NLDI) service, which provides navigation and extraction of NHDPlus data: [https://doi-usgs.github.io/nhdplusTools/](https://doi-usgs.github.io/nhdplusTools/)
+- `nhdplusTools` includes network navigation options as well as watershed delineation
+- The delineation method differs from StreamStats (based on National Hydrography IDs)
+
+## nhdplusTools 
+
+```{r, warning=F, message=F}
+library(nhdplusTools)
+
+# Simple feature option to generate point without any other attributes
+cal_pt <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
+
+# Identify the network location (NHDPlus common ID or COMID)
+start_comid <- nhdplusTools::discover_nhdplus_id(cal_pt)
+
+# Combine info into list (required by NLDI basin function)
+ws_source <- list(featureSource = "comid", featureID = start_comid)
+
+cal_ws2 <- nhdplusTools::get_nldi_basin(nldi_feature = ws_source)
+```
+
+## nhdplusTools 
+
+```{r, warning=F, message=F}
+#| echo: false
+
+#| label: buffered-cities2
+#| fig-cap: "Buffered cities w/ overlapping buffers split."
+#| output-location: slide
+library(mapview)
+mapview::mapviewOptions(fgb=FALSE)
+mapview(cal_pt, col.regions = 'black') + 
+  mapview(cal_ws, alpha.regions = .08) + 
+  mapview(cal_ws2, alpha.regions = .08, col.regions = 'red') 
+```
+
+## Other watershed delination methods 
+
+- Outside of the U.S., these tools are not available 
+- It is still possible to delineate a custom watershed from raw DEM data with help from the `whitebox` R package. 
+- This [book](https://vt-hydroinformatics.github.io/rgeowatersheds.html) walks through this process 
+- Jeff Hollister (U.S. EPA) developed an R package called [`elevatr`](https://cran.r-project.org/web/packages/elevatr/vignettes/introduction_to_elevatr.html#Point_elevation_from_Amazon_Web_Service_Terrain_Tiles) that can access DEM data from the web both within and outside the U.S.
 

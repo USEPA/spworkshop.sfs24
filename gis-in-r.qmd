@@ -177,7 +177,7 @@ EPSG codes are unique identifiers that represent coordinate reference systems. S
 
 ### It all feels like `R`
 
-There can be huge advantages to doing GIS tasks in `R`. First, there are huge advantages to keeping workflows within one software system. Second, if you are familiar with `R`, the leap to doing GIS in `R` will feel small. 
+There can be huge advantages to doing GIS tasks in `R`, within one software system. If you are familiar with `R`, the leap to doing GIS in `R` will feel small. 
 
 As noted above, the `sf` package provides a variety of GIS functions, such as buffers, intersection, centroids, etc. In addition, these functions can be combined with `tidyverse` functions in piped procedures.
 
@@ -413,6 +413,8 @@ terra::zonal(terrain_metrics,
              mean, na.rm = T)
 ```
 
+In addition to zonal statistics, the `terra` package can be used to extract (`terra::extract()`) the total number of pixels of different categories within a polygon, which can be converted to area (see exercise below). `terra::extract()` is also used to drop points through raster to obtain data at lat/lon locations.
+
 ::: {.callout-important icon="false"}
 ## Exercise
 
@@ -474,7 +476,7 @@ ggplot() +
 
 :::
 
-Zonal statistics are fundamental to generating data summaries that are useful for ecological/statistical analyses, and the `terra` package has greatly improved the processing speed of zonal stats in `R`.  
+Zonal statistics and tabulation of areas are fundamental to generating data summaries that are useful for ecological/statistical analyses, and the `terra` package has greatly improved the processing speed of zonal stats in `R`.  
 
 However, most analyses in aquatic ecology are not based on buffered points, like we covered here. In addition, zonal statistics over large geographic areas can still be a big task for `R`, such as for large watersheds.
 

@@ -223,7 +223,7 @@ This is the major limitation of NHDPlus (and by extension StreamCat). Thus, when
 
 - `NHDPlusTools` can delineate smallish to large watersheds (e.g., Mississippi River), but misses very small systems. (However, you can try experimenting with their implementation of high-res NHDPlus.)
 
-Outside of the U.S., these tools are not available. However, it is still possible to delineate a custom watershed from raw DEM data with help from the `whitebox` R package. This book has instructions on how to prepare a DEM and provide catchment pourpoints for delineation. 
+Outside of the U.S., these tools are not available. However, it is still possible to delineate a custom watershed from raw DEM data with help from the `whitebox` R package. This [book](https://vt-hydroinformatics.github.io/rgeowatersheds.html) by J.P. Gannon has instructions on how to prepare a DEM and provide catchment pourpoints for delineation. 
 
 Finally, Jeff Hollister (U.S. EPA) developed an R package called [`elevatr`](https://cran.r-project.org/web/packages/elevatr/vignettes/introduction_to_elevatr.html#Point_elevation_from_Amazon_Web_Service_Terrain_Tiles) that can access DEM data from the web both within and outside the U.S.
 
