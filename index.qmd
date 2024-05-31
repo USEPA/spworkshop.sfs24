@@ -129,7 +129,7 @@ remotes::install_github('USEPA/StreamCatTools')
 ```
 
 Lastly, we have created an `R` package for this workshop that contains some data we will work with today. To install, run
-```{r}
+```{r, eval = FALSE}
 remotes::install_github('USEPA/spdata.sfs24')
 ```
 
