@@ -194,7 +194,6 @@ Example 2: Split buffers into sub-units and calculate areas
 
 ```{r, warning=F, message=F}
 cities_buffer <- cities_buffer %>% 
-  st_buffer(100000) %>%
   st_intersection() %>%
   mutate(area = st_area(.) %>% 
            units::drop_units(),
@@ -1035,5 +1034,361 @@ ggplot() +
   theme(legend.position="bottom") 
 ```
 
-
 ## _Argia_ distribution
+
+In this example, we will model the occurrence of the _Argia_ damselfly in several northeastern states
+
+![Image from: inaturalist.org](https://inaturalist-open-data.s3.amazonaws.com/photos/10992679/original.jpg){height="25%" width="25%" fig-align="center"}
+
+## `finsyncR`
+
+To start this exercise, we'll introduce a new `R` package called [`finsyncR`](https://usepa.github.io/finsyncR/). This package was developed by US EPA scientists and academic collaborators. 
+
+![](figures/finsyncR.png){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## `finsyncR`
+
+- `finsyncR` provides us with access to thousands of biological samples across the U.S. from both EPA and USGS sources (e.g., [Rumschlag et al. 2023](https://www.science.org/doi/full/10.1126/sciadv.adf4896)). We'll be using EPA data today
+- The EPA data are from the National Aquatic Resources Assessment's [Wadeable Streams Assessment](https://www.epa.gov/national-aquatic-resource-surveys/wadeable-streams-assessment) (2001-2004) and [National Rivers and Streams Assessments](https://www.epa.gov/national-aquatic-resource-surveys/nrsa) (NRSA; 2008/2009, 2013/2014, and 2018/2019). 
+
+## Data Prep: Biological (Dependent) Data
+
+Load additional packages
+
+```{r, warning=F, message=F, eval=TRUE}
+library(finsyncR)
+library(pROC)
+```
+
+## Data Prep: Biological (Dependent) Data
+
+Next, use `finsyncR` to get genus-level macroinvert data from just EPA and rarefy to 300 count
+
+The code also converts the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. 
+
+```{r, warning=F, message=F, eval=TRUE}
+macros <- getInvertData(dataType = "occur",
+                        taxonLevel = "Genus",
+                        agency = "EPA",
+                        lifestage = FALSE,
+                        rarefy = TRUE,
+                        rarefyCount = 300,
+                        sharedTaxa = FALSE,
+                        seed = 1,
+                        boatableStreams = T)
+
+print(dim(macros))
+```
+
+## Data Prep: Biological (Dependent) Data
+
+Clean data:
+
+- Select columns of interest
+- Remove EPA's Wadeable Streams Assessment (2001-2004)
+- Convert "CollectionDate" to a date (`lubridate::date()`) and convert presence/absence to a factor
+- Convert table to a `sf` object and transform to EPSG:5070
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+# Flexible code so we could model another taxon
+genus <- 'Argia'
+
+taxon = macros %>%
+  dplyr::select(SampleID, 
+                ProjectLabel, 
+                CollectionDate,  
+                Latitude_dd,
+                Longitude_dd,
+                all_of(genus))  %>%
+  #filter(ProjectLabel != 'WSA') %>% 
+  mutate(CollectionDate = date(CollectionDate),
+         presence = 
+           as.factor(pull(., genus)))  %>% 
+  st_as_sf(coords = c('Longitude_dd', 'Latitude_dd'), crs = 4269)  %>% 
+  st_transform(crs = 5070)
+```
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Presence/Absense
+#| fig-cap: "Occurrence of Argia."
+#| output-location: slide
+ggplot() + 
+  geom_sf(data = states, fill = NA) +
+  geom_sf(data = taxon, 
+          aes(color = presence),
+          size = 1.5,
+          alpha = 0.65) + 
+  scale_color_manual(values=c("#d9d9d9", "#08519c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: NRSA samples
+#| fig-cap: "NRSA samples."
+#| output-location: slide
+ggplot() + 
+  geom_sf(data = states, fill = NA) +
+  geom_sf(data = taxon, 
+          aes(color = ProjectLabel),
+          size = 1.5,
+          alpha = 0.75) + 
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Biological (Dependent) Data
+
+For today's exercise, we'll narrow down the samples to the northeaster region of the U.S.
+
+- Select states from the northeaster U.S.
+- Select NRSA sample sites that intersect with these states.
+- Filter to just the 2013/2014 and 2018/2019 sample periods.
+- Create a new column for sample year.
+- Select desired columns.
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+region <- states %>% 
+  filter(STUSPS %in% c('VT', 'NH', 'ME', 'NY', 'RI',
+                       'MA', 'CT', 'NJ', 'PA', 'DE'))
+
+# Use region as spatial filter (sf::st_filter()) for taxon of interest
+taxon_rg <- taxon %>% 
+  st_filter(region) %>% 
+  filter(ProjectLabel %in% c('NRSA1314', 'NRSA1819')) %>% 
+  mutate(year = year(ymd(CollectionDate))) %>% 
+  select(SampleID:CollectionDate, presence:year) 
+
+taxon_rg %>% 
+  pull(presence) %>% 
+  table()
+```
+
+## Data Prep: Biological (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Northeast sites
+#| fig-cap: "Northeast sites."
+#| output-location: slide
+ggplot() + 
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = taxon_rg, 
+          aes(color = presence)) + 
+  scale_color_manual(values=c("#d9d9d9", "#08519c")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Predictor (Independent) Data
+
+1. Obtain list of NHDPlus COMIDs that match sample sites from `nhdplusTools`
+
+- Use NLDI service via StreamCat to get the COMIDs
+- Create a vector of COMIDs by splitting the COMID string
+- Add COMID to our _Argia_ occurrence table
+
+## Data Prep: Predictor (Independent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+comids <- sc_get_comid(taxon_rg)
+
+#comids <- read_rds('./data/nrsa_comids.rds')
+comid_vect <- 
+  comids %>%
+  str_split(',') %>%
+  unlist() %>%
+  as.integer()
+
+taxon_rg <- 
+  taxon_rg %>%
+  mutate(COMID = comid_vect) 
+```
+
+## Data Prep: Predictor (Independent) Data
+
+2. Get non-varying StreamCat data.
+
+```{r, warning=F, message=F, eval=TRUE}
+sc <- 
+  sc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'bfi, precip8110, wetindex, elev',
+              showAreaSqKm = TRUE)
+```
+
+## Data Prep: Predictor (Independent) Data
+
+5. PRISM air temperatures for sample periods
+
+- The `prism` package requires that we set a temporary folder in our work space. Here, we set it to "prism_data" inside of our "data" folder. It will create this folder if it does not already exist.
+- We then stack the climate rasters and use `terra::extract()` to 
+
+## Data Prep: Predictor (Independent) Data
+
+Don't worry - we'll walk through this together
+
+```{r, warning=F, message=F, eval=TRUE}
+library(prism)
+
+# Get these years of PRISM
+years <- c(2013, 2014, 2018, 2019)
+
+# Set the PRISM directory (creates directory in not present)
+prism_set_dl_dir("./data/prism_data", create = TRUE)
+
+# Download monthly PRISM rasters (tmean)
+get_prism_monthlys('tmean', 
+                   years = years, 
+                   mon = 7:8, 
+                   keepZip = FALSE)
+
+# Create stack of downloaded PRISM rasters
+tmn <- pd_stack((prism_archive_subset("tmean","monthly", 
+                                      years = years, 
+                                      mon = 7:8)))
+
+# Extract tmean at sample points and massage data
+tmn <- terra::extract(tmn, 
+                      # Transform taxon_rg to CRS of PRISM on the fly
+                      taxon_rg %>% 
+                        st_transform(crs = st_crs(tmn))) %>%
+  
+  # Add COMIDs to extracted values
+  data.frame(COMID = comid_vect, .) %>%
+  
+  # Remove front and back text from PRISM year/month in names
+  rename_with( ~ stringr::str_replace_all(., 'PRISM_tmean_stable_4kmM3_|_bil', '')) %>% 
+  
+  # Pivot to long table and calle column TMEANPRISMXXXXPT, XXXX indicates year
+  pivot_longer(!COMID, names_to = 'year_month', 
+               values_to = 'TMEANPRISMXXXXPT') %>% 
+  
+  # Create new column of year
+  mutate(year = year(ym(year_month))) %>% 
+  
+  # Average July and August temperatures 
+  summarise(TMEANPRISMXXXXPT = mean(TMEANPRISMXXXXPT, na.rm = TRUE), 
+            .by = c(COMID, year))
+```
+
+## Data Prep: Predictor (Independent) Data
+
+Combine Dependent and Independent Data
+
+```{r, warning=F, message=F, eval=TRUE}
+model_data <-
+  taxon_rg %>%
+  left_join(sc, join_by(COMID)) %>%
+  left_join(tmn, join_by(COMID, year)) %>%
+  drop_na()
+```
+
+## Modeling occurrence of genus _Argia_
+
+Model formulation
+
+```{r, warning=F, message=F, eval=TRUE}
+formula <-
+  presence ~
+  I(log10(WSAREASQKM)) +
+  ELEVWS +
+  WETINDEXWS +
+  BFIWS +
+  PRECIP8110WS +
+  TMEANPRISMXXXXPT
+```
+
+## Modeling occurrence of genus _Argia_
+
+Run non-spatial and spatial models for comparison
+
+```{r}
+bin_mod <- spglm(formula = formula,
+                 data = model_data,
+                 family = 'binomial',
+                 spcov_type = 'none')
+
+bin_spmod <- spglm(formula = formula,
+                   data = model_data,
+                   family = 'binomial',
+                   spcov_type = 'exponential')
+
+summary(bin_spmod)
+```
+
+## Model comparison/performance
+
+```{r}
+glances(bin_mod, bin_spmod)
+```
+
+## Model comparison/performance
+
+```{r, warning=F, message=F, eval=TRUE}
+# Function to convert from log odds to probability
+to_prob <- function(x) exp(x)/(1+exp(x))
+
+# loocv of non-spatial model
+loocv_mod <- loocv(bin_mod, cv_predict = TRUE, se.fit = TRUE) 
+
+# loocv of spatial model
+loocv_spmod <- loocv(bin_spmod, cv_predict = TRUE, se.fit = TRUE)
+
+pROC::auc(model_data$presence, loocv_mod$cv_predict)
+pROC::auc(model_data$presence, loocv_spmod$cv_predict)
+```
+
+## Map predictions and standard errors
+
+Extract values from `loocv()` object and join to model data for mapping
+
+```{r, warning=F, message=F, eval=TRUE}
+
+prob_spmod <- to_prob(loocv_spmod$cv_predict)
+sefit_spmod <- loocv_spmod$se.fit
+
+model_data <- model_data %>%
+  mutate(prob_spmod = prob_spmod,
+         sefit_spmod = sefit_spmod)
+```
+
+## Map predictions and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Predicted probabilities
+#| fig-cap: "Predicted probabilities."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prob_spmod)) +
+  scale_color_viridis_b() +
+  theme_bw() +
+  theme(legend.position="bottom")
+```
+
+## Map predictions and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Argia model standard errors
+#| fig-cap: "Argia model standard errors."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = region, fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = sefit_spmod)) +
+  scale_color_distiller(palette = 'Reds', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom")
+```
+
+

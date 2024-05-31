@@ -39,7 +39,7 @@ library(pROC)
 library(knitr)
 ```
 
-Next, we will use `finsyncR` to get genus-level macroinvert data from just EPA and rarefy to 500 count. The code will also convert the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. Finally, we will include samples from boatable streams rather than just those that are wadeable. 
+Next, we will use `finsyncR` to get genus-level macroinvert data from just EPA and rarefy to 300 count. The code will also convert the data to occurrence data (1 = detect, 0 = non-detect) and set a seed to make it reproducible. Finally, we will include samples from boatable streams rather than just those that are wadeable. 
 
 ```{r, warning=F, message=F, eval=TRUE}
 macros <- getInvertData(dataType = "occur",
@@ -321,7 +321,7 @@ cor(model_data %>%
 
 ```
 
-## Modeling occurrece of genus _Argia_
+## Modeling occurrence of genus _Argia_
 
 ### Model formulation
 
