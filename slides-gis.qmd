@@ -1,0 +1,82 @@
+---
+title: "Spatial Analysis and Statistical Modeling with R and spmodel - 2"
+subtitle: "2024 Society for Freshwater Science Conference"
+date: June 02, 2024
+format:
+  revealjs:
+    author: 
+      - "Ryan Hill"
+      - "Michael Dumelle"
+    institute: 
+      - "EPA (USA)"
+      - "EPA (USA)"
+    slide-number: true
+    preview-links: true
+    transition: fade
+    theme: [default, slides.scss]
+    smaller: false
+    auto-stretch: true
+    code-link: true
+    incremental: false
+execute: 
+  echo: true
+embed-resources: true
+bibliography: references.bib
+---
+
+## GIS in R
+
+Maintaining all analyses within a single software (`R`) can greatly simplify your research workflow. In this section, we'll cover the basics of doing GIS in `R`.
+
+## Goals and Motivation
+
+- Understand the main features and types of vector data.
+- Generate point data from a set of latitudes and longitudes, such as from fields sites.
+- Read, write, query, and manipulate vector data using the `sf` package.
+
+## Points, lines, and polygons
+
+![Vector data. Image from: https://earthdatascience.org/courses/earth-analytics/spatial-data-r/intro-vector-data-r/](figures/pts-lines-polys.png){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## Points, lines, and polygons
+
+We can represent these features in `R` without actually using GIS packages.
+
+```{r, warning=F, message=F}
+library(ggplot2)
+
+id <- c(1:5)
+cities <- c('Ashland','Corvallis','Bend','Portland','Newport')
+longitude <- c(-122.699, -123.275, -121.313, -122.670, -124.054)
+latitude <- c(42.189, 44.57, 44.061, 45.523, 44.652)
+population <- c(20062, 50297, 61362, 537557, 9603)
+
+oregon_cities <- data.frame(id, cities, longitude, latitude, population)
+```
+
+## Points, lines, and polygons
+
+```{r}
+#| label: fig-oregon-cities1
+#| fig-cap: "Oregon cities plotted from data frame."
+#| #| output-location: slide
+ggplot(
+  data = oregon_cities, 
+  aes(x = longitude, y = latitude, size = population, label = cities)
+) +
+  geom_point() +
+  geom_text(hjust = 1, vjust = 1) +
+  theme_bw()
+```
+
+## Points, lines, and polygons
+
+So, is this sufficient for working with spatial data in `R` and doing spatial analysis? What are we missing? 
+
+If you have worked with vector data before, you may know that these data also usually have:
+
+- A coordinate reference system
+- A bounding box or extent
+- Plot order
+- Additional data
+

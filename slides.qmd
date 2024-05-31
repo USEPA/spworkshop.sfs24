@@ -231,7 +231,7 @@ ggplot(moss, aes(color = log_Zn)) +
   theme_gray(base_size = 18)
 ```
 
-## The Moss Data
+## The `moss` Data
 
 ```{r}
 #| echo: false
