@@ -1044,7 +1044,7 @@ In this example, we will model the occurrence of the _Argia_ damselfly in severa
 
 To start this exercise, we'll introduce a new `R` package called [`finsyncR`](https://usepa.github.io/finsyncR/). This package was developed by US EPA scientists and academic collaborators. 
 
-![](figures/finsyncR.png){#fig-foo height="50%" width="50%" fig-align="center"}
+![](figures/finsyncR.png){#fig-foo height="33%" width="33%" fig-align="center"}
 
 ## `finsyncR`
 
