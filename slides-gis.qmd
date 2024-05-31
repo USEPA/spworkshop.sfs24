@@ -97,8 +97,8 @@ ls("package:sf")
 ## Exploring the Simple Features (`sf`) package
 
 - Convert the existing oregon cities data frame to a simple feature by:
-  - Supplying the longitude and latitude (x and y).
-  - Defining the (geographic) coordinate reference system (`crs`).
+- Supplying the longitude and latitude (x and y).
+- Defining the (geographic) coordinate reference system (`crs`).
 
 ## Exploring the Simple Features (`sf`) package
 
@@ -283,7 +283,7 @@ plot(s)
 
 - There are several packages for accessing geospatial data from the web
 - We will use the `FedData` package, but numerous other packages exist to access data within and without the U.S.
-  - One useful example is the `elevatr` package for accessing elevation data around the world
+- One useful example is the `elevatr` package for accessing elevation data around the world
 
 ## Working with real data
 
@@ -344,7 +344,7 @@ ned <- terra::project(ned,
 ```{r, warning=F, message=F, eval=TRUE}
 # zonal function in terra to calculate zonal statistics
 terra::zonal(ned, 
-            
+             
              # Need to convert corvallis `sf` object to terra vector
              terra::vect(corvallis), 
              
@@ -512,10 +512,528 @@ mapview(cal_pt, col.regions = 'black') +
   mapview(cal_ws2, alpha.regions = .08, col.regions = 'red') 
 ```
 
+## nhdplusTools 
+
+`nhdplusTools` works by walking a network of pre-staged sub-catchments with unique IDs (COMIDs)
+
+```{r, warning=F, message=F}
+#| echo: false
+
+# Trib coordinates
+latitude <- 44.61892
+longitude <- -123.13731
+
+trib_pt2 <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
+start_comid <- nhdplusTools::discover_nhdplus_id(trib_pt2)
+ws_source <- list(featureSource = "comid", featureID = start_comid)
+
+streams <- nhdplusTools::navigate_nldi(ws_source, mode = "UT", 
+                                       distance_km = 2000) %>%
+  pluck('UT_flowlines')
+
+# Use get_nhdplus to access the individual stream sub-catchments
+cats <- nhdplusTools::get_nhdplus(comid = streams$nhdplus_comid,
+                                  realization = 'catchment')
+
+mapview(streams, legend = FALSE) + 
+  mapview(cats, alpha.regions=.08, col.regions = 'blue') 
+
+```
+
 ## Other watershed delination methods 
 
 - Outside of the U.S., these tools are not available 
-- It is still possible to delineate a custom watershed from raw DEM data with help from the `whitebox` R package. 
+- It is still possible to delineate a custom watershed from raw DEM data with help from the `whitebox` R package
 - This [book](https://vt-hydroinformatics.github.io/rgeowatersheds.html) walks through this process 
 - Jeff Hollister (U.S. EPA) developed an R package called [`elevatr`](https://cran.r-project.org/web/packages/elevatr/vignettes/introduction_to_elevatr.html#Point_elevation_from_Amazon_Web_Service_Terrain_Tiles) that can access DEM data from the web both within and outside the U.S.
 
+## Your Turn
+
+::: task
+1. Delineate the Logan River watershed in Utah at -111.855, 41.707
+2. Use `mapview::mapview` to plot watershed
+:::
+
+```{r}
+#| echo: false
+
+countdown::countdown(minutes = 8)
+```
+
+## Solution
+
+1. Delineate Logan River watershed
+
+```{r}
+# Logan River Watershed
+latitude <- 41.707
+longitude <- -111.855
+
+# Define the lat/lon
+start_point <- st_sfc(st_point(c(longitude, latitude)), crs = 4269)
+# Find COMID of this point
+start_comid <- nhdplusTools::discover_nhdplus_id(start_point)
+# Create a list object that defines the feature source and starting COMID
+ws_source <- list(featureSource = "comid", featureID = start_comid)
+# Delineate basin
+logan_ws <- nhdplusTools::get_nldi_basin(nldi_feature = ws_source)
+```
+
+## Solution
+
+2. Map the Logan River watershed
+
+```{r}
+mapview::mapview(logan_ws)
+```
+
+## StreamCatTools
+
+![](figures/streamcattools-med-dpi.png){#fig-foo height="50%" width="50%" fig-align="center"}
+
+## Why StreamCat/LakeCat?
+
+- Examples covered are for single watersheds - but we often need data for hundreds or thousands
+- Overlaying watersheds onto numerous landscape rasters/layers is complicated/long process
+- StreamCat/LakeCat solves this issue by providing summarized data for all streams and lakes in the NHDPlus (medium resolution)
+
+## Why StreamCat/LakeCat?
+
+Let's revisit the Calapooia watershed and calculate percent row crop for 2019 with `FedData`
+
+- Download NLCD for 2019
+
+```{r}
+nlcd <- get_nlcd(
+  template = cal_ws2,
+  year = 2019,
+  label = 'Calapooia') %>%
+  terra::project('epsg:5070', method = 'near') 
+```
+
+## Why StreamCat/LakeCat?
+
+- Use terra to extract the watershed metrics
+
+```{r}
+terra::extract(nlcd,
+               terra::vect(cal_ws2)) %>%
+  group_by(Class) %>%
+  summarise(count = n()) %>%
+  mutate(percent = (count / sum(count)) * 100) %>%
+  filter(Class == 'Cultivated Crops') %>%
+  print()
+```
+
+## Why StreamCat/LakeCat?
+
+Now let's extract the same information using the `StreamCatTools` package to access the online StreamCat database
+
+```{r, warning=F, message=F}
+library(StreamCatTools)
+
+comid <- '23763521'
+
+sc_get_data(comid = comid,
+            metric = 'PctCrop2019', 
+            aoi = 'watershed')
+```
+
+
+## `StreamCatTools`
+
+- StreamCat and the `StreamCatTools` package provide access to the same information with much less code because StreamCat pre-stages watershed metrics for each NHDPlus catchment
+
+## `StreamCatTools`
+
+StreamCat also provides metrics at several scales
+
+![Geospatial framework of the StreamCat Dataset](figures/geospatialframework.png){#fig-foo height="100%" width="100%   " fig-align="center"}
+
+## `StreamCatTools`
+
+```{r, warning=F, message=F, echo=TRUE}
+sc_get_data(comid = comid,
+            metric = 'PctCrop2019', 
+            aoi = 'catchment,watershed')
+```
+
+## `StreamCatTools`
+
+For a subset of watershed metrics, summaries within ~100m of the stream segment are also available for catchments and watersheds:
+
+![Riparian buffers (red) of NHD stream lines (white) and on-network NLCD water pixels (blue).](figures/riparianbuffer.png){#fig-foo height="471px" width="480px" fig-align="center"}
+
+## `StreamCatTools`
+
+```{r, warning=F, message=F, echo=TRUE}
+sc_get_data(comid = comid,
+            metric = 'PctCrop2019', 
+            aoi = 'catchment,riparian_catchment,watershed,riparian_watershed') %>% 
+  as.data.frame()
+```
+
+## `StreamCatTools`
+
+`StreamCatTools` also makes it very easy to grab data for entire regions. 
+
+```{r, warning=F, message=F, echo=TRUE}
+library(ggplot2)
+
+iowa_crop <- sc_get_data(state = 'IA',
+                         metric = 'PctCrop2019', 
+                         aoi = 'watershed')
+```
+
+## `StreamCatTools`
+
+```{r, warning=F, message=F, echo=TRUE}
+#| label: iowa
+#| fig-cap: "Histogram of crop as a % of watersheds within Iowa in 2019."
+#| output-location: slide
+ggplot() + 
+  geom_histogram(data = iowa_crop,
+                 aes(x = PCTCROP2019WS)) + 
+  theme_bw()
+```
+
+## `StreamCatTools`
+
+- We can provide multiple metrics to the request by separating them with a comma. 
+- Note that the request is provided as a single string, `'PctCrop2001, PctCrop2019'`, rather than a vector of metrics: `c('PctCrop2001', 'PctCrop2019')`. 
+- The request itself is agnostic to formatting of the text. For example, these requests will also work: `'pctcrop2001, pctcrop2019'` or `'PCTCROP2001,PCTCROP2019'`.
+
+## `StreamCatTools`
+
+StreamCat contains hundreds of metrics and we recommend consulting the [metric list](https://www.epa.gov/national-aquatic-resource-surveys/streamcat-metrics-and-definitions) to identify those of interest for your study.
+
+## Accessing LakeCat
+
+The `R` function to access LakeCat data was designed to parallel StreamCat functions
+
+Let's walk through an example together that:
+
+- Define a `sf` object of a sample point at Pelican Lake, WI
+- Obtain the lake waterbody polygon
+- Extract the COMID (unique ID) to query LakeCat
+- Pull data on mean watershed elevation, calcium oxide content of the geology, % sand and organic matter content of soils, and % of the watershed composed of deciduous forest
+
+## Accessing LakeCat
+
+```{r, warning=F, message=F, echo=TRUE}
+library(nhdplusTools)
+
+# Pelican Lake, WI
+latitude <- 45.502840
+longitude <- -89.198694
+
+pelican_pt <- data.frame(site_name = 'Pelican Lake',
+                         latitude = latitude,
+                         longitude = longitude) %>% 
+  st_as_sf(coords = c('longitude', 'latitude'), crs = 4326)
+
+pelican_lake <- nhdplusTools::get_waterbodies(pelican_pt) 
+
+comid <- pelican_lake %>% 
+  pull(comid)
+
+lc_get_data(metric = 'elev, cao, sand, om, pctdecid2019',
+            aoi = 'watershed',
+            comid = comid)
+```
+
+## Your Turn
+
+::: task
+Query LakeCat to determine if the basins of these lakes had more deciduous or conifer forest in 2019:
+
+"9028333,9025609,9025611,9025635"
+
+The LakeCat [metrics page](https://www.epa.gov/national-aquatic-resource-surveys/lakecat-metrics-and-definitions) may help
+:::
+
+```{r}
+#| echo: false
+
+countdown::countdown(minutes = 5)
+```
+
+## Solution
+
+```{r}
+library(StreamCatTools)
+
+comids <- "9028333,9025609,9025611,9025635"
+
+lc_get_data(metric = 'pctdecid2019, pctconif2019',
+            aoi = 'watershed',
+            comid = comids) 
+```
+
+
+## Bringing it all together
+
+- To finish the workshop, we will walk through 2 examples of using `spmodel` to model phenomena in two types of freshwaters:
+  - Electrical conductivity of lake water across Minnesota
+  - The distribution of _Argia_ damselfly across several northeastern states
+  
+## Lake Conductivity
+
+- Conductivity is an important water quality measure and one of growing concern due to  salinization of freshwater ([Cañedo-Argüelles et al. 2016](https://www.science.org/doi/full/10.1126/science.aad3488), [Kaushal et al. 2021](https://link.springer.com/article/10.1007/s10533-021-00784-w))
+- This analysis is based on a recent [paper](https://www.sciencedirect.com/science/article/pii/S2211675323000830) by Michael Dumelle and others published in the journal _Spatial Statistics_. The GitHub repository for this paper is also [available](https://github.com/USEPA/lake-conductivity-spin.manuscript)
+
+## Data Prep: Conductivity (Dependent) Data
+
+Load required packages...
+
+```{r, warning=F, message=F, eval=TRUE}
+library(tidyverse)
+library(sf)
+library(tigris)
+library(StreamCatTools)
+library(spmodel)
+library(data.table)
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+Read and prep table of lake conductivity values...
+
+```{r, warning=F, message=F, eval=TRUE}
+# Read in states to give some context
+states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>% 
+  filter(!STUSPS %in% c('HI', 'PR', 'AK', 'MP', 'GU', 'AS', 'VI'))  %>% 
+  st_transform(crs = 5070)
+
+# Read in lakes, select/massage columns, convert to spatial object
+lake_cond <- fread('nla_obs.csv') %>% 
+  select(UNIQUE_ID, COMID, COND_RESULT,
+         AREA_HA, DSGN_CYCLE,
+         XCOORD, YCOORD) %>% 
+  mutate(DSGN_CYCLE = factor(DSGN_CYCLE)) %>% 
+  st_as_sf(coords = c('XCOORD', 'YCOORD'), 
+           crs = "+proj=aea +lat_0=37.5 +lon_0=-96 +lat_1=29.5 +lat_2=45.5 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +type=crs") %>% 
+  st_transform(crs = 5070)
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+```{r}
+#| label: NLA
+#| fig-cap: "NLA lake sampes across the U.S."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = states,
+          fill = NA) +
+  geom_sf(data = lake_cond,
+          aes(color = DSGN_CYCLE)) +
+  scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+Select sample sites within Minnesota
+
+```{r, warning=F, message=F, eval=TRUE}
+MN <- states %>% 
+  filter(STUSPS == 'MN')
+
+cond_mn <- lake_cond %>% 
+  st_filter(MN) %>% 
+  rename(year = DSGN_CYCLE)
+```
+
+## Data Prep: Conductivity (Dependent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Observed log(conductivity)
+#| fig-cap: "Distribution of conductivity values."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = cond_mn,
+          aes(color = log(COND_RESULT))) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Data Prep: LakeCat (Independent) Data
+
+We will use the similar watershed predictors as [Dumelle et al. (2023)](https://www.sciencedirect.com/science/article/pii/S2211675323000830). 
+
+Already included with data table with the response variable are:
+
+- Lake Area (AREA_HA)
+- Sample year (DSGN_CYCLE)
+
+## Data Prep: LakeCat (Independent) Data
+
+From LakeCat, we also will get the following predictor variables:
+
+- Local long-term air temperature 
+- Long-term watershed precipitation 
+- Sulfur content of underlying lithology
+
+## Data Prep: LakeCat (Independent) Data
+
+```{r}
+comids <- cond_mn$COMID
+
+mn_lakecat <- lc_get_data(comid = comids,
+                          metric = 'Tmean8110, Precip8110, S') %>% 
+  select(COMID, TMEAN8110CAT, PRECIP8110WS, SWS)
+
+mn_lakecat
+```
+
+## Data Prep: LakeCat (Independent) Data
+
+In addition to these static LakeCat data, we would also like to pull in data from specific years of NLCD to match sample years for % of watershed composed of crop area
+
+To do this we will need to:
+
+- Grab LakeCat NLCD % crop data for years 2006, 2011, 2016
+- Clean and pivot the columns and add a year column
+- Add 1 to each year since available NLCD are 1 year behind field samples
+
+## Data Prep: LakeCat (Independent) Data
+
+```{r, warning=F, message=F, eval=TRUE}
+crop <- 
+  
+  # Grab LakeCat crop data
+  lc_get_data(comid = comids,
+              aoi = 'watershed',
+              metric = 'pctcrop2006, pctcrop2011, pctcrop2016') %>% 
+  
+  # Remove watershed area from data
+  select(-WSAREASQKM) %>% 
+  
+  # Pivot table to long to create "year" column
+  pivot_longer(!COMID, names_to = 'tmpcol', values_to = 'PCTCROPWS') %>% 
+  
+  # Remove PCTCROP and WS to make "year" column
+  mutate(year = as.integer(
+    str_replace_all(tmpcol, 'PCTCROP|WS', ''))) %>% 
+  
+  # Add 1 to each year to match NLA years
+  mutate(year = factor(year + 1)) %>% 
+  
+  # Remove the tmp column
+  select(-tmpcol)
+```
+
+## Data Prep: LakeCat (Independent) Data
+
+Now, join the tables to make our model data
+
+```{r, warning=F, message=F, eval=TRUE}
+model_data <- cond_mn %>% 
+  left_join(mn_lakecat, join_by(COMID)) %>% 
+  left_join(crop, join_by(COMID, year))
+```
+
+## Modeling lake conductivity
+
+Define the formula
+
+```{r}
+formula <- 
+  log(COND_RESULT) ~ 
+  AREA_HA + 
+  year + 
+  TMEAN8110CAT +
+  PRECIP8110WS + 
+  PCTCROPWS + 
+  SWS
+```
+
+## Modeling lake conductivity
+
+Run a non-spatial and spatial model for comparison
+
+```{r}
+cond_mod <- splm(formula = formula,
+                 data = model_data,
+                 spcov_type = 'none')
+
+cond_spmod <- splm(formula = formula,
+                   data = model_data,
+                   spcov_type = 'exponential')
+
+summary(cond_spmod)
+```
+
+## Modeling lake conductivity
+
+Model comparison 
+
+```{r}
+glances(cond_mod, cond_spmod)
+```
+
+## Modeling lake conductivity
+
+Leave-one-out comparison
+
+```{r, warning=F, message=F, eval=TRUE}
+prd_mod <- spmodel::loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE) 
+
+prd_spmod <- spmodel::loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
+
+rbind(prd_mod %>% pluck('stats'),
+      prd_spmod %>% pluck('stats'))
+```
+
+## Map predicted values and standard errors
+
+Join back to model data for mapping
+
+```{r, warning=F, message=F, eval=TRUE}
+# Combine predictions with model data (spatial points)
+model_data <-
+  model_data %>% 
+  mutate(prd_cond = prd_spmod %>% 
+           pluck('cv_predict'), 
+         se_fit = prd_spmod %>% 
+           pluck('se.fit'))
+```
+
+## Map predicted values and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Predicted log(conductivity)
+#| fig-cap: "Predicted log(conductivity) values."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = prd_cond)) +
+  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+## Map predicted values and standard errors
+
+```{r, warning=F, message=F, eval=TRUE}
+#| label: Conductivity standard errors
+#| fig-cap: "Model standard errors."
+#| output-location: slide
+ggplot() +
+  geom_sf(data = MN,
+          fill = NA) +
+  geom_sf(data = model_data,
+          aes(color = se_fit)) +
+  scale_color_distiller(palette = 'Reds', direction = 1) +
+  theme_bw() +
+  theme(legend.position="bottom") 
+```
+
+
+## _Argia_ distribution

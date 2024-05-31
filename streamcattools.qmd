@@ -251,7 +251,7 @@ ggplot() +
   theme_bw()
 ```
 
-In the next sections, we will put what we have learned about GIS in R together with the `spmodel` package to model two types of data. First, we will model the presence/absence of a damselfly genus (_Argia_) in the northeastern U.S. streams. We'll access _Argia_ presences/absences via another `R` package that was recently released called [`finsyncR`](https://usepa.github.io/finsyncR/). In the second example, we will model the specific conductivity of lakes in several midwestern states. 
+In the next sections, we will put what we have learned about GIS in R together with the `spmodel` package to model two types of data. In the first example, we will model the specific conductivity of lakes in several midwestern states. Second, we will model the presence/absence of a damselfly genus (_Argia_) in the northeastern U.S. streams. We'll access _Argia_ presences/absences via another `R` package that was recently released called [`finsyncR`](https://usepa.github.io/finsyncR/). 
 
 
 ## R Code Appendix

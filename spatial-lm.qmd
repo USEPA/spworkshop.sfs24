@@ -84,7 +84,7 @@ ggplot() +
   geom_sf(data = MN,
           fill = NA) +
   geom_sf(data = cond_mn,
-          aes(color = COND_RESULT)) +
+          aes(color = log(COND_RESULT))) +
   scale_color_distiller(palette = 'YlOrRd', direction = 1) +
   theme_bw() +
   theme(legend.position="bottom") 
@@ -99,7 +99,7 @@ Already included with data table with the response variable are:
 - Lake Area (AREA_HA)
 - Sample year (DSGN_CYCLE)
 
-From LakeCat, we also will get the followign predictor variables:
+From LakeCat, we also will get the following predictor variables:
 
 - Local long-term air temperature 
 - Long-term watershed precipitation 
@@ -237,8 +237,7 @@ rbind(prd_mod %>% pluck('stats'),
 model_data <-
   model_data %>% 
   mutate(prd_cond = prd_spmod %>% 
-           pluck('cv_predict') %>%
-           exp(), 
+           pluck('cv_predict'), 
          se_fit = prd_spmod %>% 
            pluck('se.fit'))
 
