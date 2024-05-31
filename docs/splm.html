@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.2.269">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Spatial Analysis and Statistical Modeling with R and spmodel - 1&nbsp; Spatial Linear Models in spmodel (SLMs)</title>
+<title>Spatial Analysis and Statistical Modeling with R and spmodel - 1&nbsp; Spatial Linear Models (SPLMs) in spmodel</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,7 +142,7 @@ div.csl-indent {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }"><div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code> (SLMs)</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models (SPLMs) in <code>spmodel</code></span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -168,7 +168,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./splm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code> (SLMs)</span></a>
+  <a href="./splm.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models (SPLMs) in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -178,7 +178,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models in <code>spmodel</code> (SPGLMs)</span></a>
+  <a href="./spglm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Spatial Generalized Linear Models (SPGLMs) in <code>spmodel</code></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -198,7 +198,7 @@ div.csl-indent {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SLM Application to Lake Conductivity</span></a>
+  <a href="./spatial-lm.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">A SPLM Application to Lake Conductivity</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -252,7 +252,7 @@ div.csl-indent {
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title"><span id="sec-splm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models in <code>spmodel</code> (SLMs)</span></span></h1>
+<h1 class="title"><span id="sec-splm" class="quarto-section-identifier d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Spatial Linear Models (SPLMs) in <code>spmodel</code></span></span></h1>
 </div>
 
 
@@ -323,8 +323,8 @@ i &amp; = 1, 2, \dots, k
 i &amp; = 1, 2, \dots, k \\
 j &amp; = 1, 2, \dots, n
 \end{split}
-\tag{1.2}\]</span></span> where the model terms from <a href="#eq-lm-01">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lm-01</span></a> are now indexed via a subscript <span class="math inline">\(j\)</span> that ranges from one to <span class="math inline">\(n\)</span>, the sample size. The index <span class="math inline">\(i\)</span> still ranges from one to <span class="math inline">\(k\)</span>, the number of explanatory variables. Linear models are commonly fit in <strong>R</strong> using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function.</p>
-<p>The model in <a href="#eq-lm-02">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lm-02</span></a> is sometimes written in matrix notation instead of index notation. Let</p>
+\tag{1.2}\]</span></span> where the model terms from <a href="#eq-lm-01">Equation&nbsp;<span>1.1</span></a> are now indexed via a subscript <span class="math inline">\(j\)</span> that ranges from one to <span class="math inline">\(n\)</span>, the sample size. The index <span class="math inline">\(i\)</span> still ranges from one to <span class="math inline">\(k\)</span>, the number of explanatory variables. Linear models are commonly fit in <strong>R</strong> using the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function.</p>
+<p>The model in <a href="#eq-lm-02">Equation&nbsp;<span>1.2</span></a> is sometimes written in matrix notation instead of index notation. Let</p>
 <p><span class="math display">\[
 \mathbf{y} = \begin{bmatrix}
   \text{y}_1 \\
@@ -354,10 +354,10 @@ j &amp; = 1, 2, \dots, n
 \epsilon_j
 \end{bmatrix},
 \]</span> where for a sample size <span class="math inline">\(n\)</span>, <span class="math inline">\(\mathbf{y}\)</span> is the <span class="math inline">\(n \times 1\)</span> column vector of response variables, <span class="math inline">\(\mathbf{X}\)</span> is the <span class="math inline">\(n \times p\)</span> matrix of explanatory variables (sometimes called the “design” or “model” matrix), <span class="math inline">\(\boldsymbol{\beta}\)</span> is the <span class="math inline">\(p \times 1\)</span> column vector of fixed effects, and <span class="math inline">\(\boldsymbol{\epsilon}\)</span> is the <span class="math inline">\(n \times 1\)</span> column vector of random errors.</p>
-<p>Then <a href="#eq-lm-02">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lm-02</span></a> in matrix notation is written as <span id="eq-lm"><span class="math display">\[
+<p>Then <a href="#eq-lm-02">Equation&nbsp;<span>1.2</span></a> in matrix notation is written as <span id="eq-lm"><span class="math display">\[
 \mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}.
 \tag{1.3}\]</span></span></p>
-<p>There are typically a few assumptions inherent in models built using <a href="#eq-lm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lm</span></a>. First, we typically assume that <span class="math inline">\(\text{E}(\boldsymbol{\epsilon}) = \mathbf{0}\)</span>, where <span class="math inline">\(\text{E}(\cdot)\)</span> denotes expectation. Less formally, this means that the average of all random errors is zero. Second, we typically assume <span class="math inline">\(\text{Cov}(\boldsymbol{\epsilon}) = \sigma^2_\epsilon \mathbf{I}\)</span>, where <span class="math inline">\(\text{Cov}(\cdot)\)</span> denotes covariance, <span class="math inline">\(\sigma^2_\epsilon\)</span> denotes a variance parameter, and <span class="math inline">\(\mathbf{I}\)</span> denotes the identity matrix. Less formally, this means that each random error is independent of other random errors (i.e., we gain no information about observation two’s random error by knowing observation one’s random error). Moreover, we also usually assume these random errors are normally distributed.</p>
+<p>There are typically a few assumptions inherent in models built using <a href="#eq-lm">Equation&nbsp;<span>1.3</span></a>. First, we typically assume that <span class="math inline">\(\text{E}(\boldsymbol{\epsilon}) = \mathbf{0}\)</span>, where <span class="math inline">\(\text{E}(\cdot)\)</span> denotes expectation. Less formally, this means that the average of all random errors is zero. Second, we typically assume <span class="math inline">\(\text{Cov}(\boldsymbol{\epsilon}) = \sigma^2_\epsilon \mathbf{I}\)</span>, where <span class="math inline">\(\text{Cov}(\cdot)\)</span> denotes covariance, <span class="math inline">\(\sigma^2_\epsilon\)</span> denotes a variance parameter, and <span class="math inline">\(\mathbf{I}\)</span> denotes the identity matrix. Less formally, this means that each random error is independent of other random errors (i.e., we gain no information about observation two’s random error by knowing observation one’s random error). Moreover, we also usually assume these random errors are normally distributed.</p>
 <div class="callout-tip callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -375,15 +375,15 @@ Linear Modeling Misconceptions
 </section><section id="introducing-the-spatial-linear-model" class="level3" data-number="1.1.2"><h3 data-number="1.1.2" class="anchored" data-anchor-id="introducing-the-spatial-linear-model">
 <span class="header-section-number">1.1.2</span> Introducing the Spatial Linear Model</h3>
 <p>As mentioned previously, nonspatial linear models are very flexible tools that can capture all sorts of interesting processes. Unfortunately, they do assume that random errors are independent of one another, often unreasonable for spatial data which tend to be correlated in space. Ignoring this spatial dependence and fitting nonspatial linear models generally leads to invalid fixed effect inference and poor predictions. Spatial linear models leverage spatial dependence in the random error structure of a linear model, creating models that more accurately reflect the spatial process in study and perform substantially better than nonspatial linear models. So why have they not been more commonly used in ecological settings? These models are challenging to implement, both theoretically and computationally, and software has not always been available that uses standard <strong>R</strong> linear modeling conventions. Fortunately, incorporating spatial dependence is now straightforward using <code>spmodel</code>, which we discuss shortly.</p>
-<p>More formally, we accommodate spatial dependence in linear models by adding an <span class="math inline">\(n \times 1\)</span> spatial random effect, <span class="math inline">\(\boldsymbol{\tau}\)</span>, to <a href="#eq-lm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lm</span></a>, yielding the model</p>
+<p>More formally, we accommodate spatial dependence in linear models by adding an <span class="math inline">\(n \times 1\)</span> spatial random effect, <span class="math inline">\(\boldsymbol{\tau}\)</span>, to <a href="#eq-lm">Equation&nbsp;<span>1.3</span></a>, yielding the model</p>
 <p><span id="eq-splm"><span class="math display">\[
 \mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon},
 \tag{1.4}\]</span></span></p>
 <p>where <span class="math inline">\(\boldsymbol{\tau}\)</span> is independent of <span class="math inline">\(\boldsymbol{\epsilon}\)</span>, <span class="math inline">\(\text{E}(\boldsymbol{\tau}) = \mathbf{0}\)</span>, <span class="math inline">\(\text{Cov}(\boldsymbol{\tau}) = \sigma^2_\tau \mathbf{R}\)</span>, and <span class="math inline">\(\mathbf{R}\)</span> is a matrix that determines the spatial dependence structure in <span class="math inline">\(\mathbf{y}\)</span> and depends on a range parameter, <span class="math inline">\(\phi\)</span>, which controls the behavior of the spatial covariance as a function of distance. We discuss <span class="math inline">\(\mathbf{R}\)</span> in more detail shortly. The parameter <span class="math inline">\(\sigma^2_\tau\)</span> is called the spatially dependent random error variance or partial sill. The parameter <span class="math inline">\(\sigma^2_\epsilon\)</span> is called the spatially independent random error variance or nugget. These two variance parameters are henceforth more intuitively written as <span class="math inline">\(\sigma^2_{de}\)</span> and <span class="math inline">\(\sigma^2_{ie}\)</span>, respectively. The covariance of <span class="math inline">\(\mathbf{y}\)</span> is denoted <span class="math inline">\(\boldsymbol{\Sigma}\)</span> and given by <span class="math inline">\(\sigma^2_{de} \mathbf{R} + \sigma^2_{ie} \mathbf{I}\)</span>. The parameters that compose this covariance are contained in the vector <span class="math inline">\(\boldsymbol{\theta}\)</span>, which is called the covariance parameter vector.</p>
-<p><a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a> is called the spatial linear model. The spatial linear model applies to both point-referenced and areal (i.e., lattice) data. Spatial data are point-referenced when the elements in <span class="math inline">\(\mathbf{y}\)</span> are observed at point-locations indexed by x-coordinates and y-coordinates on a spatially continuous surface with an infinite number of locations. For example, consider sampling soil at any point-location in a field. Spatial data are areal when the elements in <span class="math inline">\(\mathbf{y}\)</span> are observed as part of a finite network of polygons whose connections are indexed by a neighborhood structure. For example, the polygons may represent states in a country who are neighbors if they share at least one boundary.</p>
+<p><a href="#eq-splm">Equation&nbsp;<span>1.4</span></a> is called the spatial linear model. The spatial linear model applies to both point-referenced and areal (i.e., lattice) data. Spatial data are point-referenced when the elements in <span class="math inline">\(\mathbf{y}\)</span> are observed at point-locations indexed by x-coordinates and y-coordinates on a spatially continuous surface with an infinite number of locations. For example, consider sampling soil at any point-location in a field. Spatial data are areal when the elements in <span class="math inline">\(\mathbf{y}\)</span> are observed as part of a finite network of polygons whose connections are indexed by a neighborhood structure. For example, the polygons may represent states in a country who are neighbors if they share at least one boundary.</p>
 </section><section id="modeling-covariance-in-the-spatial-linear-model" class="level3" data-number="1.1.3"><h3 data-number="1.1.3" class="anchored" data-anchor-id="modeling-covariance-in-the-spatial-linear-model">
 <span class="header-section-number">1.1.3</span> Modeling Covariance in the Spatial Linear Model</h3>
-<p>A primary way in which the model in <a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a> differs for point-referenced and areal data is the way in which <span class="math inline">\(\mathbf{R}\)</span> in <span class="math inline">\(\text{Cov}(\boldsymbol{\tau}) = \sigma^2_{de} \mathbf{R}\)</span> is modeled. For point-referenced data, the <span class="math inline">\(\mathbf{R}\)</span> matrix is generally constructed using the Euclidean distance between spatial locations. For example, the exponential spatial covariance function generates an <span class="math inline">\(\mathbf{R}\)</span> matrix given by</p>
+<p>A primary way in which the model in <a href="#eq-splm">Equation&nbsp;<span>1.4</span></a> differs for point-referenced and areal data is the way in which <span class="math inline">\(\mathbf{R}\)</span> in <span class="math inline">\(\text{Cov}(\boldsymbol{\tau}) = \sigma^2_{de} \mathbf{R}\)</span> is modeled. For point-referenced data, the <span class="math inline">\(\mathbf{R}\)</span> matrix is generally constructed using the Euclidean distance between spatial locations. For example, the exponential spatial covariance function generates an <span class="math inline">\(\mathbf{R}\)</span> matrix given by</p>
 <p><span id="eq-Rpoint"><span class="math display">\[
 \mathbf{R} = \exp(-\mathbf{H} / \phi),
 \tag{1.5}\]</span></span></p>
@@ -403,7 +403,7 @@ Exercise
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Navigate to the Help file for <code>splm</code> by running <code><a href="https://usepa.github.io/spmodel/reference/splm.html">?splm</a></code> or by visiting <a href="https://usepa.github.io/spmodel/reference/splm.html">this link</a> and scroll down to “Details.” Examine the spatial linear model description in the Help file and relate some of the syntax used to the syntax in <a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a> and <a href="#eq-Rpoint">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rpoint</span></a>.</p>
+<p>Navigate to the Help file for <code>splm</code> by running <code><a href="https://usepa.github.io/spmodel/reference/splm.html">?splm</a></code> or by visiting <a href="https://usepa.github.io/spmodel/reference/splm.html">this link</a> and scroll down to “Details.” Examine the spatial linear model description in the Help file and relate some of the syntax used to the syntax in <a href="#eq-splm">Equation&nbsp;<span>1.4</span></a> and <a href="#eq-Rpoint">Equation&nbsp;<span>1.5</span></a>.</p>
 </div>
 </div>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
@@ -418,7 +418,7 @@ Solution
 </div>
 <div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>The form of the spatial linear model (<span class="math inline">\(\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon}\)</span>) is the same in the Help file as the form in Equation <a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a>. In the help file, <span class="math inline">\(de\)</span> refers to <span class="math inline">\(\sigma^2_{de}\)</span>, <span class="math inline">\(ie\)</span> refers to <span class="math inline">\(\sigma^2_{ie}\)</span>, and <span class="math inline">\(range\)</span> refers to <span class="math inline">\(\phi\)</span>. Finally, in the help file <span class="math inline">\(h\)</span> refers to distance between observations while, in <a href="#eq-Rpoint">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rpoint</span></a>, <span class="math inline">\(\mathbf{H}\)</span> refers to a matrix of these distances for all pairs of observations.</p>
+<p>The form of the spatial linear model (<span class="math inline">\(\mathbf{y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\tau} + \boldsymbol{\epsilon}\)</span>) is the same in the Help file as the form in Equation <a href="#eq-splm">Equation&nbsp;<span>1.4</span></a>. In the help file, <span class="math inline">\(de\)</span> refers to <span class="math inline">\(\sigma^2_{de}\)</span>, <span class="math inline">\(ie\)</span> refers to <span class="math inline">\(\sigma^2_{ie}\)</span>, and <span class="math inline">\(range\)</span> refers to <span class="math inline">\(\phi\)</span>. Finally, in the help file <span class="math inline">\(h\)</span> refers to distance between observations while, in <a href="#eq-Rpoint">Equation&nbsp;<span>1.5</span></a>, <span class="math inline">\(\mathbf{H}\)</span> refers to a matrix of these distances for all pairs of observations.</p>
 </div>
 </div>
 </div>
@@ -426,7 +426,7 @@ Solution
 <span class="header-section-number">1.2</span> Model Fitting</h2>
 <section id="data-introduction" class="level3" data-number="1.2.1"><h3 data-number="1.2.1" class="anchored" data-anchor-id="data-introduction">
 <span class="header-section-number">1.2.1</span> Data Introduction</h3>
-<p>The <code>moss</code> data in the <code>spmodel</code> package is an <code>sf</code> (simple features) object <span class="citation" data-cites="pebesma2018sf">(<a href="#ref-pebesma2018sf" role="doc-biblioref">Pebesma 2018</a>)</span> that contains observations on heavy metals in mosses near a mining road in Alaska. An <code>sf</code> object is a special <code>data.frame</code> built for storing spatial information and contains a column called <code>geometry</code>. We can view the first few rows of <code>moss</code> by running</p>
+<p>The <code>moss</code> data in the <code>spmodel</code> package is an <code>sf</code> (simple features) object <span class="citation" data-cites="pebesma2018sf">(<a href="references.html#ref-pebesma2018sf" role="doc-biblioref">Pebesma 2018</a>)</span> that contains observations on heavy metals in mosses near a mining road in Alaska. An <code>sf</code> object is a special <code>data.frame</code> built for storing spatial information and contains a column called <code>geometry</code>. We can view the first few rows of <code>moss</code> by running</p>
 <div class="cell">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">moss</span></span>
 <span><span class="co">#&gt; Simple feature collection with 365 features and 7 fields</span></span>
@@ -469,7 +469,7 @@ Solution
 <p>An important predictor variable may be the log of the distance to the haul road, <code>log_dist2road</code>, which is measured in meters. Later we use <code>spmodel</code> to fit a spatial linear model with with <code>log_Zn</code> as the response and <code>log_dist2road</code> as a predictor.</p>
 </section><section id="splm-syntax-and-output-interpretation" class="level3" data-number="1.2.2"><h3 data-number="1.2.2" class="anchored" data-anchor-id="splm-syntax-and-output-interpretation">
 <span class="header-section-number">1.2.2</span> <code>splm()</code> Syntax and Output Interpretation</h3>
-<p>The <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> function shares similar syntactic structure with the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function used to fit linear models without spatial dependence (<a href="#eq-lm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-lm</span></a>). <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> generally requires at least three arguments</p>
+<p>The <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> function shares similar syntactic structure with the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> function used to fit linear models without spatial dependence (<a href="#eq-lm">Equation&nbsp;<span>1.3</span></a>). <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> generally requires at least three arguments</p>
 <ul>
 <li>
 <code>formula</code>: a formula that describes the relationship between the response variable (<span class="math inline">\(\mathbf{y}\)</span>) and explanatory variables (<span class="math inline">\(\mathbf{X}\)</span>)
@@ -519,7 +519,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The estimation method in <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> is specified by <code>estmethod</code>. The default estimation method is restricted maximum likelihood (<code>"reml"</code>). Additional options include maximum likelihood <code>"ml"</code>, semivariogram-based composite likelihood (<code>"sv-cl"</code>) <span class="citation" data-cites="curriero1999composite">(<a href="#ref-curriero1999composite" role="doc-biblioref">Curriero and Lele 1999</a>)</span>, and semivariogram-based weighted least squares (<code>"sv-wls"</code>) <span class="citation" data-cites="cressie1985fitting">(<a href="#ref-cressie1985fitting" role="doc-biblioref">Cressie 1985</a>)</span>. When the estimation method is semivariogram-based weighted least squares, the weights are specified by <code>weights</code> with a default of Cressie weights (“<code>cressie"</code>).</p>
+<p>The estimation method in <code><a href="https://usepa.github.io/spmodel/reference/splm.html">splm()</a></code> is specified by <code>estmethod</code>. The default estimation method is restricted maximum likelihood (<code>"reml"</code>). Additional options include maximum likelihood <code>"ml"</code>, semivariogram-based composite likelihood (<code>"sv-cl"</code>) <span class="citation" data-cites="curriero1999composite">(<a href="references.html#ref-curriero1999composite" role="doc-biblioref">Curriero and Lele 1999</a>)</span>, and semivariogram-based weighted least squares (<code>"sv-wls"</code>) <span class="citation" data-cites="cressie1985fitting">(<a href="references.html#ref-cressie1985fitting" role="doc-biblioref">Cressie 1985</a>)</span>. When the estimation method is semivariogram-based weighted least squares, the weights are specified by <code>weights</code> with a default of Cressie weights (“<code>cressie"</code>).</p>
 </div>
 </div>
 <p>We summarize the model fit by running</p>
@@ -547,12 +547,12 @@ Tip
 <span><span class="co">#&gt; 3.595e-01 7.897e-02 8.237e+03</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The fixed effects coefficient table contains estimates, standard errors, z-statistics, and asymptotic p-values for each fixed effect. From this table, we notice there is evidence that mean log zinc concentration significantly decreases with distance from the haul road (p-value &lt; 2e-16).</p>
-<p>We can relate some of the components in the summary output to the model in <a href="#eq-splm">Equation&nbsp;<span class="quarto-unresolved-ref">eq-splm</span></a>:</p>
+<p>We can relate some of the components in the summary output to the model in <a href="#eq-splm">Equation&nbsp;<span>1.4</span></a>:</p>
 <ul>
 <li>The values in the <code>Estimate</code> column of the <code>Coefficients (fixed)</code> table form <span class="math inline">\(\boldsymbol{\hat{\beta}}\)</span>, an estimate of <span class="math inline">\(\boldsymbol{\beta}\)</span>.</li>
 <li>The <code>de</code> value of 0.36 in the <code>Coefficients (exponential spatial covariance)</code> table is <span class="math inline">\(\hat{\sigma}^2_{de}\)</span>, which is an estimate of <span class="math inline">\(\sigma^2_{de}\)</span>, the variance of <span class="math inline">\(\boldsymbol{\tau}\)</span> (commonly called the partial sill).</li>
 <li>The <code>ie</code> value of 0.079 in the <code>Coefficients (exponential spatial covariance)</code> table is <span class="math inline">\(\hat{\sigma}^2_{ie}\)</span>, which is an estimate of <span class="math inline">\(\sigma^2_{ie}\)</span>, the variance of <span class="math inline">\(\boldsymbol{\epsilon}\)</span> (commonly called the nugget).</li>
-<li>The <code>range</code> value of 8,237 in the <code>Coefficients (exponential spatial covariance)</code> table is <span class="math inline">\(\hat{\phi}\)</span>, which is an estimate of <span class="math inline">\(\phi\)</span> (recall <span class="math inline">\(\phi\)</span> is the range parameter in <a href="#eq-Rpoint">Equation&nbsp;<span class="quarto-unresolved-ref">eq-Rpoint</span></a> that controls the behavior of the spatial covariance as a function of distance).</li>
+<li>The <code>range</code> value of 8,237 in the <code>Coefficients (exponential spatial covariance)</code> table is <span class="math inline">\(\hat{\phi}\)</span>, which is an estimate of <span class="math inline">\(\phi\)</span> (recall <span class="math inline">\(\phi\)</span> is the range parameter in <a href="#eq-Rpoint">Equation&nbsp;<span>1.5</span></a> that controls the behavior of the spatial covariance as a function of distance).</li>
 </ul>
 <p>The pseudo R-squared emulates the R-squared from nonspatial linear models, quantifying the proportion of variability in the model explained by the fixed effects. Via <code><a href="https://usepa.github.io/spmodel/reference/varcomp.html">varcomp()</a></code>, we can identify how much variability is attributed to distinct parts of the model:</p>
 <div class="cell">
@@ -584,7 +584,7 @@ Tip
 <span><span class="co">#&gt; 2 ie       0.0790 FALSE   </span></span>
 <span><span class="co">#&gt; 3 range 8237.     FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The <code>is_known</code> column indicates whether the parameter is assumed known. By default, all parameters are assumed unknown. We discuss this more in <a href="#sec-features"><span class="quarto-unresolved-ref">sec-features</span></a>.</p>
+<p>The <code>is_known</code> column indicates whether the parameter is assumed known. By default, all parameters are assumed unknown. We discuss this more in <a href="splm-additional.html"><span>Chapter&nbsp;2</span></a>.</p>
 <div class="callout-important callout callout-style-default no-icon callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -925,7 +925,7 @@ Solution
 </div>
 </div>
 </div>
-<p>The <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc <span class="citation" data-cites="akaike1974new">(<a href="#ref-akaike1974new" role="doc-biblioref">Akaike 1974</a>)</span>, which are commonly used to select a “best” model – the lower the AIC/AICc, the better the model. The AICc is more appropriate for small samples, but for large samples AIC/AICc are nearly equivalent. <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> automatically orders the models by AICc:</p>
+<p>The <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> function allows us to compare the model fit statistics for a few different models simultaneously. Two of these fit statistics are AIC and AICc <span class="citation" data-cites="akaike1974new">(<a href="references.html#ref-akaike1974new" role="doc-biblioref">Akaike 1974</a>)</span>, which are commonly used to select a “best” model – the lower the AIC/AICc, the better the model. The AICc is more appropriate for small samples, but for large samples AIC/AICc are nearly equivalent. <code><a href="https://usepa.github.io/spmodel/reference/glances.html">glances()</a></code> automatically orders the models by AICc:</p>
 <div class="cell">
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/glances.html">glances</a></span><span class="op">(</span><span class="va">spmod</span>, <span class="va">none</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 10</span></span>
@@ -988,7 +988,7 @@ Solution
 </div>
 </div>
 </div>
-<p>Another approach to model selection is leave-one-out cross validation <span class="citation" data-cites="hastie2009elements">(<a href="#ref-hastie2009elements" role="doc-biblioref">Hastie et al. 2009</a>)</span>. In leave-one-out cross validation, a single observation is removed from the data, the model is re-fit, and a prediction is made for the held-out observation. Then, a loss metric like mean-squared-prediction error (MSPE) is computed and used to evaluate model fit. The lower the mean-squared-prediction error, the better the model fit.</p>
+<p>Another approach to model selection is leave-one-out cross validation <span class="citation" data-cites="hastie2009elements">(<a href="references.html#ref-hastie2009elements" role="doc-biblioref">Hastie et al. 2009</a>)</span>. In leave-one-out cross validation, a single observation is removed from the data, the model is re-fit, and a prediction is made for the held-out observation. Then, a loss metric like mean-squared-prediction error (MSPE) is computed and used to evaluate model fit. The lower the mean-squared-prediction error, the better the model fit.</p>
 <div class="cell">
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://usepa.github.io/spmodel/reference/loocv.html">loocv</a></span><span class="op">(</span><span class="va">spmod</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 4</span></span>
@@ -1027,7 +1027,7 @@ Caution
 </div>
 <section id="model-selection-strategies" class="level4" data-number="1.2.4.1"><h4 data-number="1.2.4.1" class="anchored" data-anchor-id="model-selection-strategies">
 <span class="header-section-number">1.2.4.1</span> Model Selection Strategies</h4>
-<p>We use models to simplify and explain incredibly complex systems. As George Box noted, all models are wrong but some are useful. In short, model selection is a challenging problem, and people approach it with varying perspectives. Some prefer a single model be hypothesized and fit based on first principles, some prefer using algorithmic approaches like stepwise regression to find the most appropriate model, and some people are in between. We think it is reasonable to use your expert knowledge of the system being studied to determine a set of candidate models. Then, you can combine this expert knowledge with empirical tools like AIC, AICc, likelihood ratio tests, and cross validation to distinguish among these candidate models and determine the most appropriate model. We note that even if model selection is performed on fixed effects and covariance structures simultaneously using maximum likelihood (<code>estmethod = "ml"</code>) and AIC, AICc, and/or likelihood ratio tests, that the most appropriate model should then be refit using restricted maximum likelihood (<code>estmethod = "reml"</code>) before proceeding with model interpretation and, eventually, spatial prediction at unobserved locations. <span class="citation" data-cites="zuur2009mixed">Zuur et al. (<a href="#ref-zuur2009mixed" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="johnson2004model">Johnson and Omland (<a href="#ref-johnson2004model" role="doc-biblioref">2004</a>)</span>, and <span class="citation" data-cites="zimmerman2024spatial">Zimmerman and Ver Hoef (<a href="#ref-zimmerman2024spatial" role="doc-biblioref">2024</a>)</span> provide further insights.</p>
+<p>We use models to simplify and explain incredibly complex systems. As George Box noted, all models are wrong but some are useful. In short, model selection is a challenging problem, and people approach it with varying perspectives. Some prefer a single model be hypothesized and fit based on first principles, some prefer using algorithmic approaches like stepwise regression to find the most appropriate model, and some people are in between. We think it is reasonable to use your expert knowledge of the system being studied to determine a set of candidate models. Then, you can combine this expert knowledge with empirical tools like AIC, AICc, likelihood ratio tests, and cross validation to distinguish among these candidate models and determine the most appropriate model. We note that even if model selection is performed on fixed effects and covariance structures simultaneously using maximum likelihood (<code>estmethod = "ml"</code>) and AIC, AICc, and/or likelihood ratio tests, that the most appropriate model should then be refit using restricted maximum likelihood (<code>estmethod = "reml"</code>) before proceeding with model interpretation and, eventually, spatial prediction at unobserved locations. <span class="citation" data-cites="zuur2009mixed">Zuur et al. (<a href="references.html#ref-zuur2009mixed" role="doc-biblioref">2009</a>)</span>, <span class="citation" data-cites="johnson2004model">Johnson and Omland (<a href="references.html#ref-johnson2004model" role="doc-biblioref">2004</a>)</span>, and <span class="citation" data-cites="zimmerman2024spatial">Zimmerman and Ver Hoef (<a href="references.html#ref-zimmerman2024spatial" role="doc-biblioref">2024</a>)</span> provide further insights.</p>
 <div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1077,7 +1077,7 @@ Tip
 <p><img src="splm_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>From our plot, we see that there are a large number of observed moose counts at or near 0. Therefore, perhaps a generalized linear model in the Poisson or negative binomial family might be more appropriate for this particular data set. We will come back to this issue in <a href="#sec-spglm"><span class="quarto-unresolved-ref">sec-spglm</span></a>; however, for this section, we assume that a standard spatial linear model is appropriate.</p>
+<p>From our plot, we see that there are a large number of observed moose counts at or near 0. Therefore, perhaps a generalized linear model in the Poisson or negative binomial family might be more appropriate for this particular data set. We will come back to this issue in <a href="spglm.html"><span>Chapter&nbsp;3</span></a>; however, for this section, we assume that a standard spatial linear model is appropriate.</p>
 <div class="callout-note callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1088,7 +1088,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>We also see in the plot that the spatial locations in the survey were clearly not randomly selected. Random selection of spatial locations is only required for inference in design-based analyses. For model-based analyses, random selection of spatial locations is not necessarily an assumption. See <span class="citation" data-cites="brus2021statistical">Brus (<a href="#ref-brus2021statistical" role="doc-biblioref">2021</a>)</span> and <span class="citation" data-cites="dumelle2022comparison">Dumelle et al. (<a href="#ref-dumelle2022comparison" role="doc-biblioref">2022</a>)</span> for more.</p>
+<p>We also see in the plot that the spatial locations in the survey were clearly not randomly selected. Random selection of spatial locations is only required for inference in design-based analyses. For model-based analyses, random selection of spatial locations is not necessarily an assumption. See <span class="citation" data-cites="brus2021statistical">Brus (<a href="references.html#ref-brus2021statistical" role="doc-biblioref">2021</a>)</span> and <span class="citation" data-cites="dumelle2022comparison">Dumelle et al. (<a href="references.html#ref-dumelle2022comparison" role="doc-biblioref">2022</a>)</span> for more.</p>
 </div>
 </div>
 </section><section id="moose-count-predictions" class="level3" data-number="1.3.2"><h3 data-number="1.3.2" class="anchored" data-anchor-id="moose-count-predictions">
@@ -1164,7 +1164,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Examining some of the predictions, we see that a few are negative. These unreasonable negative values are a further indication that we should use a spatial generalized linear model in <a href="#sec-spglm"><span class="quarto-unresolved-ref">sec-spglm</span></a>.</p>
+<p>Examining some of the predictions, we see that a few are negative. These unreasonable negative values are a further indication that we should use a spatial generalized linear model in <a href="spglm.html"><span>Chapter&nbsp;3</span></a>.</p>
 </div>
 </div>
 <p>The <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> function can also be used to obtain predictions for unobserved locations. While the required arguments to <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> are the same as the arguments used in <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code> (the name of the fitted model object along with a <code>newdata</code> data frame), the output of <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> is an <code>sf</code> object with predictions in the <code>.fitted</code> column. Often, using <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> is more convenient than using <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code>, as <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code> returns an object with predictions alongside the spatial locations and any predictors used in the model.</p>
@@ -1391,7 +1391,7 @@ Solution
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
 <div id="ref-akaike1974new" class="csl-entry" role="doc-biblioentry">
 Akaike, Hirotugu. 1974. <span>“A New Look at the Statistical Model Identification.”</span> <em>IEEE Transactions on Automatic Control</em> 19 (6): 716–23.
 </div>
