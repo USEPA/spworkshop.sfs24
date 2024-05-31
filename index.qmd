@@ -5,7 +5,7 @@
 library(emo)
 ```
 
-Hello `r emo::ji("wave")` and welcome! The purpose of this website is to provide workshop materials for the "Spatial Analysis and Statistical Modeling with R and `spmodel`" workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop's accompanying workbook, [visit here](https://usepa.github.io/spatial.sfs2024/). To download the workshop's slides, [visit here](https://github.com/USEPA/spatial.sfs2024/blob/main/slides.html).  Slides are downloaded by clicking the "Download raw file" button via the ellipsis or downward arrow symbol on the right side of the screen.
+Hello `r emo::ji("wave")` and welcome! The purpose of this website is to provide workshop materials for the "Spatial Analysis and Statistical Modeling with R and `spmodel`" workshop at the 2024 Society for Freshwater Science Conference in Philadelphia, PA, USA. To view the workshop's accompanying workbook, [visit here](https://usepa.github.io/spworkshop.sfs24/). To download the workshop's slides, [visit here](https://github.com/USEPA/spworkshop.sfs24/blob/main/slides.html).  Slides are downloaded by clicking the "Download raw file" button via the ellipsis or downward arrow symbol on the right side of the screen.
 
 It is our hope that this workshop will provide attendees with the conceptual and practical knowledge to incorporate geospatial analyses into their `R` workflow to improve the interpretation of spatial data. In particular, this workshop will focus on the R package `spmodel`.
 
@@ -130,7 +130,7 @@ remotes::install_github('USEPA/StreamCatTools')
 
 ## How to follow along with material
 
-This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository](https://github.com/USEPA/spatial.sfs2024), or simply clone directly and open the corresponding `.qmd` files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
+This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository](https://github.com/USEPA/spworkshop.sfs24), or simply clone directly and open the corresponding `.qmd` files to follow along with material in RStudio.  You can also copy code snippets from the rendered book site and paste into your code files in RStudio.
 
 ## Citation Information
 

@@ -41,7 +41,7 @@ library(knitr)
 
 ## Welcome!
 
-1. Please visit [https://usepa.github.io/spatial.sfs2024/](https://usepa.github.io/spatial.sfs2024/) to view the workshop's accompanying workbook
+1. Please visit [https://usepa.github.io/spworkshop.sfs24/](https://usepa.github.io/spworkshop.sfs24/) to view the workshop's accompanying workbook
 
 2. If necessary, install and load R packages by visiting "Setup" in the workbook's "Welcome" section 
 
