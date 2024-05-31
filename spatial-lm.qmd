@@ -1,4 +1,4 @@
-# A SLM Application to Lake Conductivity {#spatial-lm}
+# A SPLM Application to Lake Conductivity {#spatial-lm}
 
 ```{r source_r, echo = FALSE}
 source("_common.R")
