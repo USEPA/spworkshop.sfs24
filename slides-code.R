@@ -381,8 +381,8 @@ states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>%
 ggplot() +
   geom_sf(data = states,
           fill = NA) +
-  geom_sf(data = lake_cond,
-          aes(color = DSGN_CYCLE)) +
+  geom_sf(data = cond_nla_data,
+          aes(color = year)) +
   scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
   theme_bw() +
   theme(legend.position="bottom")
@@ -390,21 +390,12 @@ ggplot() +
 MN <- states %>%
   filter(STUSPS == 'MN')
 
-cond_mn <- lake_cond %>%
-  st_filter(MN) %>%
-  rename(year = DSGN_CYCLE)
+# only needed if cond_nla_data contains all states (as in a previous version)
+# now, cond_nla_data only contains MN data and so these lines are not needed
+# cond_nla_data <- cond_nla_data %>%
+#   st_filter(MN)
 
-ggplot() +
-  geom_sf(data = MN,
-          fill = NA) +
-  geom_sf(data = cond_mn,
-          aes(color = log(COND_RESULT))) +
-  scale_color_distiller(palette = 'YlOrRd', direction = 1) +
-  theme_bw() +
-  theme(legend.position="bottom")
-
-
-comids <- cond_mn$COMID
+comids <- cond_nla_data$COMID
 
 mn_lakecat <- lc_get_data(comid = comids,
                           metric = 'Tmean8110, Precip8110, S') %>%
@@ -437,7 +428,7 @@ crop <-
   select(-tmpcol)
 
 
-model_data <- cond_mn %>%
+cond_model_data <- cond_nla_data %>%
   left_join(mn_lakecat, join_by(COMID)) %>%
   left_join(crop, join_by(COMID, year))
 
@@ -451,27 +442,27 @@ formula <-
   SWS
 
 cond_mod <- splm(formula = formula,
-                 data = model_data,
+                 data = cond_model_data,
                  spcov_type = 'none')
 
 cond_spmod <- splm(formula = formula,
-                   data = model_data,
+                   data = cond_model_data,
                    spcov_type = 'exponential')
 
 summary(cond_spmod)
 
 glances(cond_mod, cond_spmod)
 
-prd_mod <- spmodel::loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE)
+prd_mod <- loocv(cond_mod, se.fit = TRUE, cv_predict = TRUE)
 
-prd_spmod <- spmodel::loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
+prd_spmod <- loocv(cond_spmod, se.fit = TRUE, cv_predict = TRUE)
 
 rbind(prd_mod %>% pluck('stats'),
       prd_spmod %>% pluck('stats'))
 
 # Combine predictions with model data (spatial points)
-model_data <-
-  model_data %>%
+cond_model_data <-
+  cond_model_data %>%
   mutate(prd_cond = prd_spmod %>%
            pluck('cv_predict'),
          se_fit = prd_spmod %>%
@@ -480,7 +471,7 @@ model_data <-
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = cond_model_data,
           aes(color = prd_cond)) +
   scale_color_distiller(palette = 'YlOrRd', direction = 1) +
   theme_bw() +
@@ -490,7 +481,7 @@ ggplot() +
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = cond_model_data,
           aes(color = se_fit)) +
   scale_color_distiller(palette = 'Reds', direction = 1) +
   theme_bw() +
@@ -635,7 +626,7 @@ tmn <- terra::extract(tmn,
             .by = c(COMID, year))
 
 
-model_data <-
+argia_model_data <-
   taxon_rg %>%
   left_join(sc, join_by(COMID)) %>%
   left_join(tmn, join_by(COMID, year)) %>%
@@ -651,12 +642,12 @@ formula <-
   TMEANPRISMXXXXPT
 
 bin_mod <- spglm(formula = formula,
-                 data = model_data,
+                 data = argia_model_data,
                  family = 'binomial',
                  spcov_type = 'none')
 
 bin_spmod <- spglm(formula = formula,
-                   data = model_data,
+                   data = argia_model_data,
                    family = 'binomial',
                    spcov_type = 'exponential')
 
@@ -673,19 +664,20 @@ loocv_mod <- loocv(bin_mod, cv_predict = TRUE, se.fit = TRUE)
 # loocv of spatial model
 loocv_spmod <- loocv(bin_spmod, cv_predict = TRUE, se.fit = TRUE)
 
-pROC::auc(model_data$presence, loocv_mod$cv_predict)
+pROC::auc(argia_model_data$presence, loocv_mod$cv_predict)
+pROC::auc(argia_model_data$presence, loocv_spmod$cv_predict)
 
 prob_spmod <- to_prob(loocv_spmod$cv_predict)
 sefit_spmod <- loocv_spmod$se.fit
 
-model_data <- model_data %>%
+argia_model_data <- argia_model_data %>%
   mutate(prob_spmod = prob_spmod,
          sefit_spmod = sefit_spmod)
 
 # Plot predicted values
 ggplot() +
   geom_sf(data = region, fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = argia_model_data,
           aes(color = prob_spmod)) +
   scale_color_viridis_b() +
   theme_bw() +
@@ -694,7 +686,7 @@ ggplot() +
 # Plot standard errors
 ggplot() +
   geom_sf(data = region, fill = NA) +
-  geom_sf(data = model_data,
+  geom_sf(data = argia_model_data,
           aes(color = sefit_spmod)) +
   scale_color_distiller(palette = 'Reds', direction = 1) +
   theme_bw() +

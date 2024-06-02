@@ -1490,8 +1490,8 @@ states <- tigris::states(cb = TRUE, progress_bar = FALSE)  %>%
   filter(!STUSPS %in% c('HI', 'PR', 'AK', 'MP', 'GU', 'AS', 'VI'))  %>% 
   st_transform(crs = 5070)
 
-# Read in lakes, select/massage columns, convert to spatial object
-lake_cond <- cond_nla_data
+# Read in lakes data from data package
+data("cond_nla_data")
 ```
 
 ## Data Prep: Conductivity (Dependent) Data
@@ -1503,7 +1503,7 @@ lake_cond <- cond_nla_data
 ggplot() +
   geom_sf(data = states,
           fill = NA) +
-  geom_sf(data = lake_cond,
+  geom_sf(data = cond_nla_data,
           aes(color = year)) +
   scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
   theme_bw() +
@@ -1517,9 +1517,6 @@ Select sample sites within Minnesota
 ```{r, warning=F, message=F, eval=TRUE}
 MN <- states %>% 
   filter(STUSPS == 'MN')
-
-cond_mn <- lake_cond %>% 
-  st_filter(MN)
 ```
 
 ## Data Prep: Conductivity (Dependent) Data
@@ -1531,7 +1528,7 @@ cond_mn <- lake_cond %>%
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = cond_mn,
+  geom_sf(data = cond_nla_data,
           aes(color = log(COND_RESULT))) +
   scale_color_distiller(palette = 'YlOrRd', direction = 1) +
   theme_bw() +
@@ -1558,7 +1555,7 @@ From LakeCat, we also will get the following predictor variables:
 ## Data Prep: LakeCat (Independent) Data
 
 ```{r}
-comids <- cond_mn$COMID
+comids <- cond_nla_data$COMID
 
 mn_lakecat <- lc_get_data(comid = comids,
                           metric = 'Tmean8110, Precip8110, S') %>% 
@@ -1609,7 +1606,7 @@ crop <-
 Now, join the tables to make our model data
 
 ```{r, warning=F, message=F, eval=TRUE}
-cond_model_data <- cond_mn %>% 
+cond_model_data <- cond_nla_data %>% 
   left_join(mn_lakecat, join_by(COMID)) %>% 
   left_join(crop, join_by(COMID, year))
 ```

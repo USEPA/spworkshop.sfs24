@@ -58,14 +58,11 @@ Select sample sites within Minnesota and plot:
 MN <- states %>% 
   filter(STUSPS == 'MN')
 
-cond_mn <- cond_nla_data %>% 
-  st_filter(MN) 
-
 # Plot sample locations
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = cond_mn,
+  geom_sf(data = cond_nla_data,
           aes(color = year)) +
   scale_color_manual(values=c("#a6cee3", "#1f78b4", "#b2df8a")) +
   theme_bw() +
@@ -75,7 +72,7 @@ ggplot() +
 ggplot() +
   geom_sf(data = MN,
           fill = NA) +
-  geom_sf(data = cond_mn,
+  geom_sf(data = cond_nla_data,
           aes(color = log(COND_RESULT))) +
   scale_color_distiller(palette = 'YlOrRd', direction = 1) +
   theme_bw() +
@@ -100,7 +97,7 @@ From LakeCat, we also will get the following predictor variables:
 
 ```{r, warning=F, message=F, eval=TRUE}
 
-comids <- cond_mn$COMID
+comids <- cond_nla_data$COMID
 
 mn_lakecat <- lc_get_data(comid = comids,
                           metric = 'Tmean8110, Precip8110,
@@ -171,7 +168,7 @@ urb <-
 Now, join the various tables to make our model data:
 
 ```{r, warning=F, message=F, eval=TRUE}
-cond_model_data <- cond_mn %>% 
+cond_model_data <- cond_nla_data %>% 
   left_join(mn_lakecat, join_by(COMID)) %>% 
   left_join(crop, join_by(COMID, year)) %>% 
   left_join(urb, join_by(COMID, year))

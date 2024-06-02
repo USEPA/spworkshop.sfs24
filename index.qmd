@@ -138,6 +138,16 @@ remotes::install_github('USEPA/spdata.sfs24')
 
 This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository](https://github.com/USEPA/spworkshop.sfs24), or simply clone directly and open the corresponding `.qmd` files to follow along with material in RStudio.  You can also 1) copy code snippets from the rendered book site and paste into your code files in RStudio or 2) download [this file](https://github.com/USEPA/spworkshop.sfs24/blob/main/slides-code.R), which contains all the code we will run together during the workshop.
 
+## Additional Resources
+
+We highly recommend the following resources for further learning:
+
+* [R For Data Science](https://r4ds.hadley.nz/): A guide to data wrangling and visualization in `R` using the `tidyverse`.
+* [Geomcomputation with R](https://r.geocompx.org/): A guide to geospatial (i.e., GIS) operations in `R`. 
+* [Spatial Data Science with Application in R](https://r-spatial.org/book/): A guide to handling and describing spatial data in `R`.
+* [Spatial Linear Models for Environmental Data](https://www.routledge.com/Spatial-Linear-Models-for-Environmental-Data/Zimmerman-VerHoef/p/book/9780367183349): A guide to spatial statistical modeling for environmental data. 
+* [Quarto for R and RStudio](https://posit-conf-2023.github.io/quarto-r/): A guide to using Quarto in `R` and `RStudio`.
+
 ## Citation Information
 
 If you use these software packages in a formal report or publication, please cite them. For example, the `spmodel` citation is available by running:
