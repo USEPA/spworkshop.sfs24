@@ -39,7 +39,7 @@
     "href": "index.html#how-to-follow-along-with-material",
     "title": "Spatial Analysis and Statistical Modeling with R and spmodel",
     "section": "How to follow along with material",
-    "text": "How to follow along with material\nThis workshop was built using Quarto and rendered to html. If you are familiar with using git and GitHub, you can fork and clone this repository, or simply clone directly and open the corresponding .qmd files to follow along with material in RStudio. You can also copy code snippets from the rendered book site and paste into your code files in RStudio."
+    "text": "How to follow along with material\nThis workshop was built using Quarto and rendered to html. If you are familiar with using git and GitHub, you can fork and clone this repository, or simply clone directly and open the corresponding .qmd files to follow along with material in RStudio. You can also 1) copy code snippets from the rendered book site and paste into your code files in RStudio or 2) download this file, which contains all the code we will run together during the workshop."
   },
   {
     "objectID": "index.html#citation-information",
