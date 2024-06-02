@@ -20,6 +20,10 @@ format:
     incremental: false
 execute: 
   echo: true
+title-slide-attributes: 
+  data-background-image: figures/epa_logo_green.jpg
+  data-background-size: 12%
+  data-background-position: 2% 2%  
 embed-resources: true
 bibliography: references.bib
 ---
@@ -45,7 +49,7 @@ library(knitr)
 
 2. If necessary, install and load R packages by visiting "Setup" in the workbook's "Welcome" section 
 
-3. (Optional) Download the workshop slides (instructions in the workbook's "Welcome" section)
+3. (Optional) Download the workshop slides and/or code (instructions in the workbook's "Welcome" section)
 
 4. Follow along and have fun!
 
@@ -69,7 +73,6 @@ __Wade Boys__ (he/him/his) is a graduate student at the University of Arkansas b
 
 The views expressed in this workshop are those of the authors and do not necessarily represent the views or policies of the U.S. Environmental Protection Agency. Any mention of trade names, products, or services does not imply an endorsement by the U.S. government or the U.S. Environmental Protection Agency. The U.S. Environmental Protection Agency does not endorse any commercial products, services, or enterprises.
 
-
 ## What is `spmodel`?
 
 `spmodel` is an `R` package to fit, summarize, and predict for a variety of spatial statistical models. Some of the things that `spmodel` can do include:
@@ -90,6 +93,49 @@ There are many great spatial modeling packages in `R`. A few reasons to use `spm
 -   There are a wide variety of `spmodel` capabilities that give the user significant control over the specific spatial model being fit.
 -   `spmodel` is compatible with other modern `R` packages like `broom` and `sf`.
 :::
+
+## How to Follow Along
+
+* Copy code snippets from the workbook
+* Download slides-code.R from GitHub
+* Code in real-time
+
+## Motivation
+
+```{r}
+#| echo: false
+#| fig-align: center
+
+include_graphics(here("figures", "tdep.png"))
+```
+
+## Motivation
+
+```{r}
+#| echo: false
+#| fig-align: center
+#| out-width: 75%
+
+include_graphics(here("figures", "tdep_residuals.png"))
+```
+
+## Motivation
+
+```{r}
+#| echo: false
+#| fig-align: center
+
+include_graphics(here("figures", "tdep_nonspatial.png"))
+```
+
+## Motivation
+
+```{r}
+#| echo: false
+#| fig-align: center
+
+include_graphics(here("figures", "tdep_spatial.png"))
+```
 
 # Spatial Linear Models in `spmodel`
 
@@ -542,6 +588,8 @@ Examine the help file `?augment.spmodel` or by visiting [this link](https://usep
 countdown(minutes = 5)
 ```
 
+# Additional Features
+
 ## Additional Features
 
 Applications to:
@@ -654,6 +702,8 @@ Use `spglm()` to fit a spatial logistic regression model to the `moose` data usi
 
 countdown(minutes = 5)
 ```
+
+# GIS in R
 
 ## GIS in R
 
@@ -1043,6 +1093,8 @@ terra::zonal(ned,
              mean, na.rm = T)
 ```
 
+# Watershed Delineation
+
 ## Watershed Delineation
 
 - Characterizing watersheds is fundamental to much of our work in freshwater science
@@ -1216,6 +1268,8 @@ logan_ws <- nhdplusTools::get_nldi_basin(nldi_feature = ws_source)
 ```{r}
 mapview::mapview(logan_ws)
 ```
+
+## StreamCat and LakeCat
 
 ## StreamCatTools
 
@@ -1400,6 +1454,7 @@ lc_get_data(metric = 'pctdecid2019, pctconif2019',
             comid = comids) 
 ```
 
+# SPLM and SPGLM Applications
 
 ## Bringing it all together
 
@@ -2018,12 +2073,6 @@ ggplot() +
 ## Acknowledgements
 
 * Thank you so much for attending!
+* [https://usepa.github.io/spmodel/](https://usepa.github.io/spmodel/)
+* [https://usepa.github.io/StreamCatTools/](https://usepa.github.io/StreamCatTools/)
 * Questions?
-
-```{r}
-#| echo: false
-#| fig-align: center
-
-include_graphics(here("figures", "spmodel_hex_rancho_300dpi_cropped_2in.png"))
-```
-
