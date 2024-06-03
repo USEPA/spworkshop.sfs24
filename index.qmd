@@ -155,7 +155,7 @@ We highly recommend the following resources for further learning:
 * [R For Data Science](https://r4ds.hadley.nz/): A guide to data wrangling and visualization in `R` using the `tidyverse`.
 * [Geomcomputation with R](https://r.geocompx.org/): A guide to geospatial (i.e., GIS) operations in `R`. 
 * [Spatial Data Science with Application in R](https://r-spatial.org/book/): A guide to handling and describing spatial data in `R`.
-* [Spatial Linear Models for Environmental Data](https://www.routledge.com/Spatial-Linear-Models-for-Environmental-Data/Zimmerman-VerHoef/p/book/9780367183349): A guide to spatial statistical modeling for environmental data. 
+* [Spatial Linear Models for Environmental Data](https://www.taylorfrancis.com/books/mono/10.1201/9780429060878/spatial-linear-models-environmental-data-dale-zimmerman-jay-ver-hoef): A guide to spatial statistical modeling for environmental data. 
 * [Quarto for R and RStudio](https://posit-conf-2023.github.io/quarto-r/): A guide to using Quarto in `R` and `RStudio`.
 
 ## Citation Information
