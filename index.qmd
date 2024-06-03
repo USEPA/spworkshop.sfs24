@@ -134,6 +134,16 @@ remotes::install_github('USEPA/spdata.sfs24')
 ```
 
 
+While installing any of the above packages by calling `remotes::install_github()`, if you receive a confusing error message that you cannot fix, try installing the `.zip` of the package locally. To do this, visit the GitHub repository specified by the `repo` (the first) argument to `remotes::install_github()`. Then, on GitHub, click on the green "Code" button and then click the "Download ZIP" button. Save this `.zip` somewhere on your computer and then install it using `devtools::install_local()`. For example, if you cannot install the `spdata.sfs24` data package by running
+```{r, eval = FALSE}
+remotes::install_github('USEPA/spdata.sfs24')
+```
+
+then instead visit [https://github.com/USEPA/spdata.sfs24](https://github.com/USEPA/spdata.sfs24), download the `.zip` from the `main` (the default) branch, and save this `.zip` on your computer. Suppose this `.zip` is saved at the location `C:\Program Files\spdata.sfs24-main.zip` on your computer. Then, to install the `spdata.sfs24` package, run
+```{r, eval = FALSE}
+devtools::install_local('C:/Program Files/spdata.sfs24-main.zip')
+```
+
 ## How to follow along with material
 
 This workshop was built using [Quarto](https://quarto.org/) and *rendered* to html.  If you are familiar with using git and GitHub, you can fork and clone [this repository](https://github.com/USEPA/spworkshop.sfs24), or simply clone directly and open the corresponding `.qmd` files to follow along with material in RStudio.  You can also 1) copy code snippets from the rendered book site and paste into your code files in RStudio or 2) download [this file](https://github.com/USEPA/spworkshop.sfs24/blob/main/slides-code.R), which contains all the code we will run together during the workshop.
